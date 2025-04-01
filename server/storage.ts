@@ -4,6 +4,8 @@ import {
   admissionInquiries, type AdmissionInquiry, type InsertAdmissionInquiry,
   newsletterSubscriptions, type NewsletterSubscription, type InsertNewsletterSubscription
 } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 // Storage interface with CRUD methods
 export interface IStorage {
@@ -29,101 +31,84 @@ export interface IStorage {
   createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private contactSubmissions: Map<number, ContactSubmission>;
-  private admissionInquiries: Map<number, AdmissionInquiry>;
-  private newsletterSubscriptions: Map<number, NewsletterSubscription>;
-  private currentUserId: number;
-  private currentContactId: number;
-  private currentInquiryId: number;
-  private currentSubscriptionId: number;
-
-  constructor() {
-    this.users = new Map();
-    this.contactSubmissions = new Map();
-    this.admissionInquiries = new Map();
-    this.newsletterSubscriptions = new Map();
-    this.currentUserId = 1;
-    this.currentContactId = 1;
-    this.currentInquiryId = 1;
-    this.currentSubscriptionId = 1;
-  }
-
+export class DatabaseStorage implements IStorage {
   // User methods
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
     return user;
   }
   
   // Contact submission methods
   async getContactSubmission(id: number): Promise<ContactSubmission | undefined> {
-    return this.contactSubmissions.get(id);
+    const [submission] = await db.select().from(contactSubmissions).where(eq(contactSubmissions.id, id));
+    return submission || undefined;
   }
   
   async getAllContactSubmissions(): Promise<ContactSubmission[]> {
-    return Array.from(this.contactSubmissions.values());
+    return await db.select().from(contactSubmissions).orderBy(contactSubmissions.submittedAt);
   }
   
   async createContactSubmission(submission: InsertContact): Promise<ContactSubmission> {
-    const id = this.currentContactId++;
-    const submittedAt = new Date();
-    const contactSubmission: ContactSubmission = { ...submission, id, submittedAt };
-    this.contactSubmissions.set(id, contactSubmission);
+    const [contactSubmission] = await db
+      .insert(contactSubmissions)
+      .values(submission)
+      .returning();
     return contactSubmission;
   }
   
   // Admission inquiry methods
   async getAdmissionInquiry(id: number): Promise<AdmissionInquiry | undefined> {
-    return this.admissionInquiries.get(id);
+    const [inquiry] = await db.select().from(admissionInquiries).where(eq(admissionInquiries.id, id));
+    return inquiry || undefined;
   }
   
   async getAllAdmissionInquiries(): Promise<AdmissionInquiry[]> {
-    return Array.from(this.admissionInquiries.values());
+    return await db.select().from(admissionInquiries).orderBy(admissionInquiries.submittedAt);
   }
   
   async createAdmissionInquiry(inquiry: InsertAdmissionInquiry): Promise<AdmissionInquiry> {
-    const id = this.currentInquiryId++;
-    const submittedAt = new Date();
-    const admissionInquiry: AdmissionInquiry = { ...inquiry, id, submittedAt };
-    this.admissionInquiries.set(id, admissionInquiry);
+    const [admissionInquiry] = await db
+      .insert(admissionInquiries)
+      .values(inquiry)
+      .returning();
     return admissionInquiry;
   }
   
   // Newsletter subscription methods
   async getNewsletterSubscription(id: number): Promise<NewsletterSubscription | undefined> {
-    return this.newsletterSubscriptions.get(id);
+    const [subscription] = await db.select().from(newsletterSubscriptions).where(eq(newsletterSubscriptions.id, id));
+    return subscription || undefined;
   }
   
   async getNewsletterSubscriptionByEmail(email: string): Promise<NewsletterSubscription | undefined> {
-    return Array.from(this.newsletterSubscriptions.values()).find(
-      (subscription) => subscription.email === email,
-    );
+    const [subscription] = await db.select().from(newsletterSubscriptions).where(eq(newsletterSubscriptions.email, email));
+    return subscription || undefined;
   }
   
   async getAllNewsletterSubscriptions(): Promise<NewsletterSubscription[]> {
-    return Array.from(this.newsletterSubscriptions.values());
+    return await db.select().from(newsletterSubscriptions).orderBy(newsletterSubscriptions.subscribedAt);
   }
   
   async createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription> {
-    const id = this.currentSubscriptionId++;
-    const subscribedAt = new Date();
-    const newsletterSubscription: NewsletterSubscription = { ...subscription, id, subscribedAt };
-    this.newsletterSubscriptions.set(id, newsletterSubscription);
+    const [newsletterSubscription] = await db
+      .insert(newsletterSubscriptions)
+      .values(subscription)
+      .returning();
     return newsletterSubscription;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
