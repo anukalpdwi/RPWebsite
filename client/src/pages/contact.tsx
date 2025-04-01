@@ -57,21 +57,16 @@ export default function ContactPage() {
             viewport={{ once: true }}
             className="rounded-lg overflow-hidden shadow-lg"
           >
-            <div className="h-[400px] w-full bg-gray-200 flex items-center justify-center">
-              <div className="text-center p-6 bg-white/80 rounded-lg backdrop-blur-sm">
-                <h3 className="text-xl font-heading font-bold mb-4">School Location</h3>
-                <p className="mb-4">{schoolInfo.address}</p>
-                <p className="text-sm mb-3">This map would show our exact location and directions</p>
-                <div className="flex justify-center space-x-4">
-                  <Button variant="outline" className="flex items-center">
-                    <FaPhoneAlt className="mr-2" /> Call for Directions
-                  </Button>
-                  <Button variant="outline" className="flex items-center">
-                    <FaEnvelope className="mr-2" /> Email for Directions
-                  </Button>
-                </div>
-              </div>
-            </div>
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3653.7281574229837!2d81.3908538!3d23.6856776!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39868fd5decc19c9%3A0x16cc0bc5a56b6b9c!2sRP%20PUBLIC%20SCHOOL%20JAISINGHNAGAR!5e0!3m2!1sen!2sin!4v1743529828316!5m2!1sen!2sin"
+              width="100%" 
+              height="400" 
+              style={{ border: 0 }} 
+              allowFullScreen 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+              className="rounded-lg"
+            />
           </motion.div>
         </div>
       </section>

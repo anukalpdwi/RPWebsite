@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 
 interface UseCounterProps {
@@ -15,12 +16,12 @@ export function useCounter({
 }: UseCounterProps): number {
   const [count, setCount] = useState(start);
   const [hasStarted, setHasStarted] = useState(false);
-  const targetRef = useRef<HTMLDivElement>(null);
+  const targetRef = useRef<HTMLDivElement | null>(null);
   const frameRef = useRef<number | null>(null);
   const startTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
-    // Create a target div to observe
+    // Create a target div to observe if it doesn't exist
     if (!targetRef.current) {
       targetRef.current = document.createElement("div");
       targetRef.current.style.position = "absolute";
@@ -48,12 +49,13 @@ export function useCounter({
 
     return () => {
       observer.disconnect();
-      if (targetRef.current) {
+      if (targetRef.current && targetRef.current.parentNode === document.body) {
         document.body.removeChild(targetRef.current);
       }
       if (frameRef.current !== null) {
         cancelAnimationFrame(frameRef.current);
       }
+      targetRef.current = null;
     };
   }, [viewportMargin, hasStarted]);
 

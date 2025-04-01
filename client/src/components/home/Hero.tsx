@@ -7,8 +7,8 @@ import AnimatedText from "@/components/ui/animated-text";
 // Hero slider data
 const heroSlides = [
   {
-    image: "https://source.unsplash.com/1800x600/?school,building",
-    title: "Welcome to RP Public School",
+    image: "/Images/annual-day/1.jpg",
+    title: "Welcome  to  RP Public School",
     subtitle: "Nurturing Excellence, Building Character, Creating Future Leaders",
     buttons: [
       { text: "Apply Now", link: "/admissions#inquiry", primary: true },
@@ -16,17 +16,17 @@ const heroSlides = [
     ]
   },
   {
-    image: "https://source.unsplash.com/1800x600/?classroom,students",
-    title: "Excellence in Education",
+    image: "/Images/annual-day/24.jpg",
+    title: "Excellence  in  Education",
     subtitle: "Modern Facilities, Expert Faculty, and Comprehensive Curriculum",
     buttons: [
       { text: "Academic Programs", link: "/academics", primary: true },
-      { text: "Virtual Tour", link: "#tour", primary: false }
+      { text: "View Images", link: "#tour", primary: false }
     ]
   },
   {
-    image: "https://source.unsplash.com/1800x600/?school,sports",
-    title: "Holistic Development",
+    image: "/Images/annual-day/sports.webp",
+    title: "Holistic  Development",
     subtitle: "Sports, Arts, and Extracurricular Activities for Well-rounded Growth",
     buttons: [
       { text: "Explore Facilities", link: "/facilities", primary: true },

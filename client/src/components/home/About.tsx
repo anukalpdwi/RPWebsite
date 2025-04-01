@@ -25,7 +25,7 @@ export default function About() {
             viewport={{ once: true }}
           >
             <img 
-              src="https://source.unsplash.com/random/600x400/?school,campus" 
+              src="\Images\banner\bg4.jpg" 
               alt="RP Public School Campus" 
               className="rounded-lg shadow-lg object-cover w-full h-full" 
             />

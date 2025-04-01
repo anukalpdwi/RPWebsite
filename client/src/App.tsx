@@ -22,19 +22,7 @@ import Gallery from "@/pages/gallery";
 import Contact from "@/pages/contact";
 
 function Router() {
-  return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/about" component={About} />
-      <Route path="/academics" component={Academics} />
-      <Route path="/admissions" component={Admissions} />
-      <Route path="/faculty" component={Faculty} />
-      <Route path="/facilities" component={Facilities} />
-      <Route path="/gallery" component={Gallery} />
-      <Route path="/contact" component={Contact} />
-      <Route component={NotFound} />
-    </Switch>
-  );
+  return <Home />;
 }
 
 function App() {

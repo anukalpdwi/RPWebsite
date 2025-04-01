@@ -144,13 +144,15 @@ export default function Contact() {
           viewport={{ once: true }}
         >
           <div className="md:w-1/2 h-96 md:h-auto">
-            {/* Google Map - In a real application, replace this with an actual Google Maps component */}
-            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-              <div className="text-center p-4">
-                <p className="text-lg font-medium">Interactive Map</p>
-                <p className="text-sm text-gray-600 mt-2">School Location: {schoolInfo.address}</p>
-              </div>
-            </div>
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3653.7281574229837!2d81.3908538!3d23.6856776!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39868fd5decc19c9%3A0x16cc0bc5a56b6b9c!2sRP%20PUBLIC%20SCHOOL%20JAISINGHNAGAR!5e0!3m2!1sen!2sin!4v1743529828316!5m2!1sen!2sin"
+              width="100%" 
+              height="100%" 
+              style={{ border: 0 }} 
+              allowFullScreen 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+            />
           </div>
           <div className="md:w-1/2 bg-white p-6">
             <h3 className="text-2xl font-heading font-bold text-primary mb-4">Send a Message</h3>

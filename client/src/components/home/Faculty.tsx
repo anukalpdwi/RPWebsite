@@ -5,34 +5,34 @@ import { FaEnvelope, FaLinkedinIn } from "react-icons/fa";
 // Faculty data
 const facultyMembers = [
   {
-    image: "https://source.unsplash.com/random/300x400/?teacher,man",
-    name: "Dr. Rajesh Sharma",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8eRZ7rZwCsqz9O5HyOhpBmuCyT9MX0BOPDg&s",
+    name: "Mr. Prakash Narayan Tiwari",
+    position: "Director",
+    bio: "Successful entrepreneur with extensive experience in leadership and education. His vision focuses on fostering excellence and nurturing future leaders.",
+    email: "#",
+    linkedin: "#"
+  },
+  {
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMEdcbBWgjmIZM0q1PPWrNRbIHrI7MJvfJGLF6fDQbwCkJTboADyT-uCTTR2EOeVPZZbI&usqp=CAU",
+    name: "Mrs. Bharti Pandey",
     position: "Principal",
-    bio: "Ph.D. in Education with 25+ years of experience in academic leadership.",
+    bio: "Masters in Education with 10+ years of experience in academic leadership.",
     email: "#",
     linkedin: "#"
   },
   {
-    image: "https://source.unsplash.com/random/300x400/?teacher,woman",
-    name: "Dr. Priya Verma",
+    image: "https://clipart-library.com/8300/principal-.png",
+    name: "Mrs. Deepti Tiwari",
     position: "Vice Principal",
-    bio: "M.Phil in Mathematics with expertise in curriculum development and teacher training.",
+    bio: "Masters in Mathematics with expertise in curriculum development and teacher training.",
     email: "#",
     linkedin: "#"
   },
   {
-    image: "https://source.unsplash.com/random/300x400/?professor,man",
-    name: "Mr. Anand Kapoor",
-    position: "Head of Sciences",
-    bio: "M.Sc. in Physics with specialized training in innovative science teaching methodologies.",
-    email: "#",
-    linkedin: "#"
-  },
-  {
-    image: "https://source.unsplash.com/random/300x400/?teacher,lady",
-    name: "Mrs. Sunita Patel",
-    position: "Head of Languages",
-    bio: "M.A. in English Literature with extensive experience in language education and creative writing.",
+    image: "https://static.vecteezy.com/system/resources/thumbnails/003/524/750/small_2x/a-man-working-with-laptop-free-vector.jpg",
+    name: "Mrs. Pradeep Pandey",
+    position: "Head of Staff",
+    bio: "Experienced in leadership and education. His vision focuses on fostering excellence and nurturing future leaders.",
     email: "#",
     linkedin: "#"
   }

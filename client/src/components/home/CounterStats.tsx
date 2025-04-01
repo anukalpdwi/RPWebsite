@@ -3,10 +3,10 @@ import { motion } from "framer-motion";
 
 // Stats data
 const stats = [
-  { value: 1500, label: "Students" },
-  { value: 120, label: "Expert Faculty" },
-  { value: 25, label: "Years of Excellence" },
-  { value: 50, label: "Extracurricular Activities" }
+  { value: 120, label: "Students" },
+  { value: 15, label: "Expert Faculty" },
+  { value: 3, label: "Years of Excellence" },
+  { value: 10, label: "Extracurricular Activities" }
 ];
 
 export default function CounterStats() {

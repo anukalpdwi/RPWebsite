@@ -6,12 +6,12 @@ import Lightbox from "@/components/ui/lightbox";
 // Gallery images
 const galleryImages = [
   {
-    src: "https://source.unsplash.com/random/600x800/?school,building",
+    src: "/images/banner/1.jpg",
     alt: "School Building",
     className: "aspect-square md:aspect-auto md:row-span-2"
   },
   {
-    src: "https://source.unsplash.com/random/400x300/?classroom,learning",
+    src: "/Images/Facilities/smart tv.jpg",
     alt: "Classroom Activity"
   },
   {
@@ -19,12 +19,12 @@ const galleryImages = [
     alt: "Science Exhibition"
   },
   {
-    src: "https://source.unsplash.com/random/600x800/?sports,school",
+    src: "/Images/Facilities/Sports.jpg",
     alt: "Sports Event",
     className: "aspect-square md:aspect-auto md:row-span-2"
   },
   {
-    src: "https://source.unsplash.com/random/400x300/?music,performance",
+    src: "/Images/annual-day/27.jpg",
     alt: "Cultural Performance"
   },
   {

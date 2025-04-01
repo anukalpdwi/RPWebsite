@@ -1,3 +1,4 @@
+
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { FaChild, FaBookReader, FaGraduationCap, FaCheck, FaArrowRight } from "react-icons/fa";
@@ -6,38 +7,38 @@ import { FaChild, FaBookReader, FaGraduationCap, FaCheck, FaArrowRight } from "r
 const programs = [
   {
     icon: <FaChild className="text-2xl" />,
-    title: "Primary Section",
-    description: "Classes I to V focus on building a strong foundation in literacy, numeracy, science, and social studies through activity-based learning.",
+    title: "Pre-Primary Section",
+    description: "Nursery, LKG and UKG classes focus on early childhood development through play-based learning and foundational skills.",
     features: [
-      "Activity-based learning approach",
-      "Foundation in language and mathematics",
-      "Regular field trips and workshops"
+      "Age-appropriate learning activities",
+      "Development of motor skills",
+      "Introduction to basic concepts"
+    ],
+    link: "/academics#pre-primary",
+    linkText: "Learn More"
+  },
+  {
+    icon: <FaBookReader className="text-2xl" />,
+    title: "Primary Section",
+    description: "Classes 1st to 5th focus on building strong foundations in core subjects through engaging and interactive learning methods.",
+    features: [
+      "Core subject fundamentals",
+      "Activity-based learning",
+      "Regular assessments and feedback"
     ],
     link: "/academics#primary",
     linkText: "Learn More"
   },
   {
-    icon: <FaBookReader className="text-2xl" />,
+    icon: <FaGraduationCap className="text-2xl" />,
     title: "Middle Section",
-    description: "Classes VI to VIII build on foundational knowledge while introducing specialized subjects and encouraging analytical thinking.",
+    description: "Classes 6th to 8th build on foundational knowledge while introducing advanced concepts and analytical thinking.",
     features: [
-      "Expanded curriculum with specialized subjects",
-      "Development of research and analytical skills",
-      "Introduction to various languages"
+      "Advanced subject content",
+      "Project-based learning",
+      "Critical thinking development"
     ],
     link: "/academics#middle",
-    linkText: "Learn More"
-  },
-  {
-    icon: <FaGraduationCap className="text-2xl" />,
-    title: "Secondary Section",
-    description: "Classes IX to XII prepare students for board examinations with in-depth subject knowledge and career guidance.",
-    features: [
-      "Comprehensive board exam preparation",
-      "Science, Commerce, and Humanities streams",
-      "Career counseling and guidance"
-    ],
-    link: "/academics#secondary",
     linkText: "Learn More"
   }
 ];
@@ -77,7 +78,7 @@ export default function Programs() {
           >
             <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Academic Programs</h2>
             <div className="h-1 w-20 bg-accent mx-auto mb-6"></div>
-            <p className="max-w-3xl mx-auto">Our comprehensive academic programs are designed to provide students with a strong foundation in core subjects while encouraging exploration and critical thinking.</p>
+            <p className="max-w-3xl mx-auto">Our comprehensive academic programs are designed to provide students with a strong foundation while nurturing their overall development.</p>
           </motion.div>
         </div>
         

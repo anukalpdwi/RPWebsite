@@ -28,21 +28,21 @@ export function truncateText(text: string, length: number): string {
 
 export const schoolInfo = {
   name: "RP Public School",
-  location: "Jaisinghnagar",
-  fullName: "RP Public School, Jaisinghnagar",
-  address: "RP Public School Campus, Main Road, Jaisinghnagar, Madhya Pradesh, India - 488999",
-  phone: "+91 9876543210",
-  admissionsPhone: "+91 9876543211",
-  principalPhone: "+91 9876543212",
-  email: "info@rppublicschool.edu.in",
-  admissionsEmail: "admissions@rppublicschool.edu.in",
-  principalEmail: "principal@rppublicschool.edu.in",
-  hours: "8:00 AM - 3:30 PM",
+  location: "Jaisinghnagar, Shahdol, Madhya Pradesh",
+  fullName: "RP Public School, Jaisinghnagar Shahdol, Madhya Pradesh",
+  address: "RP Public School Campus, Main Road, Jaisinghnagar, Distt. Madhya Pradesh, India - 484771",
+  phone: "+91 9893767392, +91 9893575723",
+  admissionsPhone: "+91 9893767392",
+  principalPhone: "+91 9893767392",
+  email: "rppublicschool@gmail.com",
+  admissionsEmail: "rppublicschool@gmial.com",
+  principalEmail: "dserdjaisinghnagar@gmail.com",
+  hours: "9:00 AM - 3:30 PM",
   socialMedia: {
-    facebook: "#",
+    facebook: "https://www.facebook.com/p/RP-Public-School-Jaisinghnagar-100070063312463/",
     twitter: "#",
-    instagram: "#",
+    instagram: "https://www.instagram.com/rppublic.school/",
     youtube: "#"
   },
-  founded: 1995
+  founded: 2021
 };

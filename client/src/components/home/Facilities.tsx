@@ -4,34 +4,34 @@ import { Link } from "wouter";
 // Facilities data
 const facilities = [
   {
-    image: "https://source.unsplash.com/random/600x400/?library,books",
+    image: "https://images.theconversation.com/files/266481/original/file-20190329-139374-1z0c9i3.jpg?ixlib=rb-4.1.0&q=20&auto=format&w=320&fit=clip&dpr=2&usm=12&cs=strip",
     title: "Modern Library",
     description: "Our well-stocked library houses thousands of books, journals, and digital resources to foster a love for reading and research."
   },
   {
-    image: "https://source.unsplash.com/random/600x400/?science,laboratory",
-    title: "Science Laboratories",
-    description: "Fully equipped physics, chemistry, and biology labs provide hands-on learning experiences and practical knowledge."
+    image: "/Images/annual-day/4.jpg",
+    title: "Multi Purpose Hall",
+    description: "The Multi-Purpose Hall at RP Public School is a versatile space for events, sports, and activities, fostering learning and creativity."
   },
   {
-    image: "https://source.unsplash.com/random/600x400/?computer,lab",
+    image: "/Images/Facilities/Computer lab.webp",
     title: "Computer Labs",
     description: "Our computer labs feature the latest technology and software to equip students with essential digital skills for the future."
   },
   {
-    image: "https://source.unsplash.com/random/600x400/?sports,field",
+    image: "/Images/Facilities/Sports.jpg",
     title: "Sports Facilities",
     description: "Extensive outdoor fields and indoor courts for various sports including cricket, football, basketball, and badminton."
   },
   {
-    image: "https://source.unsplash.com/random/600x400/?art,studio",
+    image: "/Images/annual-day/23.jpg",
     title: "Art & Music Studios",
     description: "Dedicated spaces for creative expression through visual arts, music, dance, and other performing arts."
   },
   {
-    image: "https://source.unsplash.com/random/600x400/?cafeteria,school",
-    title: "Dining Hall",
-    description: "Spacious cafeteria serving nutritious and balanced meals prepared in our hygienic kitchen by trained staff."
+    image: "/Images/Facilities/smart tv.jpg",
+    title: "Smart Classes",
+    description: "To enhance the learning experience & incorporate modern educational technology, we utilize state-of-the-art Smart TVs as part of our teaching tools"
   }
 ];
 

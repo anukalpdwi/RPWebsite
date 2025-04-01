@@ -111,4 +111,34 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+class MockStorage {
+  async createUser() {
+    return { id: 1, username: "test", password: "test" };
+  }
+
+  async getContactSubmission() {
+    return undefined;
+  }
+
+  async getAllContactSubmissions() {
+    return [];
+  }
+
+  async createContactSubmission(submission: any) {
+    return { id: 1, ...submission, submittedAt: new Date() };
+  }
+
+  async getAdmissionInquiry() {
+    return undefined;
+  }
+
+  async getAllAdmissionInquiries() {
+    return [];
+  }
+
+  async createAdmissionInquiry(inquiry: any) {
+    return { id: 1, ...inquiry, submittedAt: new Date() };
+  }
+}
+
+export const storage = new MockStorage();

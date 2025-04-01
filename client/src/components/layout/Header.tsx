@@ -27,15 +27,15 @@ const navigationItems = [
     ]
   },
   { title: "Admissions", link: "/admissions" },
-  { 
-    title: "Campus Life", 
-    link: "/facilities",
-    dropdown: [
-      { title: "Facilities", link: "/facilities" },
-      { title: "Activities & Clubs", link: "/facilities#activities" },
-      { title: "Sports", link: "/facilities#sports" }
-    ]
-  },
+  // { 
+  //   title: "Campus Life", 
+  //   link: "/facilities",
+  //   dropdown: [
+  //     { title: "Facilities", link: "/facilities" },
+  //     { title: "Activities & Clubs", link: "/facilities#activities" },
+  //     { title: "Sports", link: "/facilities#sports" }
+  //   ]
+  // },
   { title: "Faculty", link: "/faculty" },
   { title: "Gallery", link: "/gallery" },
   { title: "Contact", link: "/contact" }
@@ -77,9 +77,11 @@ export default function Header() {
       <div className="container mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between">
         <div className="flex items-center mb-3 md:mb-0">
           <div className="mr-3">
-            <div className="h-16 w-16 bg-primary rounded-full flex items-center justify-center text-white font-bold text-xl">
-              RP
-            </div>
+          <img 
+              src="/images/logo/favicon.jpg" 
+              alt="School Logo" 
+              className="h-16 w-16 object-contain"
+            />
           </div>
           <div>
             <h1 className="font-heading text-2xl md:text-3xl font-bold text-primary">
@@ -214,7 +216,7 @@ export default function Header() {
           </div>
           <div className="overflow-hidden whitespace-nowrap">
             <div className="announcement-scroll inline-block">
-              Admissions open for academic year 2023-24 &nbsp;&nbsp;|&nbsp;&nbsp; Annual Sports Meet on December 15th &nbsp;&nbsp;|&nbsp;&nbsp; Inter-school Science Exhibition on November 20th &nbsp;&nbsp;|&nbsp;&nbsp; Parent-Teacher Meeting scheduled for October 5th
+              Admissions open for academic year 2025-26 &nbsp;&nbsp;|&nbsp;&nbsp; Annual Sports Meet on December 15th &nbsp;&nbsp; &nbsp;&nbsp;|&nbsp;&nbsp; Parent-Teacher Meeting scheduled for October 5th
             </div>
           </div>
         </div>

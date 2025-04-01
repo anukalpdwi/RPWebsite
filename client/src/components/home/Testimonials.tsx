@@ -7,14 +7,14 @@ const testimonials = [
   {
     quote: "RP Public School has provided my daughter with not just academic excellence but also a nurturing environment that has helped her grow into a confident individual. The faculty's dedication and personalized attention make all the difference.",
     author: "Mrs. Anjali Gupta",
-    role: "Parent of Riya Gupta, Class X",
-    image: "https://source.unsplash.com/random/100x100/?woman,portrait"
+    role: "Parent of Riya Gupta, Class 5",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcx9AHEcXoUO7xsDRwI3jrN1N_yGYBmGyr1w&s"
   },
   {
-    quote: "As a student at RP Public School for the past 8 years, I've had incredible opportunities to explore my interests in both academics and extracurricular activities. The school's approach to holistic education has truly shaped my personality.",
-    author: "Arjun Singh",
-    role: "Class XII Student",
-    image: "https://source.unsplash.com/random/100x100/?boy,portrait"
+    quote: "As a student at RP Public School for the past 2 years, I've had incredible opportunities to explore my interests in both academics and extracurricular activities. The school's approach to holistic education has truly shaped my personality.",
+    author: "Arjuna Singh",
+    role: "Class 6 Student",
+    image: "Images/annual-day/2.jpg"
   },
   {
     quote: "The emphasis on values, discipline, and academic rigor at RP Public School has been instrumental in my son's development. The school's balanced approach ensures that students excel not just in studies but also develop essential life skills.",
