@@ -9,6 +9,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import TopBar from "@/components/layout/TopBar";
 import BackToTop from "@/components/ui/backtotop";
+import WhatsAppButton from "@/components/ui/whatsapp-button";
 
 // Pages
 import Home from "@/pages/home";
@@ -47,6 +48,7 @@ function App() {
         </main>
         <Footer />
         <BackToTop />
+        <WhatsAppButton phoneNumber="9893767392" />
       </div>
       <Toaster />
     </QueryClientProvider>
