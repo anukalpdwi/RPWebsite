@@ -78,7 +78,7 @@ export default function Header() {
         <div className="flex items-center mb-3 md:mb-0">
           <div className="mr-3">
           <img 
-              src="/images/logo/favicon.jpg" 
+              src="/Images/logo/favicon.jpg" 
               alt="School Logo" 
               className="h-16 w-16 object-contain"
             />

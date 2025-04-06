@@ -6,21 +6,21 @@ import { formatDate } from "@/lib/utils";
 // News data
 const newsItems = [
   {
-    image: "https://source.unsplash.com/random/600x400/?award,ceremony",
+    image: "/Images/annual-day/5.jpg",
     title: "Annual Academic Excellence Awards",
     description: "Our school celebrated the Annual Academic Excellence Awards ceremony, recognizing outstanding student achievements across all grades.",
     date: new Date(2023, 9, 15), // October 15, 2023
     link: "/news/academic-awards"
   },
   {
-    image: "https://source.unsplash.com/random/600x400/?science,fair",
+    image: "https://scontent.fjlr3-1.fna.fbcdn.net/v/t39.30808-6/480614907_932060769139358_4269754223735221782_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=127cfc&_nc_ohc=s7UI53TMnmkQ7kNvwHroP_v&_nc_oc=AdnJTfCqt5lnmbjZ5OaLuCpzQcLISfINQwyjiQQY0HEpYTx9A3dhDR3rp6WEiU65CIqetjA9kTeRDlCkuNgl0OMY&_nc_zt=23&_nc_ht=scontent.fjlr3-1.fna&_nc_gid=RGHXNSha2lS2ZLp9gUAfUQ&oh=00_AfFTKwuJkHRW7EGht2yX4u_tQlrkjpfQ0L6bSf1xr88ifg&oe=67F88A55",
     title: "Inter-school Science Exhibition",
     description: "RP Public School will host the annual Inter-school Science Exhibition showcasing innovative projects from students across the region.",
     date: new Date(2023, 10, 20), // November 20, 2023
     link: "/news/science-exhibition"
   },
   {
-    image: "https://source.unsplash.com/random/600x400/?sports,trophy",
+    image: "/Images/annual-day/sports day.jpg",
     title: "Annual Sports Meet",
     description: "The upcoming Annual Sports Meet will feature track and field events, team sports competitions, and various athletic demonstrations.",
     date: new Date(2023, 11, 15), // December 15, 2023
