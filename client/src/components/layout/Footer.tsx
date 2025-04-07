@@ -36,9 +36,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center mb-4">
-              <div className="h-16 w-16 bg-white rounded-md flex items-center justify-center text-primary font-bold text-xl mr-3">
-                RP
-              </div>
+            <img 
+              src="/Images/logo/favicon.jpg" 
+              alt="School Logo" 
+              className="h-16 w-16 object-contain"
+            />
               <div>
                 <h3 className="font-heading text-xl font-bold">{schoolInfo.name}</h3>
                 <p className="text-sm italic">{schoolInfo.location}</p>

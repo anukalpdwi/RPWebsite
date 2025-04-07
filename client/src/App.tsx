@@ -48,7 +48,7 @@ function App() {
         </main>
         <Footer />
         <BackToTop />
-        <WhatsAppButton phoneNumber="9893767392" />
+        <WhatsAppButton phoneNumber="9243998770" />
       </div>
       <Toaster />
     </QueryClientProvider>
