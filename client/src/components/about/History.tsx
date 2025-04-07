@@ -10,39 +10,19 @@ const timeline = [
     description: "RP Public School was established with just two classrooms and 50 students, with a vision of providing quality education in Jaisinghnagar."
   },
   {
-    year: schoolInfo.founded + 5,
-    title: "Campus Expansion",
-    description: "The school campus was expanded with new buildings to accommodate growing enrollment and introduce additional facilities."
+    year: schoolInfo.founded + 1,
+    title: "Campus Growth",
+    description: "With increasing enrollment and community support, the campus expanded to include new classrooms and basic facilities, laying the foundation for a better learning environment."
   },
   {
-    year: schoolInfo.founded + 8,
-    title: "Secondary Section",
-    description: "Secondary classes were introduced, allowing students to continue their education through Class X at RP Public School."
+    year: schoolInfo.founded + 2,
+    title: "Academic Enrichment",
+    description: "The school introduced activity-based learning programs, co-curricular events, and value education classes to make learning more engaging and holistic for students from Nursery to Class 8."
   },
   {
-    year: schoolInfo.founded + 12,
-    title: "CBSE Affiliation",
-    description: "The school received CBSE affiliation, marking a significant milestone in its academic journey."
-  },
-  {
-    year: schoolInfo.founded + 15,
-    title: "Higher Secondary",
-    description: "Higher secondary section was introduced with Science, Commerce, and Humanities streams, completing the K-12 educational offering."
-  },
-  {
-    year: 2010,
-    title: "Infrastructure Enhancement",
-    description: "Major infrastructure enhancement including new science labs, computer facilities, library, and sports complex."
-  },
-  {
-    year: 2015,
-    title: "Academic Excellence Awards",
-    description: "The school was recognized with academic excellence awards at the district and state levels for outstanding student performance."
-  },
-  {
-    year: 2020,
-    title: "Digital Transformation",
-    description: "Complete digital transformation with smart classrooms, digital library, and integrated learning management system."
+    year: schoolInfo.founded + 3,
+    title: "Technological Integration",
+    description: "Smart boards and digital learning tools were introduced to enhance classroom experiences, helping students stay updated with modern educational methods."
   }
 ];
 

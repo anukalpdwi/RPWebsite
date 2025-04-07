@@ -5,19 +5,19 @@ import SectionTitle from "@/components/ui/section-title";
 // Leadership team data
 const leadershipTeam = [
   {
-    name: "Dr. Rajesh Sharma",
-    position: "Principal",
-    image: "https://source.unsplash.com/random/400x500/?principal,man",
-    bio: "Dr. Rajesh Sharma has over 25 years of experience in education and academic leadership. He holds a Ph.D. in Education Administration and has previously served as the head of several prestigious institutions. Under his guidance, RP Public School has achieved numerous milestones in academic excellence and holistic education.",
+    name: "Mr. Prakash Narayan Tiwari",
+    position: "Director",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8eRZ7rZwCsqz9O5HyOhpBmuCyT9MX0BOPDg&s",
+    bio: "Successful entrepreneur with extensive experience in leadership and education. His vision focuses on fostering excellence and nurturing future leaders.",
     quote: "Education is not just about academics; it's about nurturing compassionate, critical thinkers who can shape a better world.",
     email: "#",
     linkedin: "#"
   },
   {
-    name: "Dr. Priya Verma",
-    position: "Vice Principal",
-    image: "https://source.unsplash.com/random/400x500/?principal,woman",
-    bio: "Dr. Priya Verma brings 18 years of experience in curriculum development and teacher training. With an M.Phil in Mathematics and a specialization in educational psychology, she has been instrumental in developing innovative teaching methodologies at RP Public School. Her focus on personalized learning has significantly enhanced student outcomes.",
+    name: "Mrs. Bharti Pandey",
+    position: "Principal",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMEdcbBWgjmIZM0q1PPWrNRbIHrI7MJvfJGLF6fDQbwCkJTboADyT-uCTTR2EOeVPZZbI&usqp=CAU",
+    bio: "Masters in Education with 10+ years of experience in academic leadership.",
     quote: "Every child has unique potential waiting to be discovered and nurtured through thoughtful education.",
     email: "#",
     linkedin: "#"
@@ -27,22 +27,22 @@ const leadershipTeam = [
 // Board members data
 const boardMembers = [
   {
-    name: "Mr. Vikram Singh",
+    name: "Mr. Deep Narayan Tiwari",
     position: "Chairman",
     image: "https://source.unsplash.com/random/300x300/?businessman"
   },
   {
-    name: "Mrs. Asha Patel",
-    position: "Secretary",
+    name: "Mr. Pradeep Pandey",
+    position: "Board Member",
     image: "https://source.unsplash.com/random/300x300/?businesswoman"
   },
   {
-    name: "Mr. Rajendra Kumar",
+    name: "Mrs. Savita Dwivedi",
     position: "Treasurer",
     image: "https://source.unsplash.com/random/300x300/?executive,man"
   },
   {
-    name: "Dr. Neha Gupta",
+    name: "Mrs. Deepti Tiwari ",
     position: "Board Member",
     image: "https://source.unsplash.com/random/300x300/?professor,woman"
   }
