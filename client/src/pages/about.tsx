@@ -12,7 +12,7 @@ export default function AboutPage() {
         title="About Us" 
         description="Learn more about our school's history, mission, vision, and leadership"
         breadcrumbs={[{ label: "About Us" }]}
-        backgroundImage="https://source.unsplash.com/random/1800x400/?school,education"
+        backgroundImage="https://www.informalnewz.com/wp-content/uploads/2025/03/School-Admission-1200x675.jpg"
       />
       <About />
       <CounterStats />

@@ -141,7 +141,7 @@ export default function AdmissionsPage() {
         title="Admissions" 
         description="Join our school community and embark on a journey of academic excellence and holistic development"
         breadcrumbs={[{ label: "Admissions" }]}
-        backgroundImage="https://source.unsplash.com/random/1800x400/?school,students"
+        backgroundImage="https://www.informalnewz.com/wp-content/uploads/2025/03/School-Admission-1200x675.jpg"
       />
       
       <section className="py-16">

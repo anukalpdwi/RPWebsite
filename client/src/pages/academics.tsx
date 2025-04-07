@@ -11,7 +11,7 @@ export default function AcademicsPage() {
         title="Academics" 
         description="Explore our comprehensive academic programs, curriculum, teaching methodology, and educational resources"
         breadcrumbs={[{ label: "Academics" }]}
-        backgroundImage="https://source.unsplash.com/random/1800x400/?classroom,study"
+        backgroundImage="https://www.theindianschool.in/uploads/posts/L-16972674476964-pre-primary-magic-years-main.jpg"
       />
       <Programs />
       <Curriculum />

@@ -14,23 +14,23 @@ import {
 const facultyByDepartment = {
   administration: [
     {
-      name: "Dr. Rajesh Sharma",
-      position: "Principal",
-      image: "https://source.unsplash.com/random/400x500/?principal,man",
+      name: "Mr. Prakash Narayan Tiwari",
+      position: "Director",
+      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8eRZ7rZwCsqz9O5HyOhpBmuCyT9MX0BOPDg&s",
       bio: "Dr. Rajesh Sharma has over 25 years of experience in education and academic leadership. He holds a Ph.D. in Education Administration and has previously served as the head of several prestigious institutions. Under his guidance, RP Public School has achieved numerous milestones in academic excellence and holistic education.",
-      education: "Ph.D. in Education Administration, M.Ed., B.Ed.",
-      experience: "25+ years in academic leadership",
+      education: "L.LB, MBA, Entrepreneurship",
+      experience: "15+ years in academic leadership",
       quote: "Education is not just about academics; it's about nurturing compassionate, critical thinkers who can shape a better world.",
       email: "#",
       linkedin: "#"
     },
     {
-      name: "Dr. Priya Verma",
-      position: "Vice Principal",
-      image: "https://source.unsplash.com/random/400x500/?principal,woman",
-      bio: "Dr. Priya Verma brings 18 years of experience in curriculum development and teacher training. With an M.Phil in Mathematics and a specialization in educational psychology, she has been instrumental in developing innovative teaching methodologies at RP Public School. Her focus on personalized learning has significantly enhanced student outcomes.",
+      name: "Mrs. Bharti Pandey",
+      position: "Principal",
+      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMEdcbBWgjmIZM0q1PPWrNRbIHrI7MJvfJGLF6fDQbwCkJTboADyT-uCTTR2EOeVPZZbI&usqp=CAU",
+      bio: "Mrs. Bharti Pandey brings 18 years of experience in curriculum development and teacher training.",
       education: "M.Phil in Mathematics, Ph.D. in Educational Psychology",
-      experience: "18 years in education",
+      experience: "10+ years in education",
       quote: "Every child has unique potential waiting to be discovered and nurtured through thoughtful education.",
       email: "#",
       linkedin: "#"
