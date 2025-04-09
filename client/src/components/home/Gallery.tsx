@@ -6,8 +6,9 @@ import Lightbox from "@/components/ui/lightbox";
 // Gallery images
 const galleryImages = [
   {
-    src: "/Images/banner/1.jpg",
-    alt: "School Building",
+    src: "/Images/Drawing Arts.mp4",
+    alt: "Arts and Crafts",
+    type: "video",
     className: "aspect-square md:aspect-auto md:row-span-2"
   },
   {
