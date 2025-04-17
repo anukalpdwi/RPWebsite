@@ -16,7 +16,7 @@ const heroSlides = [
     ]
   },
   {
-    image: "/Images/annual-day/24.jpg",
+    image: "/Images/Hero Images/rpbg2.jpg",
     title: "Excellence  in  Education",
     subtitle: "Modern Facilities, Expert Faculty, and Comprehensive Curriculum",
     buttons: [
