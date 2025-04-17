@@ -25,7 +25,7 @@ export default function About() {
             viewport={{ once: true }}
           >
             <img 
-              src="\Images\banner\bg4.jpg" 
+              src="\Images\students/arts2.jpg" 
               alt="RP Public School Campus" 
               className="rounded-lg shadow-lg object-cover w-full h-full" 
             />

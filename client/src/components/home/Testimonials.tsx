@@ -8,7 +8,7 @@ const testimonials = [
     quote: "RP Public School has provided my daughter with not just academic excellence but also a nurturing environment that has helped her grow into a confident individual. The faculty's dedication and personalized attention make all the difference.",
     author: "Mrs. Anjali Gupta",
     role: "Parent of Riya Gupta, Class 5",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcx9AHEcXoUO7xsDRwI3jrN1N_yGYBmGyr1w&s"
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzRTDWXBII-sLtvL_s0gfbNvau1CnT2anlLh_YFVbbIpOoMJzqeuixY8aI9vBVl-_N4NM&usqp=CAU"
   },
   {
     quote: "As a student at RP Public School for the past 2 years, I've had incredible opportunities to explore my interests in both academics and extracurricular activities. The school's approach to holistic education has truly shaped my personality.",
