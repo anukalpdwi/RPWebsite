@@ -6,7 +6,7 @@ import Lightbox from "@/components/ui/lightbox";
 // Gallery images
 const galleryImages = [
   {
-    src: "/Images/Drawing Arts.mp4",
+    src: "/Images/students/Arts.jpg",
     alt: "Arts and Crafts",
     type: "video",
     className: "aspect-square md:aspect-auto md:row-span-2"
@@ -16,7 +16,7 @@ const galleryImages = [
     alt: "Classroom Activity"
   },
   {
-    src: "https://scontent.fjlr3-1.fna.fbcdn.net/v/t39.30808-6/478292832_934819188856090_7994096301781181772_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=833d8c&_nc_ohc=vnAlrurbV8AQ7kNvwFE9ieQ&_nc_oc=AdmsZqdhALbqtFHhBToAILdqmVXtWxqeYelOP32QX3kxce5BQOH-JK68qU5Rs0BR1qxXxEz6w9Gsbh7iYezBnXVW&_nc_zt=23&_nc_ht=scontent.fjlr3-1.fna&_nc_gid=blL40hSuZ5kdSeoGO9_2DA&oh=00_AfEW3ulF258kk6tuDB1VDaCq_hPYQbm-t51JMdTpKX3i8Q&oe=67F8772F",
+    src: "/Images/students/stu 1.webp",
     alt: "Science Exhibition"
   },
   {

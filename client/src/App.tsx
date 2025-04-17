@@ -1,7 +1,8 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
+import { useEffect } from "react";
 import NotFound from "@/pages/not-found";
 
 // Layout components
@@ -20,6 +21,16 @@ import Faculty from "@/pages/faculty";
 import Facilities from "@/pages/facilities";
 import Gallery from "@/pages/gallery";
 import Contact from "@/pages/contact";
+
+function ScrollToTop() {
+  const [location] = useLocation();
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+  
+  return null;
+}
 
 function Router() {
   return (
