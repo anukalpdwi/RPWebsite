@@ -6,7 +6,7 @@ import { FaQuoteLeft, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 const testimonials = [
   {
     quote: "RP Public School has provided my daughter with not just academic excellence but also a nurturing environment that has helped her grow into a confident individual. The faculty's dedication and personalized attention make all the difference.",
-    author: "Mrs. Anjali Gupta",
+    author: "Mr. Ajay Gupta",
     role: "Parent of Riya Gupta, Class 5",
     image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzRTDWXBII-sLtvL_s0gfbNvau1CnT2anlLh_YFVbbIpOoMJzqeuixY8aI9vBVl-_N4NM&usqp=CAU"
   },
