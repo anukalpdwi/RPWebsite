@@ -36,8 +36,8 @@ const categories = [
 // Gallery images by category
 const galleryImages = {
   campus: [
-    { src: "https://source.unsplash.com/random/600x800/?school,building", alt: "Main School Building", className: "aspect-square md:aspect-auto md:row-span-2" },
-    { src: "https://source.unsplash.com/random/600x400/?school,campus", alt: "School Campus" },
+    { src: "/Images/Hero Images/rpbg2.jpg", className: "aspect-square md:aspect-auto md:row-span-2" },
+    { src: "/Images/annual-day/Skit 1.JPG", alt: "School Campus" },
     { src: "https://source.unsplash.com/random/600x400/?school,playground", alt: "School Playground" },
     { src: "https://source.unsplash.com/random/600x800/?school,architecture", alt: "School Architecture", className: "aspect-square md:aspect-auto md:row-span-2" },
     { src: "https://source.unsplash.com/random/600x400/?school,garden", alt: "School Garden" },
@@ -45,9 +45,9 @@ const galleryImages = {
     { src: "https://source.unsplash.com/random/800x400/?school,auditorium", alt: "School Auditorium", className: "col-span-2" }
   ],
   events: [
-    { src: "https://source.unsplash.com/random/600x400/?school,event", alt: "Annual Day Celebration" },
-    { src: "https://source.unsplash.com/random/600x400/?school,ceremony", alt: "Award Ceremony" },
-    { src: "https://source.unsplash.com/random/600x800/?school,cultural", alt: "Cultural Program", className: "aspect-square md:aspect-auto md:row-span-2" },
+    { src: "/Images/annual-day/27.jpg", alt: "Annual Day Celebration" },
+    { src: "/Images/students/republic1.jpg", alt: "Award Ceremony" },
+    { src: "/Images/students/republic2.jpg", className: "aspect-square md:aspect-auto md:row-span-2" },
     { src: "https://source.unsplash.com/random/600x400/?school,festival", alt: "School Festival" },
     { src: "https://source.unsplash.com/random/600x400/?school,independence", alt: "Independence Day Celebration" },
     { src: "https://source.unsplash.com/random/800x400/?school,assembly", alt: "Morning Assembly", className: "col-span-2" }
@@ -61,7 +61,7 @@ const galleryImages = {
     { src: "https://source.unsplash.com/random/800x400/?school,volleyball", alt: "Volleyball Match", className: "col-span-2" }
   ],
   activities: [
-    { src: "https://source.unsplash.com/random/600x400/?art,students", alt: "Art Class" },
+    { src: "/Images/banner/bg4.jpg", alt: "Art Class" },
     { src: "https://source.unsplash.com/random/600x400/?music,performance", alt: "Music Performance" },
     { src: "https://source.unsplash.com/random/600x800/?dance,school", alt: "Dance Performance", className: "aspect-square md:aspect-auto md:row-span-2" },
     { src: "https://source.unsplash.com/random/600x400/?debate,school", alt: "Debate Competition" },

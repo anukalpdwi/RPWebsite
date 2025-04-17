@@ -17,15 +17,15 @@ const navigationItems = [
       { title: "Leadership", link: "/about#leadership" }
     ]
   },
-  { 
-    title: "Academics", 
-    link: "/academics",
-    dropdown: [
-      { title: "Curriculum", link: "/academics#curriculum" },
-      { title: "Departments", link: "/academics#departments" },
-      { title: "Academic Calendar", link: "/academics#calendar" }
-    ]
-  },
+  // { 
+  //   title: "Academics", 
+  //   link: "/academics",
+  //   dropdown: [
+  //     { title: "Curriculum", link: "/academics#curriculum" },
+  //     { title: "Departments", link: "/academics#departments" },
+  //     { title: "Academic Calendar", link: "/academics#calendar" }
+  //   ]
+  // },
   { title: "Admissions", link: "/admissions" },
   // { 
   //   title: "Campus Life", 
@@ -36,7 +36,7 @@ const navigationItems = [
   //     { title: "Sports", link: "/facilities#sports" }
   //   ]
   // },
-  { title: "Faculty", link: "/faculty" },
+  // { title: "Faculty", link: "/faculty" },
   { title: "Gallery", link: "/gallery" },
   { title: "Contact", link: "/contact" }
 ];

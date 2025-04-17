@@ -129,6 +129,8 @@ export default function Footer() {
       <div className="border-t border-white/20 py-4">
         <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm mb-2 md:mb-0">&copy; {new Date().getFullYear()} {schoolInfo.name}, {schoolInfo.location}. All Rights Reserved.</p>
+          <p className="text-center text-sm text-white-500">
+           Developed by: <a href="https://www.linkedin.com/in/anukalp-dwivedi" target="_blank" className="text-yellow-200 hover:underline">Anukalp Dwivedi</a></p>
           <div className="flex text-sm">
             <Link href="/privacy" className="mr-4 hover:text-accent transition">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-accent transition">Terms of Use</Link>

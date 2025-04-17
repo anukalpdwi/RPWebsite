@@ -33,9 +33,19 @@ const galleryImages = [
     alt: "Art Class"
   },
   {
-    src: "/Images/Facilities/Computer lab.webp",
-    alt: "Annual Day Celebration",
+    src: "/Images/students/republic1.jpg",
+    alt: "Republic Day Celebration",
     className: "col-span-2"
+  },
+  {
+    src: "/Images/students/republic2.jpg",
+    alt: "Republic Day Celebration",
+    // className: "aspect-square md:aspect-auto md:row-span-2"
+  },
+  {
+    src: "/Images/Facilities/Computer lab.webp",
+    alt: "Computer Lab",
+    // className: "aspect-square md:aspect-auto md:row-span-2"
   }
 ];
 

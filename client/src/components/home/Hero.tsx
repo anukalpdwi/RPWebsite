@@ -32,7 +32,34 @@ const heroSlides = [
       { text: "Explore Facilities", link: "/facilities", primary: true },
       { text: "Activities & Clubs", link: "/facilities#activities", primary: false }
     ]
-  }
+  },
+  {
+    image: "/Images/annual-day/Skit 1.JPG",
+    title: "Welcome  to  RP Public School",
+    subtitle: "Nurturing Excellence, Building Character, Creating Future Leaders",
+    buttons: [
+      { text: "Apply Now", link: "/admissions#inquiry", primary: true },
+      { text: "Discover More", link: "#about", primary: false }
+    ]
+  },
+  {
+    image: "/Images/students/Arts.jpg",
+    title: "Excellence  in  Education",
+    subtitle: "Modern Facilities, Expert Faculty, and Comprehensive Curriculum",
+    buttons: [
+      { text: "Academic Programs", link: "/academics", primary: true },
+      { text: "View Images", link: "#tour", primary: false }
+    ]
+  },
+  {
+    image: "/Images/students/stu 1.webp",
+    title: "Holistic  Development",
+    subtitle: "Sports, Arts, and Extracurricular Activities for Well-rounded Growth",
+    buttons: [
+      { text: "Explore Facilities", link: "/facilities", primary: true },
+      { text: "Activities & Clubs", link: "/facilities#activities", primary: false }
+    ]
+  },
 ];
 
 export default function Hero() {
