@@ -25,7 +25,7 @@ const heroSlides = [
     ]
   },
   {
-    image: "/Images/annual-day/sports.webp",
+    image: "/Images/students/arts5.jpg",
     title: "Holistic  Development",
     subtitle: "Sports, Arts, and Extracurricular Activities for Well-rounded Growth",
     buttons: [
@@ -52,7 +52,7 @@ const heroSlides = [
     ]
   },
   {
-    image: "/Images/students/stu 1.webp",
+    image: "/Images/students/stu3.jpg",
     title: "Holistic  Development",
     subtitle: "Sports, Arts, and Extracurricular Activities for Well-rounded Growth",
     buttons: [

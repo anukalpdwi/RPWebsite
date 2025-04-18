@@ -46,7 +46,31 @@ const galleryImages = [
     src: "/Images/Facilities/Computer lab.webp",
     alt: "Computer Lab",
     // className: "aspect-square md:aspect-auto md:row-span-2"
-  }
+  },
+  {
+    src: "/Images/students/krishna.jpg",
+    alt: "Events and Celebrations",
+    type: "video",
+    className: "aspect-square md:aspect-auto md:row-span-2"
+  },
+  {
+    src: "/Images/students/arts4.jpg",
+    alt: "Arts and Crafts"
+  },
+  {
+    src: "/Images/students/class.jpg",
+    alt: "Classroom",
+    className: "col-span-2"
+  },
+  {
+    src: "/Images/students/parade.jpg",
+    alt: "Parade"
+  },
+  {
+    src: "/Images/students/stu3.jpg",
+    alt: "Events and Celebrations",
+    className: "aspect-square md:aspect-auto md:row-span-2"
+  },
 ];
 
 // Animation variants
