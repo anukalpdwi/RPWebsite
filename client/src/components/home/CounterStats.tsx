@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 // Stats data
 const stats = [
-  { value: 120, label: "Students" },
+  { value: 220, label: "Students" },
   { value: 15, label: "Expert Faculty" },
   { value: 3, label: "Years of Excellence" },
   { value: 10, label: "Extracurricular Activities" }
