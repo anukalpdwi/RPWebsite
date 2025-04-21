@@ -13,18 +13,18 @@ const facultyMembers = [
     linkedin: "#"
   },
   {
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMEdcbBWgjmIZM0q1PPWrNRbIHrI7MJvfJGLF6fDQbwCkJTboADyT-uCTTR2EOeVPZZbI&usqp=CAU",
-    name: "Mrs. Bharti Pandey",
+    image: "https://clipart-library.com/8300/principal-.png",
+    name: "Mrs. Deepti Tiwari",
     position: "Principal",
-    bio: "Masters in Education with 10+ years of experience in academic leadership.",
+    bio: "Masters in Mathematics with expertise in curriculum development and teacher training.",
     email: "#",
     linkedin: "#"
   },
   {
-    image: "https://clipart-library.com/8300/principal-.png",
-    name: "Mrs. Deepti Tiwari",
-    position: "Vice Principal",
-    bio: "Masters in Mathematics with expertise in curriculum development and teacher training.",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMEdcbBWgjmIZM0q1PPWrNRbIHrI7MJvfJGLF6fDQbwCkJTboADyT-uCTTR2EOeVPZZbI&usqp=CAU",
+    name: "Mrs. Bharti Pandey",
+    position: "Vice sPrincipal",
+    bio: "Masters in Education with 10+ years of experience in academic leadership.",
     email: "#",
     linkedin: "#"
   },
