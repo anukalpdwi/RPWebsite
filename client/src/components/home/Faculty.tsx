@@ -23,7 +23,7 @@ const facultyMembers = [
   {
     image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMEdcbBWgjmIZM0q1PPWrNRbIHrI7MJvfJGLF6fDQbwCkJTboADyT-uCTTR2EOeVPZZbI&usqp=CAU",
     name: "Mrs. Bharti Pandey",
-    position: "Vice sPrincipal",
+    position: "Vice Principal",
     bio: "Masters in Education with 10+ years of experience in academic leadership.",
     email: "#",
     linkedin: "#"
