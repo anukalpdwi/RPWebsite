@@ -14,9 +14,9 @@ const leadershipTeam = [
     linkedin: "#"
   },
   {
-    name: "Mrs. Bharti Pandey",
+    name: "Mrs. Deepti Tiwari",
     position: "Principal",
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMEdcbBWgjmIZM0q1PPWrNRbIHrI7MJvfJGLF6fDQbwCkJTboADyT-uCTTR2EOeVPZZbI&usqp=CAU",
+    image: "",
     bio: "Masters in Education with 10+ years of experience in academic leadership.",
     quote: "Every child has unique potential waiting to be discovered and nurtured through thoughtful education.",
     email: "#",

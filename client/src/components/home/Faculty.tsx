@@ -13,7 +13,7 @@ const facultyMembers = [
     linkedin: "#"
   },
   {
-    image: "https://clipart-library.com/8300/principal-.png",
+    image: "/Images/Faculty/Deepti.jpg",
     name: "Mrs. Deepti Tiwari",
     position: "Principal",
     bio: "Masters in Mathematics with expertise in curriculum development and teacher training.",
@@ -21,7 +21,7 @@ const facultyMembers = [
     linkedin: "#"
   },
   {
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMEdcbBWgjmIZM0q1PPWrNRbIHrI7MJvfJGLF6fDQbwCkJTboADyT-uCTTR2EOeVPZZbI&usqp=CAU",
+    image: "/Images/Faculty/bharti.jpg",
     name: "Mrs. Bharti Pandey",
     position: "Vice Principal",
     bio: "Masters in Education with 10+ years of experience in academic leadership.",

@@ -63,7 +63,7 @@ function App() {
         <Footer />
         <BackToTop />
         <WhatsAppButton phoneNumber="9243998770" />
-        <Analytics />
+         
       </div>
       <Toaster />
     </QueryClientProvider>
