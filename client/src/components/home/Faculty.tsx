@@ -30,7 +30,7 @@ const facultyMembers = [
   },
   {
     image: "https://static.vecteezy.com/system/resources/thumbnails/003/524/750/small_2x/a-man-working-with-laptop-free-vector.jpg",
-    name: "Mrs. Pradeep Pandey",
+    name: "Mr. Pradeep Pandey",
     position: "Head of Staff",
     bio: "Experienced in leadership and education. His vision focuses on fostering excellence and nurturing future leaders.",
     email: "#",
