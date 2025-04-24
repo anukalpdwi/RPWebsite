@@ -4,6 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { useEffect } from "react";
 import NotFound from "@/pages/not-found";
+import { Analytics } from '@vercel/analytics/next';
 
 // Layout components
 import Header from "@/components/layout/Header";
@@ -47,6 +48,8 @@ function Router() {
     </Switch>
   );
 }
+
+<Analytics />
 
 function App() {
   return (
