@@ -216,7 +216,7 @@ export default function Header() {
           </div>
           <div className="overflow-hidden whitespace-nowrap">
             <div className="announcement-scroll inline-block">
-              Admissions open for academic year 2025-26 &nbsp;&nbsp;|&nbsp;&nbsp; Annual Sports Meet on December 15th &nbsp;&nbsp; &nbsp;&nbsp;|&nbsp;&nbsp; Parent-Teacher Meeting scheduled for October 5th
+              Admissions open for academic year 2026-27 &nbsp;&nbsp;|&nbsp;&nbsp; Annual Sports Meet on December 15th &nbsp;&nbsp;|&nbsp;&nbsp; Parent-Teacher Meeting scheduled for October 5th &nbsp;&nbsp;|&nbsp;&nbsp; New session starts April 1, 2026
             </div>
           </div>
         </div>

@@ -9,22 +9,29 @@ const newsItems = [
     image: "/Images/annual-day/5.jpg",
     title: "Annual Academic Excellence Awards",
     description: "Our school celebrated the Annual Academic Excellence Awards ceremony, recognizing outstanding student achievements across all grades.",
-    date: new Date(2025, 1, 7), 
+    date: new Date(2026, 1, 7),
     link: "/news/academic-awards"
   },
   {
     image: "/Images/students/stu 1.webp",
-    title: "Inter-school Science Exhibition",
-    description: "RP Public School will host the annual Inter-school Science Exhibition showcasing innovative projects from students across the region.",
-    date: new Date(2025, 3, 20),
-    link: "/news/science-exhibition"
+    title: "Inter-school Science Exhibition 2026",
+    description: "RP Public School will host the annual Inter-school Science Exhibition 2026, showcasing innovative projects from students across the region.",
+    date: new Date(2026, 3, 20),
+    link: "/news/science-exhibition-2026"
   },
   {
     image: "/Images/annual-day/sports2.JPG",
-    title: "Annual Sports Meet",
-    description: "The upcoming Annual Sports Meet will feature track and field events, team sports competitions, and various athletic demonstrations.",
-    date: new Date(2025, 1, 20), // December 15, 2023
-    link: "/news/sports-meet"
+    title: "Annual Sports Meet 2026",
+    description: "The Annual Sports Meet 2026 will feature track and field events, team sports competitions, and various athletic demonstrations.",
+    date: new Date(2026, 11, 15),
+    link: "/news/sports-meet-2026"
+  },
+  {
+    image: "/Images/banner/session2026.jpg",
+    title: "New Academic Session 2026-27",
+    description: "Admissions are now open for the academic year 2026-27. Join us for a year of excellence and growth!",
+    date: new Date(2026, 2, 1),
+    link: "/news/session-2026-27"
   }
 ];
 

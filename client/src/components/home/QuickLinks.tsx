@@ -6,22 +6,22 @@ import { FaUserGraduate, FaCalendarAlt, FaNewspaper, FaArrowRight } from "react-
 const quickLinks = [
   {
     icon: <FaUserGraduate className="text-4xl" />,
-    title: "Admissions Open",
-    description: "Applications are now being accepted for the upcoming academic year. Limited seats available.",
+    title: "Admissions Open 2026-27",
+    description: "Applications are now being accepted for the academic year 2026-27. Limited seats available.",
     link: "/admissions",
     linkText: "Learn More"
   },
   {
     icon: <FaCalendarAlt className="text-4xl" />,
     title: "School Calendar",
-    description: "Stay updated with important dates, events, holidays, and examination schedules.",
+    description: "Stay updated with important dates, events, holidays, and examination schedules for 2026-27.",
     link: "/academics#calendar",
     linkText: "View Calendar"
   },
   {
     icon: <FaNewspaper className="text-4xl" />,
-    title: "Latest News",
-    description: "Keep up with the latest happenings, achievements, and announcements from our school.",
+    title: "Latest News & Updates",
+    description: "Keep up with the latest happenings, achievements, and announcements for the new session.",
     link: "/news",
     linkText: "Read News"
   }
