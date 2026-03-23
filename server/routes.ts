@@ -236,6 +236,11 @@ async function sendNewsletterEmail(data: any) {
 export async function registerRoutes(app: Express): Promise<Server> {
   // API routes for handling form submissions
   
+  // Health check
+  app.get("/api/health", (_req, res) => {
+    res.json({ status: "ok", version: "1.0.1", timestamp: new Date().toISOString() });
+  });
+
   // Contact form submission
   app.post("/api/contact", async (req, res) => {
     try {
