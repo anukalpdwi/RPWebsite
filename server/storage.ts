@@ -10,9 +10,8 @@ import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const DATA_DIR = path.join(__dirname, "..", "data");
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const DATA_DIR = process.env.VERCEL ? "/tmp" : path.join(__dirname, "..", "data");
 const ADMISSIONS_FILE = path.join(DATA_DIR, "admissions_backup.json");
 
 // Storage interface with CRUD methods
@@ -174,10 +173,12 @@ class MockStorage implements IStorage {
 
   private async persistAdmissions() {
     try {
-      await this.ensureDataDir();
+      if (!process.env.VERCEL) {
+        await this.ensureDataDir();
+      }
       await fs.writeFile(ADMISSIONS_FILE, JSON.stringify(this.admissionInquiries, null, 2));
-    } catch (e) {
-      console.error("Failed to persist admissions:", e);
+    } catch (e: any) {
+      console.error("Non-fatal backup error:", e.message);
     }
   }
 

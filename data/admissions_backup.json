@@ -1,0 +1,25 @@
+[
+  {
+    "id": 1,
+    "parentName": "",
+    "email": "",
+    "phone": "",
+    "childName": "",
+    "grade": "",
+    "dob": "",
+    "gender": "",
+    "address": "",
+    "fatherName": "",
+    "motherName": "",
+    "fatherOccupation": "",
+    "motherOccupation": "",
+    "previousSchool": "",
+    "bloodGroup": "",
+    "academicYear": "2026-2027",
+    "mobileNo": "",
+    "emailId": "",
+    "message": "",
+    "pdfBase64": null,
+    "submittedAt": "2026-03-23T16:20:18.663Z"
+  }
+]
