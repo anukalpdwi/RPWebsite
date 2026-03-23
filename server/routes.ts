@@ -210,15 +210,21 @@ async function sendAdmissionEmail(data: any, pdfBase64?: string) {
   };
 
   try {
-    const pdfBuffer = await generateAdmissionPDF(data);
-    mailOptions.attachments = [
-      {
-        filename: `RPPS_Admission_${data.childName.replace(/\s+/g, "_")}_2026.pdf`,
-        content: pdfBuffer
-      }
-    ];
+    const pdfBuffer = await generateAdmissionPDF(data).catch(err => {
+      console.error("PDF generation failed:", err);
+      return null;
+    });
 
-    // Only attempt to send if credentials are provided, otherwise log the "email"
+    if (pdfBuffer) {
+      mailOptions.attachments = [
+        {
+          filename: `RPPS_Admission_${data.childName?.replace(/\s+/g, "_") || "Form"}_2026.pdf`,
+          content: pdfBuffer
+        }
+      ];
+    }
+
+    // Only attempt to send if credentials are provided
     // Only attempt to send if credentials are provided, otherwise log the "email"
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
       await transporter.sendMail(mailOptions);
@@ -383,7 +389,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error("Error processing admission inquiry:", error);
         res.status(500).json({ 
           success: false,
-          message: "An error occurred while processing your request"
+          message: "An error occurred while processing your request",
+          error: error instanceof Error ? error.message : String(error)
         });
       }
     }

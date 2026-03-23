@@ -42,9 +42,9 @@ export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 // Admission inquiries schema
 export const admissionInquiries = pgTable("admission_inquiries", {
   id: serial("id").primaryKey(),
-  parentName: text("parent_name").notNull(),
-  email: text("email").notNull(),
-  phone: text("phone").notNull(),
+  parentName: text("parent_name"),
+  email: text("email"),
+  phone: text("phone"),
   childName: text("child_name").notNull(),
   grade: text("grade").notNull(),
   dob: text("dob").notNull(),
@@ -64,9 +64,6 @@ export const admissionInquiries = pgTable("admission_inquiries", {
 });
 
 export const insertAdmissionInquirySchema = createInsertSchema(admissionInquiries).pick({
-  parentName: true,
-  email: true,
-  phone: true,
   childName: true,
   grade: true,
   dob: true,

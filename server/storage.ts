@@ -182,10 +182,12 @@ class MockStorage implements IStorage {
     }
   }
 
-  async createAdmissionInquiry(inquiry: InsertAdmissionInquiry): Promise<AdmissionInquiry> {
-    const admission = { 
+    const admission: AdmissionInquiry = { 
       id: this.currentId++, 
       ...inquiry, 
+      parentName: null,
+      email: null,
+      phone: null,
       fatherOccupation: inquiry.fatherOccupation ?? null,
       motherOccupation: inquiry.motherOccupation ?? null,
       previousSchool: inquiry.previousSchool ?? null,
