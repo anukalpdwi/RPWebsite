@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from "wouter";
 import PageHeader from "@/components/ui/page-header";
 import SectionTitle from "@/components/ui/section-title";
 import AdmissionInquiry from "@/components/home/AdmissionInquiry";
@@ -278,11 +279,21 @@ export default function AdmissionsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
+                    <div className="p-4 border rounded-md bg-primary/5">
+                      <h4 className="font-bold mb-2">Online Admission Form</h4>
+                      <p className="text-sm mb-3">Complete and submit the application form online for faster processing.</p>
+                      <Link href="/apply-now">
+                        <Button className="w-full bg-primary hover:bg-primary-dark">
+                          <FaClipboardList className="mr-2" /> Apply Online Now
+                        </Button>
+                      </Link>
+                    </div>
+
                     <div className="p-4 border rounded-md">
-                      <h4 className="font-bold mb-2">Admission Application Form</h4>
-                      <p className="text-sm mb-3">Complete application form for new student enrollment</p>
-                      <Button variant="outline" className="flex items-center">
-                        <FaDownload className="mr-2" /> Download Form
+                      <h4 className="font-bold mb-2">Admission Application Form (PDF)</h4>
+                      <p className="text-sm mb-3">Download and print the application form to submit manually.</p>
+                      <Button variant="outline" className="flex items-center w-full">
+                        <FaDownload className="mr-2" /> Download PDF Form
                       </Button>
                     </div>
                     

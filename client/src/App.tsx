@@ -12,6 +12,7 @@ import Footer from "@/components/layout/Footer";
 import TopBar from "@/components/layout/TopBar";
 import BackToTop from "@/components/ui/backtotop";
 import WhatsAppButton from "@/components/ui/whatsapp-button";
+import AdmissionPopup from "@/components/ui/AdmissionPopup";
 
 // Pages
 import Home from "@/pages/home";
@@ -22,6 +23,7 @@ import Faculty from "@/pages/faculty";
 import Facilities from "@/pages/facilities";
 import Gallery from "@/pages/gallery";
 import Contact from "@/pages/contact";
+import AdmissionFormPage from "@/pages/admission-form";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -44,6 +46,7 @@ function Router() {
       <Route path="/facilities" component={Facilities} />
       <Route path="/gallery" component={Gallery} />
       <Route path="/contact" component={Contact} />
+      <Route path="/apply-now" component={AdmissionFormPage} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -55,17 +58,21 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex flex-col min-h-screen">
-        <TopBar />
-        <Header />
+        <div className="print:hidden">
+          <TopBar />
+          <Header />
+        </div>
         <main className="flex-grow">
           <Router />
         </main>
-        <Footer />
-        <BackToTop />
-        <WhatsAppButton phoneNumber="9243998770" />
-         
+        <div className="print:hidden">
+          <Footer />
+          <BackToTop />
+          <WhatsAppButton phoneNumber="9243998770" />
+        </div>
       </div>
       <Toaster />
+      <AdmissionPopup />
     </QueryClientProvider>
     
   );

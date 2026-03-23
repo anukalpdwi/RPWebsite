@@ -16,7 +16,7 @@ export default function PageHeader({
   backgroundImage = "https://source.unsplash.com/random/1800x400/?school,education",
 }: PageHeaderProps) {
   return (
-    <div className="relative bg-primary py-20 px-4 overflow-hidden">
+    <div className="relative bg-primary py-8 md:py-10 px-4 overflow-hidden">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
         <img
@@ -33,12 +33,12 @@ export default function PageHeader({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-4xl md:text-5xl font-heading font-bold text-white mb-4 text-center">
+          <h1 className="text-3xl md:text-4xl font-heading font-bold text-white mb-2 text-center">
             {title}
           </h1>
 
           {description && (
-            <p className="text-white/90 text-center max-w-3xl mx-auto mb-6">
+            <p className="text-white/80 text-center max-w-2xl mx-auto mb-4 text-sm md:text-base">
               {description}
             </p>
           )}

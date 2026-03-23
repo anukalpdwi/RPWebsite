@@ -23,8 +23,8 @@ const inquirySchema = z.object({
   gradeApplying: z.string().min(1, "Please select a grade"),
   academicYear: z.string().min(1, "Please select an academic year"),
   message: z.string().optional(),
-  consent: z.literal(true, {
-    errorMap: () => ({ message: "You must agree to the terms" }),
+  consent: z.boolean().refine(val => val === true, {
+    message: "You must agree to the terms",
   }),
 });
 
@@ -51,7 +51,18 @@ export default function AdmissionInquiry() {
   async function onSubmit(data: InquiryFormData) {
     setIsSubmitting(true);
     try {
-      await apiRequest("POST", "/api/admission-inquiry", data);
+      // Map frontend fields to server schema fields
+      const serverData = {
+        parentName: data.parentName,
+        phone: data.phoneNumber,
+        email: data.email,
+        childName: data.studentName,
+        grade: data.gradeApplying,
+        academicYear: data.academicYear,
+        message: data.message,
+      };
+      
+      await apiRequest("POST", "/api/admission-inquiry", serverData);
       toast({
         title: "Inquiry Submitted Successfully",
         description: "Our admissions team will contact you soon.",
@@ -225,8 +236,8 @@ export default function AdmissionInquiry() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="2023-2024">2023-2024</SelectItem>
-                              <SelectItem value="2024-2025">2024-2025</SelectItem>
+                              <SelectItem value="2026-2027">2026-2027</SelectItem>
+                              <SelectItem value="2027-2028">2027-2028</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />

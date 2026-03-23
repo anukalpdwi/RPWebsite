@@ -6,6 +6,14 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
+import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const DATA_DIR = path.join(__dirname, "..", "data");
+const ADMISSIONS_FILE = path.join(DATA_DIR, "admissions_backup.json");
 
 // Storage interface with CRUD methods
 export interface IStorage {
@@ -111,33 +119,99 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-class MockStorage {
-  async createUser() {
-    return { id: 1, username: "test", password: "test" };
+class MockStorage implements IStorage {
+  private users: User[] = [];
+  private contactSubmissions: ContactSubmission[] = [];
+  private admissionInquiries: AdmissionInquiry[] = [];
+  private newsletterSubscriptions: NewsletterSubscription[] = [];
+  private currentId = 1;
+
+  constructor() {
+    this.loadAdmissions();
   }
 
-  async getContactSubmission() {
-    return undefined;
+  private async loadAdmissions() {
+    try {
+      const data = await fs.readFile(ADMISSIONS_FILE, "utf-8");
+      this.admissionInquiries = JSON.parse(data);
+      if (this.admissionInquiries.length > 0) {
+        this.currentId = Math.max(...this.admissionInquiries.map(i => i.id)) + 1;
+      }
+    } catch (e) {
+      // No backup found yet, it's okay
+    }
   }
 
-  async getAllContactSubmissions() {
-    return [];
+  async getUser(id: number) { return this.users.find(u => u.id === id); }
+  async getUserByUsername(username: string) { return this.users.find(u => u.username === username); }
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const user = { id: this.currentId++, ...insertUser };
+    this.users.push(user);
+    return user;
   }
 
-  async createContactSubmission(submission: any) {
-    return { id: 1, ...submission, submittedAt: new Date() };
+  async getContactSubmission(id: number) { return this.contactSubmissions.find(s => s.id === id); }
+  async getAllContactSubmissions() { return this.contactSubmissions; }
+  async createContactSubmission(submission: InsertContact): Promise<ContactSubmission> {
+    const contact = { 
+      id: this.currentId++, 
+      ...submission, 
+      phone: submission.phone ?? null,
+      submittedAt: new Date() 
+    };
+    this.contactSubmissions.push(contact);
+    return contact;
   }
 
-  async getAdmissionInquiry() {
-    return undefined;
+  async getAdmissionInquiry(id: number) { return this.admissionInquiries.find(i => i.id === id); }
+  async getAllAdmissionInquiries() { return this.admissionInquiries; }
+  
+  private async ensureDataDir() {
+    try {
+      await fs.mkdir(DATA_DIR, { recursive: true });
+    } catch (e) {}
   }
 
-  async getAllAdmissionInquiries() {
-    return [];
+  private async persistAdmissions() {
+    try {
+      await this.ensureDataDir();
+      await fs.writeFile(ADMISSIONS_FILE, JSON.stringify(this.admissionInquiries, null, 2));
+    } catch (e) {
+      console.error("Failed to persist admissions:", e);
+    }
   }
 
-  async createAdmissionInquiry(inquiry: any) {
-    return { id: 1, ...inquiry, submittedAt: new Date() };
+  async createAdmissionInquiry(inquiry: InsertAdmissionInquiry): Promise<AdmissionInquiry> {
+    const admission = { 
+      id: this.currentId++, 
+      ...inquiry, 
+      fatherOccupation: inquiry.fatherOccupation ?? null,
+      motherOccupation: inquiry.motherOccupation ?? null,
+      previousSchool: inquiry.previousSchool ?? null,
+      bloodGroup: inquiry.bloodGroup ?? null,
+      mobileNo: inquiry.mobileNo ?? null,
+      emailId: inquiry.emailId ?? null,
+      message: inquiry.message ?? null,
+      pdfBase64: inquiry.pdfBase64 ?? null,
+      submittedAt: new Date() 
+    };
+    this.admissionInquiries.push(admission);
+    await this.persistAdmissions();
+    return admission;
+  }
+
+  async getNewsletterSubscription(id: number) { return this.newsletterSubscriptions.find(s => s.id === id); }
+  async getNewsletterSubscriptionByEmail(email: string) { return this.newsletterSubscriptions.find(s => s.email === email); }
+  async getAllNewsletterSubscriptions() { return this.newsletterSubscriptions; }
+  async createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription> {
+    const sub = { 
+      id: this.currentId++, 
+      ...subscription, 
+      name: subscription.name ?? null,
+      subscribedAt: new Date() 
+    };
+    this.newsletterSubscriptions.push(sub);
+    return sub;
   }
 }
 

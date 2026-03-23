@@ -26,7 +26,16 @@ const navigationItems = [
   //     { title: "Academic Calendar", link: "/academics#calendar" }
   //   ]
   // },
-  { title: "Admissions", link: "/admissions" },
+  { 
+    title: "Admissions", 
+    link: "/admissions",
+    dropdown: [
+      { title: "Admission Process", link: "/admissions" },
+      { title: "Online Admission Form", link: "/apply-now" },
+      { title: "Eligibility Criteria", link: "/admissions#eligibility" },
+      { title: "Admission Inquiry", link: "/admissions#inquiry" }
+    ]
+  },
   // { 
   //   title: "Campus Life", 
   //   link: "/facilities",
@@ -136,10 +145,10 @@ export default function Header() {
           ))}
           
           <Link 
-            href="/admissions#inquiry" 
-            className="ml-2 px-4 py-2 bg-accent text-white rounded-md shadow-sm hover:bg-accent-dark transition"
+            href="/apply-now" 
+            className="ml-2 px-4 py-2 bg-accent text-white rounded-md shadow-sm hover:bg-accent-dark transition animate-pulse"
           >
-            Admission Inquiry
+            Apply Now
           </Link>
         </nav>
       </div>
@@ -199,10 +208,10 @@ export default function Header() {
             ))}
             
             <Link 
-              href="/admissions#inquiry" 
+              href="/apply-now" 
               className="mt-3 px-4 py-2 bg-accent text-white rounded-md shadow-sm text-center hover:bg-accent-dark transition"
             >
-              Admission Inquiry
+              Apply Now
             </Link>
           </motion.nav>
         )}

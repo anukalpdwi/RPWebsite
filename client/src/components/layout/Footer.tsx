@@ -32,8 +32,8 @@ export default function Footer() {
 
   return (
     <footer className="bg-primary text-white">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           <div>
             <div className="flex items-center mb-4">
             <img 
@@ -65,16 +65,16 @@ export default function Footer() {
           
           <div>
             <h3 className="text-lg font-heading font-bold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              <li><Link href="/about" className="hover:text-accent transition flex items-center"><FaChevronRight className="mr-1 text-xs" /> About Us</Link></li>
-              <li><Link href="/academics" className="hover:text-accent transition flex items-center"><FaChevronRight className="mr-1 text-xs" /> Academics</Link></li>
-              <li><Link href="/admissions" className="hover:text-accent transition flex items-center"><FaChevronRight className="mr-1 text-xs" /> Admissions</Link></li>
-              <li><Link href="/facilities" className="hover:text-accent transition flex items-center"><FaChevronRight className="mr-1 text-xs" /> Facilities</Link></li>
-              <li><Link href="/faculty" className="hover:text-accent transition flex items-center"><FaChevronRight className="mr-1 text-xs" /> Faculty</Link></li>
-              <li><Link href="/gallery" className="hover:text-accent transition flex items-center"><FaChevronRight className="mr-1 text-xs" /> Gallery</Link></li>
-              <li><Link href="/news" className="hover:text-accent transition flex items-center"><FaChevronRight className="mr-1 text-xs" /> News & Events</Link></li>
-              <li><Link href="/contact" className="hover:text-accent transition flex items-center"><FaChevronRight className="mr-1 text-xs" /> Contact</Link></li>
-            </ul>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+              <Link href="/about" className="hover:text-accent transition flex items-center text-sm"><FaChevronRight className="mr-1 text-[10px]" /> About Us</Link>
+              <Link href="/academics" className="hover:text-accent transition flex items-center text-sm"><FaChevronRight className="mr-1 text-[10px]" /> Academics</Link>
+              <Link href="/admissions" className="hover:text-accent transition flex items-center text-sm"><FaChevronRight className="mr-1 text-[10px]" /> Admissions</Link>
+              <Link href="/facilities" className="hover:text-accent transition flex items-center text-sm"><FaChevronRight className="mr-1 text-[10px]" /> Facilities</Link>
+              <Link href="/faculty" className="hover:text-accent transition flex items-center text-sm"><FaChevronRight className="mr-1 text-[10px]" /> Faculty</Link>
+              <Link href="/gallery" className="hover:text-accent transition flex items-center text-sm"><FaChevronRight className="mr-1 text-[10px]" /> Gallery</Link>
+              <Link href="/news" className="hover:text-accent transition flex items-center text-sm"><FaChevronRight className="mr-1 text-[10px]" /> News</Link>
+              <Link href="/contact" className="hover:text-accent transition flex items-center text-sm"><FaChevronRight className="mr-1 text-[10px]" /> Contact</Link>
+            </div>
           </div>
           
           <div>
@@ -99,30 +99,6 @@ export default function Footer() {
             </ul>
           </div>
           
-          <div>
-            <h3 className="text-lg font-heading font-bold mb-4">Newsletter</h3>
-            <p className="mb-4">Subscribe to receive updates on school news, events, and announcements.</p>
-            <form className="mb-4" onSubmit={handleSubscribe}>
-              <div className="flex">
-                <input 
-                  type="email" 
-                  placeholder="Your Email Address" 
-                  className="px-3 py-2 rounded-l-md w-full focus:outline-none text-neutral-dark"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <button 
-                  type="submit" 
-                  className="bg-accent hover:bg-accent-dark px-4 py-2 rounded-r-md transition"
-                  aria-label="Subscribe"
-                >
-                  <FaPaperPlane />
-                </button>
-              </div>
-            </form>
-            <p className="text-sm">By subscribing, you agree to receive emails from RP Public School.</p>
-          </div>
         </div>
       </div>
       

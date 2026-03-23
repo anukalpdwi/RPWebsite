@@ -34,8 +34,8 @@ export const schoolInfo = {
   phone: "+91 9893767392",
   admissionsPhone: "91 7000984484",
   principalPhone: "+91 9893767392",
-  email: "rppublicschool@gmail.com",
-  admissionsEmail: "rppublicschool@gmial.com",
+  email: "rppublicschool2021@gmail.com",
+  admissionsEmail: "rppublicschool2021@gmail.com",
   principalEmail: "dserdjaisinghnagar@gmail.com",
   hours: "9:00 AM - 3:30 PM",
   socialMedia: {

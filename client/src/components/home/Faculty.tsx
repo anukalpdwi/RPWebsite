@@ -5,7 +5,7 @@ import { FaEnvelope, FaLinkedinIn } from "react-icons/fa";
 // Faculty data
 const facultyMembers = [
   {
-    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8eRZ7rZwCsqz9O5HyOhpBmuCyT9MX0BOPDg&s",
+    image: "/Images/Faculty/Prakash_narayan.jpeg",
     name: "Mr. Prakash Narayan Tiwari",
     position: "Director",
     bio: "Successful entrepreneur with extensive experience in leadership and education. His vision focuses on fostering excellence and nurturing future leaders.",
