@@ -197,7 +197,9 @@ class MockStorage implements IStorage {
       submittedAt: new Date() 
     };
     this.admissionInquiries.push(admission);
-    await this.persistAdmissions();
+    if (!process.env.VERCEL) {
+      await this.persistAdmissions();
+    }
     return admission;
   }
 

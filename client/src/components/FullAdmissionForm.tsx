@@ -93,7 +93,7 @@ export default function FullAdmissionForm() {
         el.style.width = "850px"; 
 
         const canvas = await html2canvas(el, {
-          scale: 1.3, // Optimized for Vercel 4.5MB limit
+          scale: 1.1, // Ultra-optimized for Vercel 4.5MB limit
           useCORS: true,
           logging: false,
           backgroundColor: "#ffffff"
@@ -102,7 +102,7 @@ export default function FullAdmissionForm() {
         // Restore style
         el.style.cssText = originalStyle;
 
-        const imgData = canvas.toDataURL("image/jpeg", 0.85);
+        const imgData = canvas.toDataURL("image/jpeg", 0.75);
         const pdf = new jsPDF({
           orientation: "portrait",
           unit: "px",
