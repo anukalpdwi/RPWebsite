@@ -182,6 +182,7 @@ class MockStorage implements IStorage {
     }
   }
 
+  async createAdmissionInquiry(inquiry: InsertAdmissionInquiry): Promise<AdmissionInquiry> {
     const admission: AdmissionInquiry = { 
       id: this.currentId++, 
       ...inquiry, 
