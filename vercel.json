@@ -1,14 +1,11 @@
 {
   "version": 2,
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/index"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/$1"
-    }
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/index.ts" },
+    { "src": "/assets/(.*)", "dest": "/assets/$1" },
+    { "src": "/Images/(.*)", "dest": "/Images/$1" },
+    { "src": "/videos/(.*)", "dest": "/videos/$1" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ],
   "builds": [
     {
