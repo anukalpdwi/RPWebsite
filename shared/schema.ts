@@ -63,22 +63,22 @@ export const admissionInquiries = pgTable("admission_inquiries", {
   submittedAt: timestamp("submitted_at").defaultNow().notNull(),
 });
 
-export const insertAdmissionInquirySchema = createInsertSchema(admissionInquiries).pick({
-  childName: true,
-  grade: true,
-  dob: true,
-  gender: true,
-  address: true,
-  fatherName: true,
-  motherName: true,
-  fatherOccupation: true,
-  motherOccupation: true,
-  previousSchool: true,
-  bloodGroup: true,
-  academicYear: true,
-  mobileNo: true,
-  emailId: true,
-  message: true,
+export const insertAdmissionInquirySchema = z.object({
+  childName: z.string().min(1, "Child name is required"),
+  grade: z.string().min(1, "Grade is required"),
+  dob: z.string().min(1, "Date of birth is required"),
+  gender: z.string().min(1, "Gender is required"),
+  address: z.string().min(1, "Address is required"),
+  fatherName: z.string().min(1, "Father's name is required"),
+  motherName: z.string().min(1, "Mother's name is required"),
+  academicYear: z.string().min(1, "Academic year is required"),
+  email: z.string().email("Invalid email").optional().nullable(),
+  phone: z.string().min(10, "Phone must be at least 10 digits").optional().nullable(),
+  fatherOccupation: z.string().optional().nullable(),
+  motherOccupation: z.string().optional().nullable(),
+  previousSchool: z.string().optional().nullable(),
+  bloodGroup: z.string().optional().nullable(),
+  message: z.string().optional().nullable(),
 });
 
 export type InsertAdmissionInquiry = z.infer<typeof insertAdmissionInquirySchema>;

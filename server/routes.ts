@@ -4,9 +4,9 @@ import { storage } from "./storage";
 import { 
   insertContactSchema, 
   insertAdmissionInquirySchema, 
-  insertNewsletterSubscriptionSchema
+  insertNewsletterSubscriptionSchema 
 } from "@shared/schema";
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import nodemailer from "nodemailer";
 import PDFDocument from "pdfkit";
@@ -362,11 +362,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admission inquiry submission
   app.post("/api/admission-inquiry", async (req, res) => {
     try {
+      // 100% Manual Inline Schema to ensure no stale imports block submission
+      const inlineSchema = z.object({
+        childName: z.string().min(1),
+        grade: z.string().min(1),
+        dob: z.string().min(1),
+        gender: z.string().min(1),
+        address: z.string().min(1),
+        fatherName: z.string().min(1),
+        motherName: z.string().min(1),
+        academicYear: z.string().min(1),
+        email: z.string().optional().nullable(),
+        phone: z.string().optional().nullable(),
+        fatherOccupation: z.string().optional().nullable(),
+        motherOccupation: z.string().optional().nullable(),
+        previousSchool: z.string().optional().nullable(),
+        bloodGroup: z.string().optional().nullable(),
+        message: z.string().optional().nullable(),
+      });
+
       const { pdfBase64, ...formData } = req.body;
-      const data = insertAdmissionInquirySchema.parse(formData);
+      const data = inlineSchema.parse(formData);
       const inquiry = await storage.createAdmissionInquiry(data);
       
       // Send email notification (and don't block the response)

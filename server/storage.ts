@@ -187,14 +187,14 @@ class MockStorage implements IStorage {
       id: this.currentId++, 
       ...inquiry, 
       parentName: null,
-      email: null,
-      phone: null,
+      mobileNo: null,
+      emailId: null,
+      email: inquiry.email ?? null,
+      phone: inquiry.phone ?? null,
       fatherOccupation: inquiry.fatherOccupation ?? null,
       motherOccupation: inquiry.motherOccupation ?? null,
       previousSchool: inquiry.previousSchool ?? null,
       bloodGroup: inquiry.bloodGroup ?? null,
-      mobileNo: inquiry.mobileNo ?? null,
-      emailId: inquiry.emailId ?? null,
       message: inquiry.message ?? null,
       submittedAt: new Date() 
     };
