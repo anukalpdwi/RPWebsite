@@ -79,45 +79,7 @@ export default function FullAdmissionForm() {
   async function onSubmit(data: any) {
     setIsSubmitting(true);
     try {
-      // 1. Generate PDF copy for email attachment
-      let pdfBase64 = "";
-      if (printRef.current) {
-        const el = printRef.current;
-        const originalStyle = el.style.cssText;
-        
-        // Temporarily prepare for capture (make visible but hidden from view)
-        el.style.display = "block";
-        el.style.position = "fixed";
-        el.style.left = "-9999px";
-        el.style.top = "0";
-        el.style.width = "850px"; 
-
-        const canvas = await html2canvas(el, {
-          scale: 1.1, // Ultra-optimized for Vercel 4.5MB limit
-          useCORS: true,
-          logging: false,
-          backgroundColor: "#ffffff"
-        });
-        
-        // Restore style
-        el.style.cssText = originalStyle;
-
-        const imgData = canvas.toDataURL("image/jpeg", 0.75);
-        const pdf = new jsPDF({
-          orientation: "portrait",
-          unit: "px",
-          format: "a4"
-        });
-
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        
-        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
-        pdfBase64 = pdf.output("datauristring").split(",")[1];
-      }
-
-      await apiRequest("POST", "/api/admission-inquiry", { ...data, pdfBase64 });
+      await apiRequest("POST", "/api/admission-inquiry", data);
       setStep("success");
       window.scrollTo({ top: 0, behavior: "instant" });
       toast({

@@ -193,7 +193,6 @@ class MockStorage implements IStorage {
       mobileNo: inquiry.mobileNo ?? null,
       emailId: inquiry.emailId ?? null,
       message: inquiry.message ?? null,
-      pdfBase64: inquiry.pdfBase64 ?? null,
       submittedAt: new Date() 
     };
     this.admissionInquiries.push(admission);

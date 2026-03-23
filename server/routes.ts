@@ -9,6 +9,7 @@ import {
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import nodemailer from "nodemailer";
+import PDFDocument from "pdfkit";
 
 // Email transporter configuration
 // For production, you would use real SMTP credentials
@@ -21,6 +22,94 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS || "placeholder",
   },
 });
+
+async function generateAdmissionPDF(data: any): Promise<Buffer> {
+  return new Promise((resolve) => {
+    const doc = new PDFDocument({ margin: 50, size: "A4" });
+    const chunks: Buffer[] = [];
+    doc.on("data", (chunk) => chunks.push(chunk));
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+
+    // 1. Header with Logo & School Info
+    doc.rect(0, 0, 595, 120).fill("#1e3a8a");
+    doc.fillColor("#ffffff");
+    doc.fontSize(24).font("Helvetica-Bold").text("RP PUBLIC SCHOOL", 50, 35, { characterSpacing: 2 });
+    doc.fontSize(10).font("Helvetica").text("Jaisinghnagar, Shahdol, Madhya Pradesh", 50, 65);
+    doc.text("Official Admission Application | Session 2026-27", 50, 80);
+    doc.fontSize(14).font("Helvetica-Bold").text("ADMISSION FORM", 430, 45, { align: "right" });
+
+    doc.moveDown(5);
+    doc.fillColor("#1e293b");
+
+    // 2. Helper for Sections
+    const drawSection = (title: string, y: number) => {
+      doc.rect(50, y, 495, 20).fill("#f1f5f9");
+      doc.fillColor("#1e3a8a").fontSize(12).font("Helvetica-Bold").text(title.toUpperCase(), 60, y + 5);
+      doc.moveDown(1.5);
+    };
+
+    let currentY = 140;
+
+    // 3. Student Identity
+    drawSection("1. Student Identity", currentY);
+    currentY += 30;
+    doc.fillColor("#334155").fontSize(10).font("Helvetica-Bold");
+    
+    // Labels & Data in grid
+    const drawField = (label: string, value: string, x: number, y: number) => {
+        doc.font("Helvetica-Bold").text(label, x, y);
+        doc.font("Helvetica").text(value || "N/A", x + 100, y);
+    };
+
+    drawField("Student Name:", data.childName, 50, currentY);
+    drawField("Date of Birth:", data.dob, 300, currentY);
+    currentY += 20;
+    drawField("Gender:", data.gender, 50, currentY);
+    drawField("Grade Applying:", data.grade, 300, currentY);
+    currentY += 20;
+    drawField("Blood Group:", data.bloodGroup, 50, currentY);
+    drawField("Academic Year:", data.academicYear, 300, currentY);
+    
+    currentY += 40;
+
+    // 4. Family & Guardian Details
+    drawSection("2. Parent / Guardian Details", currentY);
+    currentY += 30;
+    drawField("Father's Name:", data.fatherName, 50, currentY);
+    drawField("Occupation:", data.fatherOccupation, 300, currentY);
+    currentY += 20;
+    drawField("Mother's Name:", data.motherName, 50, currentY);
+    drawField("Occupation:", data.motherOccupation, 300, currentY);
+    currentY += 20;
+    drawField("Contact No:", data.phone, 50, currentY);
+    drawField("Email ID:", data.email, 300, currentY);
+    
+    currentY += 40;
+
+    // 5. Address & History
+    drawSection("3. Address & Academic History", currentY);
+    currentY += 30;
+    doc.font("Helvetica-Bold").text("Residential Address:", 50, currentY);
+    doc.font("Helvetica").text(data.address, 150, currentY, { width: 400 });
+    currentY += 40;
+    drawField("Previous School:", data.previousSchool, 50, currentY);
+    
+    currentY += 60;
+
+    // 6. Signatures
+    doc.fontSize(10).font("Helvetica-Bold").text("_______________________", 50, currentY);
+    doc.text("_______________________", 350, currentY);
+    currentY += 15;
+    doc.fontSize(8).text("Parent / Guardian Signature", 50, currentY);
+    doc.text("Admissions Authority", 350, currentY);
+
+    // 7. Footer
+    doc.fontSize(9).font("Helvetica-Oblique").fillColor("#94a3b8")
+       .text("This document is a computer-generated admission backup provided by RP Public School Portal.", 50, 750, { align: "center" });
+
+    doc.end();
+  });
+}
 
 async function sendAdmissionEmail(data: any, pdfBase64?: string) {
   const mailOptions: any = {
@@ -120,17 +209,16 @@ async function sendAdmissionEmail(data: any, pdfBase64?: string) {
     `,
   };
 
-  if (pdfBase64) {
+  try {
+    const pdfBuffer = await generateAdmissionPDF(data);
     mailOptions.attachments = [
       {
         filename: `RPPS_Admission_${data.childName.replace(/\s+/g, "_")}_2026.pdf`,
-        content: pdfBase64,
-        encoding: "base64"
+        content: pdfBuffer
       }
     ];
-  }
 
-  try {
+    // Only attempt to send if credentials are provided, otherwise log the "email"
     // Only attempt to send if credentials are provided, otherwise log the "email"
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
       await transporter.sendMail(mailOptions);

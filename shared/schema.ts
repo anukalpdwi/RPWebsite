@@ -60,7 +60,6 @@ export const admissionInquiries = pgTable("admission_inquiries", {
   mobileNo: text("mobile_no"),
   emailId: text("email_id"),
   message: text("message"),
-  pdfBase64: text("pdf_base64"),
   submittedAt: timestamp("submitted_at").defaultNow().notNull(),
 });
 
@@ -83,7 +82,6 @@ export const insertAdmissionInquirySchema = createInsertSchema(admissionInquirie
   mobileNo: true,
   emailId: true,
   message: true,
-  pdfBase64: true,
 });
 
 export type InsertAdmissionInquiry = z.infer<typeof insertAdmissionInquirySchema>;
