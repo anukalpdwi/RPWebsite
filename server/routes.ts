@@ -366,6 +366,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // 100% Manual Inline Schema to ensure no stale imports block submission
       const inlineSchema = z.object({
+        parentName: z.string().optional().nullable(),
         childName: z.string().min(1),
         grade: z.string().min(1),
         dob: z.string().min(1),
@@ -380,6 +381,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         motherOccupation: z.string().optional().nullable(),
         previousSchool: z.string().optional().nullable(),
         bloodGroup: z.string().optional().nullable(),
+        mobileNo: z.string().optional().nullable(),
+        emailId: z.string().optional().nullable(),
         message: z.string().optional().nullable(),
       });
 

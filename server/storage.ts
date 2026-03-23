@@ -186,9 +186,9 @@ class MockStorage implements IStorage {
     const admission: AdmissionInquiry = { 
       id: this.currentId++, 
       ...inquiry, 
-      parentName: null,
-      mobileNo: null,
-      emailId: null,
+      parentName: inquiry.parentName ?? null,
+      mobileNo: inquiry.mobileNo ?? null,
+      emailId: inquiry.emailId ?? null,
       email: inquiry.email ?? null,
       phone: inquiry.phone ?? null,
       fatherOccupation: inquiry.fatherOccupation ?? null,

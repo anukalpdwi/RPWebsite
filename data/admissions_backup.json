@@ -43,5 +43,27 @@
     "previousSchool": null,
     "message": null,
     "submittedAt": "2026-03-23T17:44:04.131Z"
+  },
+  {
+    "id": 3,
+    "childName": "Test Child",
+    "grade": "1st Grade",
+    "dob": "2020-01-01",
+    "gender": "Male",
+    "address": "123 Test St",
+    "fatherName": "Test Father",
+    "motherName": "Test Mother",
+    "academicYear": "2026-2027",
+    "email": "test@test.com",
+    "phone": "1234567890",
+    "fatherOccupation": "Business",
+    "motherOccupation": "Housewife",
+    "bloodGroup": "O+",
+    "message": "Hello",
+    "parentName": null,
+    "mobileNo": null,
+    "emailId": null,
+    "previousSchool": null,
+    "submittedAt": "2026-03-23T17:50:07.784Z"
   }
 ]

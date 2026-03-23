@@ -64,6 +64,9 @@ export const admissionInquiries = pgTable("admission_inquiries", {
 });
 
 export const insertAdmissionInquirySchema = z.object({
+  parentName: z.string().optional().nullable(),
+  email: z.string().email("Invalid email").optional().nullable(),
+  phone: z.string().min(10, "Phone must be at least 10 digits").optional().nullable(),
   childName: z.string().min(1, "Child name is required"),
   grade: z.string().min(1, "Grade is required"),
   dob: z.string().min(1, "Date of birth is required"),
@@ -72,12 +75,12 @@ export const insertAdmissionInquirySchema = z.object({
   fatherName: z.string().min(1, "Father's name is required"),
   motherName: z.string().min(1, "Mother's name is required"),
   academicYear: z.string().min(1, "Academic year is required"),
-  email: z.string().email("Invalid email").optional().nullable(),
-  phone: z.string().min(10, "Phone must be at least 10 digits").optional().nullable(),
   fatherOccupation: z.string().optional().nullable(),
   motherOccupation: z.string().optional().nullable(),
   previousSchool: z.string().optional().nullable(),
   bloodGroup: z.string().optional().nullable(),
+  mobileNo: z.string().optional().nullable(),
+  emailId: z.string().optional().nullable(),
   message: z.string().optional().nullable(),
 });
 
