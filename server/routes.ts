@@ -247,19 +247,19 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
-  app.post("/api/admission-inquiry", async (req, res) => {
+  const admissionHandler = async (req: any, res: any) => {
     try {
       // 100% Manual Inline Schema to ensure no stale imports block submission
       const inlineSchema = z.object({
         parentName: z.string().optional().nullable(),
         childName: z.string().min(1),
         grade: z.string().min(1),
-        dob: z.string().min(1),
-        gender: z.string().min(1),
-        address: z.string().min(1),
-        fatherName: z.string().min(1),
-        motherName: z.string().min(1),
-        academicYear: z.string().min(1),
+        dob: z.string().optional().nullable().default(""),
+        gender: z.string().optional().nullable().default("NOT_SPECIFIED"),
+        address: z.string().optional().nullable().default("N/A"),
+        fatherName: z.string().optional().nullable().default("N/A"),
+        motherName: z.string().optional().nullable().default("N/A"),
+        academicYear: z.string().min(1).default("2026-2027"),
         email: z.string().optional().nullable(),
         phone: z.string().optional().nullable(),
         alternatePhone: z.string().optional().nullable(),
@@ -269,16 +269,29 @@ export function registerRoutes(app: Express): Server {
         bloodGroup: z.string().optional().nullable(),
         mobileNo: z.string().optional().nullable(),
         emailId: z.string().optional().nullable(),
-        studentPhoto: z.string().min(1, "Student photo is required"),
+        studentPhoto: z.string().optional().nullable(),
+        admissionNumber: z.number().optional().nullable(),
         message: z.string().optional().nullable(),
       });
 
       const { pdfBase64, ...formData } = req.body;
       const data = inlineSchema.parse(formData);
-      const inquiry = await storage.createAdmissionInquiry(data);
+      
+      // Ensure required fields for storage type
+      const validatedData = {
+        ...data,
+        dob: data.dob || "",
+        gender: data.gender || "NOT_SPECIFIED",
+        address: data.address || "N/A",
+        fatherName: data.fatherName || "N/A",
+        motherName: data.motherName || "N/A",
+        academicYear: data.academicYear || "2026-2027",
+      };
+
+      const inquiry = await storage.createAdmissionInquiry(validatedData as any);
       
       try {
-        await sendAdmissionEmail(data);
+        await sendAdmissionEmail({ ...validatedData, admissionNumber: inquiry.admissionNumber });
       } catch (e) {
         console.error("Email send failed (non-fatal):", e);
       }
@@ -300,7 +313,10 @@ export function registerRoutes(app: Express): Server {
         details: "Check server logs for full stack trace"
       });
     }
-  });
+  };
+
+  app.post("/api/admission", admissionHandler);
+  app.post("/api/admission-inquiry", admissionHandler);
 
   // Newsletter subscription
   app.post("/api/newsletter-subscribe", async (req, res) => {
