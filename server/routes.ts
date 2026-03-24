@@ -204,6 +204,11 @@ async function sendNewsletterEmail(data: any) {
 }
 
 export function registerRoutes(app: Express): Server {
+  // Diagnostic route for Vercel
+  app.get("/api/ping", (_req, res) => {
+    res.json({ status: "alive", time: new Date().toISOString() });
+  });
+
   // API routes for handling form submissions
   
   // Contact form submission
@@ -258,12 +263,15 @@ export function registerRoutes(app: Express): Server {
       const data = inlineSchema.parse(formData);
       const inquiry = await storage.createAdmissionInquiry(data);
       
-      // Await email for stability
+      // Temporarily DISABLED email to rule out Vercel timeouts as the cause of 500
+      /*
       try {
         await sendAdmissionEmail(data);
       } catch (e) {
         console.error("Email send failed (non-fatal):", e);
       }
+      */
+      console.log("DIAGNOSTIC: Admission data reached storage successfully");
       
       res.status(201).json({ 
         success: true, 

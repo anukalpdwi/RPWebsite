@@ -4,8 +4,8 @@ import {
   admissionInquiries, type AdmissionInquiry, type InsertAdmissionInquiry,
   newsletterSubscriptions, type NewsletterSubscription, type InsertNewsletterSubscription
 } from "@shared/schema";
-import { db } from "./db";
-import { eq } from "drizzle-orm";
+// import { db } from "./db";
+// import { eq } from "drizzle-orm";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -38,85 +38,11 @@ export interface IStorage {
   createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription>;
 }
 
+/*
 export class DatabaseStorage implements IStorage {
-  // User methods
-  async getUser(id: number): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user || undefined;
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(insertUser)
-      .returning();
-    return user;
-  }
-  
-  // Contact submission methods
-  async getContactSubmission(id: number): Promise<ContactSubmission | undefined> {
-    const [submission] = await db.select().from(contactSubmissions).where(eq(contactSubmissions.id, id));
-    return submission || undefined;
-  }
-  
-  async getAllContactSubmissions(): Promise<ContactSubmission[]> {
-    return await db.select().from(contactSubmissions).orderBy(contactSubmissions.submittedAt);
-  }
-  
-  async createContactSubmission(submission: InsertContact): Promise<ContactSubmission> {
-    const [contactSubmission] = await db
-      .insert(contactSubmissions)
-      .values(submission)
-      .returning();
-    return contactSubmission;
-  }
-  
-  // Admission inquiry methods
-  async getAdmissionInquiry(id: number): Promise<AdmissionInquiry | undefined> {
-    const [inquiry] = await db.select().from(admissionInquiries).where(eq(admissionInquiries.id, id));
-    return inquiry || undefined;
-  }
-  
-  async getAllAdmissionInquiries(): Promise<AdmissionInquiry[]> {
-    return await db.select().from(admissionInquiries).orderBy(admissionInquiries.submittedAt);
-  }
-  
-  async createAdmissionInquiry(inquiry: InsertAdmissionInquiry): Promise<AdmissionInquiry> {
-    const [admissionInquiry] = await db
-      .insert(admissionInquiries)
-      .values(inquiry)
-      .returning();
-    return admissionInquiry;
-  }
-  
-  // Newsletter subscription methods
-  async getNewsletterSubscription(id: number): Promise<NewsletterSubscription | undefined> {
-    const [subscription] = await db.select().from(newsletterSubscriptions).where(eq(newsletterSubscriptions.id, id));
-    return subscription || undefined;
-  }
-  
-  async getNewsletterSubscriptionByEmail(email: string): Promise<NewsletterSubscription | undefined> {
-    const [subscription] = await db.select().from(newsletterSubscriptions).where(eq(newsletterSubscriptions.email, email));
-    return subscription || undefined;
-  }
-  
-  async getAllNewsletterSubscriptions(): Promise<NewsletterSubscription[]> {
-    return await db.select().from(newsletterSubscriptions).orderBy(newsletterSubscriptions.subscribedAt);
-  }
-  
-  async createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription> {
-    const [newsletterSubscription] = await db
-      .insert(newsletterSubscriptions)
-      .values(subscription)
-      .returning();
-    return newsletterSubscription;
-  }
+  // ... (Database implementation commented out to avoid Vercel crashes)
 }
+*/
 
 class MockStorage implements IStorage {
   private users: User[] = [];

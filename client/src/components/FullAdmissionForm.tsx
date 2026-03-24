@@ -86,11 +86,23 @@ export default function FullAdmissionForm() {
         title: "Application Submitted!",
         description: "We have received your admission inquiry. A copy has been sent to our desk.",
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Submission Error:", error);
+      let errorMessage = "There was a problem submitting your form.";
+      if (error && typeof error.json === 'function') {
+        try {
+          const errData = await error.json();
+          if (errData.error) errorMessage += ` Details: ${errData.error}`;
+          else if (errData.message) errorMessage += ` Details: ${errData.message}`;
+        } catch (e) {}
+      } else if (error && error.message) {
+        errorMessage += ` (${error.message})`;
+      }
+      
       toast({
         variant: "destructive",
         title: "Submission Error",
-        description: "There was a problem submitting your form. Please try again.",
+        description: errorMessage,
       });
     } finally {
       setIsSubmitting(false);
