@@ -203,7 +203,7 @@ async function sendNewsletterEmail(data: any) {
   }
 }
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export function registerRoutes(app: Express): Server {
   // API routes for handling form submissions
   
   // Contact form submission
@@ -220,21 +220,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: "Contact form submission successful",
         data: submission
       });
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof ZodError) {
         const validationError = fromZodError(error);
-        res.status(400).json({ 
-          success: false,
-          message: "Validation failed",
-          errors: validationError.message
-        });
-      } else {
-        console.error("Error processing contact form:", error);
-        res.status(500).json({ 
-          success: false,
-          message: "An error occurred while processing your request"
-        });
+        return res.status(400).json({ success: false, message: validationError.message });
       }
+      console.error("Error processing contact form:", error);
+      res.status(500).json({ success: false, message: "Internal server error" });
     }
   });
 
@@ -266,29 +258,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const data = inlineSchema.parse(formData);
       const inquiry = await storage.createAdmissionInquiry(data);
       
-      // Send email notification (Awaited for Vercel stability)
+      // Await email for stability
       try {
         await sendAdmissionEmail(data);
-      } catch (err) {
-        console.error("Admission email error:", err);
+      } catch (e) {
+        console.error("Email send failed (non-fatal):", e);
       }
       
       res.status(201).json({ 
-        success: true,
-        message: "Admission inquiry submitted successfully. A confirmation will be sent to your email.",
-        data: inquiry
+        success: true, 
+        message: "Admission inquiry submitted successfully.", 
+        data: inquiry 
       });
     } catch (error: any) {
+      console.error("CRITICAL ADMISSION ERROR:", error);
       if (error instanceof ZodError) {
-        const validationError = fromZodError(error);
-        return res.status(400).json({ success: false, message: validationError.message });
+        return res.status(400).json({ success: false, message: fromZodError(error).message });
       }
-      console.error("Admission submission error:", error);
       res.status(500).json({ 
         success: false, 
         message: "Internal server error", 
         error: error.message,
-        stack: process.env.NODE_ENV === "development" ? error.stack : undefined 
+        details: "Check server logs for full stack trace"
       });
     }
   });
@@ -297,41 +288,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/newsletter-subscribe", async (req, res) => {
     try {
       const data = insertNewsletterSubscriptionSchema.parse(req.body);
-      
-      // Check if email already exists
-      const existingSubscription = await storage.getNewsletterSubscriptionByEmail(data.email);
-      if (existingSubscription) {
-        return res.status(400).json({ 
-          success: false,
-          message: "This email is already subscribed to our newsletter"
-        });
-      }
-      
-      const subscription = await storage.createNewsletterSubscription(data);
-      
-      // Send email notification (non-blocking)
-      sendNewsletterEmail(data).catch(err => console.error("Non-blocking newsletter email error:", err));
-
-      res.status(201).json({ 
-        success: true,
-        message: "Successfully subscribed to newsletter",
-        data: subscription
-      });
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const validationError = fromZodError(error);
-        res.status(400).json({ 
-          success: false,
-          message: "Validation failed",
-          errors: validationError.message
-        });
-      } else {
-        console.error("Error processing newsletter subscription:", error);
-        res.status(500).json({ 
-          success: false,
-          message: "An error occurred while processing your request"
-        });
-      }
+      await storage.createNewsletterSubscription(data);
+      res.status(201).json({ success: true, message: "Subscribed successfully" });
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: "Internal server error" });
     }
   });
 

@@ -38,35 +38,34 @@ app.use((req, res, next) => {
   next();
 });
 
-// Initialize routes
-const serverPromise = registerRoutes(app);
+// Initialize routes synchronously to avoid race conditions on Vercel
+const server = registerRoutes(app);
 
-if (process.env.NODE_ENV !== "production") {
-  (async () => {
-    const server = await serverPromise;
-    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-      const status = err.status || err.statusCode || 500;
-      const message = err.message || "Internal Server Error";
-      res.status(status).json({ message });
+const setupAsync = async () => {
+  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+    res.status(status).json({ message });
   });
 
+  if (process.env.NODE_ENV !== "production") {
     if (app.get("env") === "development") {
       await setupVite(app, server);
     } else {
       serveStatic(app);
     }
+  }
 
-    const port = 5000;
+  const port = Number(process.env.PORT) || 5000;
+  if (process.env.NODE_ENV !== "production" || process.env.LISTEN_IN_PROD) {
     server.listen(port, "0.0.0.0", () => {
       log(`serving on port ${port}`);
     });
-  })();
-} else {
-  // Production / Vercel
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    res.status(status).json({ message: err.message || "Internal Server Error" });
-  });
-}
+  }
+};
+
+setupAsync().catch(err => {
+  console.error("Critical server startup error:", err);
+});
 
 export default app;
