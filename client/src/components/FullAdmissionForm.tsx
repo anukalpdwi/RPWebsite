@@ -161,17 +161,60 @@ export default function FullAdmissionForm() {
   const onSubmit = async (data: any) => {
     setIsSubmitting(true);
     try {
-      const res = await apiRequest("POST", "/api/admission", data);
+      // 1. Generate PDF for the application
+      let pdfBase64 = "";
+      try {
+        const element = printRef.current;
+        if (element) {
+          // Temporarily show the element to capture it
+          element.classList.remove('hidden');
+          element.classList.add('block');
+          
+          const canvas = await html2canvas(element, {
+            scale: 2, // High quality
+            useCORS: true,
+            logging: false,
+            windowWidth: 794, // A4 width in pixels at 96dpi
+          });
+          
+          const imgData = canvas.toDataURL('image/jpeg', 0.8);
+          const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+          });
+          
+          const imgProps = pdf.getImageProperties(imgData);
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+          
+          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+          pdfBase64 = pdf.output('datauristring');
+          
+          // Re-hide the element
+          element.classList.remove('block');
+          element.classList.add('hidden');
+        }
+      } catch (pdfError) {
+        console.error("PDF generation failed, falling back to data-only submission:", pdfError);
+      }
+
+      // 2. Submit data + PDF
+      const payload = { ...data, pdfBase64 };
+      const res = await apiRequest("POST", "/api/admission", payload);
       const resData = await res.json();
+      
       if (resData.data && resData.data.admissionNumber) {
         setAdmissionNo(resData.data.admissionNumber);
       }
+      
       toast({
         title: "Success!",
         description: "Application submitted successfully.",
       });
       setStep("success");
     } catch (error) {
+      console.error("Submission error:", error);
       toast({
         title: "Error",
         description: "Failed to submit application. Please try again.",

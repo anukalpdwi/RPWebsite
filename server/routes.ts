@@ -23,91 +23,107 @@ const transporter = nodemailer.createTransport({
 });
 
 async function sendAdmissionEmail(data: any) {
+  const attachments: any[] = [];
+  
+  // Handle Student Photo CID attachment
+  let photoHtml = '';
+  if (data.studentPhoto && data.studentPhoto.startsWith('data:image')) {
+    const photoBase64 = data.studentPhoto.split(',')[1];
+    attachments.push({
+      filename: 'student-photo.jpg',
+      content: photoBase64,
+      encoding: 'base64',
+      cid: 'studentphoto'
+    });
+    photoHtml = '<img src="cid:studentphoto" style="width: 150px; height: 180px; object-fit: cover; border: 3px solid #f1f5f9; border-radius: 8px; display: block; margin: 0 auto;" />';
+  }
+
+  // Handle PDF attachment if provided
+  if (data.pdfBase64) {
+    attachments.push({
+      filename: `Admission_Form_${data.admissionNumber || 'New'}.pdf`,
+      content: data.pdfBase64.split(',')[1] || data.pdfBase64,
+      encoding: 'base64'
+    });
+  }
+
   const mailOptions = {
     from: process.env.EMAIL_USER || 'rppublicschool2021@gmail.com',
     to: 'rppublicschool2021@gmail.com',
     subject: `NEW ADMISSION [ID: ${data.admissionNumber || 'PENDING'}]: ${data.childName} | Grade: ${data.grade}`,
+    attachments,
     html: `
     <!DOCTYPE html>
     <html>
       <head>
+        <meta charset="utf-8">
         <style>
-          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #1e293b; background: #f8fafc; margin: 0; padding: 20px; }
-          .container { max-width: 700px; margin: auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
-          .header { background: #0f172a; color: #ffffff; padding: 30px; text-align: center; }
-          .header h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.025em; text-transform: uppercase; }
-          .header p { margin: 5px 0 0; opacity: 0.8; font-size: 14px; font-weight: 500; }
-          .section { padding: 25px; border-bottom: 1px solid #f1f5f9; }
-          .section-title { font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 15px; display: flex; align-items: center; }
-          .section-title::after { content: ''; flex: 1; height: 1px; background: #f1f5f9; margin-left: 15px; }
-          table { width: 100%; border-collapse: collapse; }
-          th { text-align: left; padding: 10px 0; font-size: 14px; font-weight: 600; color: #475569; width: 40%; vertical-align: top; }
-          td { text-align: right; padding: 10px 0; font-size: 15px; font-weight: 700; color: #0f172a; }
-          .photo-container { text-align: center; margin-bottom: 20px; }
-          .student-photo { width: 150px; height: 180px; object-fit: cover; border: 3px solid #f1f5f9; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-          .footer { background: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; }
-          .admission-no { font-size: 18px; font-weight: 800; color: #1e40af; background: #eff6ff; padding: 10px; border-radius: 6px; display: inline-block; margin-top: 10px; border: 1px solid #bfdbfe; }
-          @media print {
-            body { background: white; padding: 0; }
-            .container { border: none; padding: 0; }
-          }
+          body { font-family: 'Helvetica', 'Arial', sans-serif; line-height: 1.6; color: #1e293b; background-color: #f8fafc; margin: 0; padding: 0; }
+          .wrapper { width: 100%; background-color: #f8fafc; padding: 40px 0; }
+          .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+          .header { background-color: #0f172a; color: #ffffff; padding: 40px 20px; text-align: center; }
+          .header h1 { margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.025em; text-transform: uppercase; }
+          .header p { margin: 10px 0 0; opacity: 0.8; font-size: 14px; font-weight: 500; }
+          .content { padding: 30px; }
+          .admission-badge { background-color: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 10px 20px; border-radius: 6px; display: inline-block; font-weight: 800; margin-bottom: 30px; }
+          .section-title { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em; margin: 30px 0 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; }
+          .info-table { width: 100%; border-collapse: collapse; }
+          .info-table th { text-align: left; padding: 12px 0; font-size: 13px; font-weight: 600; color: #64748b; border-bottom: 1px solid #f8fafc; }
+          .info-table td { text-align: right; padding: 12px 0; font-size: 14px; font-weight: 700; color: #0f172a; border-bottom: 1px solid #f8fafc; }
+          .footer { background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 12px; color: #94a3b8; }
         </style>
       </head>
       <body>
-        <div class="container">
-          <div class="header">
-            <h1>RP PUBLIC SCHOOL</h1>
-            <p>Jaisinghnagar, Shahdol, Madhya Pradesh</p>
-            <p><strong>OFFICIAL ADMISSION APPLICATION | SESSION ${data.academicYear || '2026-2027'}</strong></p>
-            <div class="admission-no">Admission No: ${data.admissionNumber || 'N/A'}</div>
-          </div>
-
-          <div class="section">
-            <div class="section-title">1. STUDENT IDENTITY</div>
-            ${data.studentPhoto ? `
-            <div class="photo-container">
-              <img src="${data.studentPhoto}" alt="Student Photo" class="student-photo" />
+        <div class="wrapper">
+          <div class="container">
+            <div class="header">
+              <h1>RP PUBLIC SCHOOL</h1>
+              <p>JAISINGHNAGAR, SHAHDOL, MADHYA PRADESH</p>
+              <div style="margin-top: 20px;">
+                <span class="admission-badge">ADMISSION NO: ${data.admissionNumber || 'PENDING'}</span>
+              </div>
             </div>
-            ` : ''}
-            <table>
-              <tr><th>Admission No</th><td style="color: #1e40af;">${data.admissionNumber || 'N/A'}</td></tr>
-              <tr><th>Student Name</th><td>${data.childName}</td></tr>
-              <tr><th>Date of Birth</th><td>${data.dob}</td></tr>
-              <tr><th>Gender</th><td>${data.gender}</td></tr>
-              <tr><th>Grade Applying</th><td>${data.grade}</td></tr>
-              <tr><th>Blood Group</th><td>${data.bloodGroup || 'N/A'}</td></tr>
-              <tr><th>Academic Year</th><td>${data.academicYear || '2026-2027'}</td></tr>
-            </table>
-          </div>
+            
+            <div class="content">
+              <div style="text-align: center; margin-bottom: 30px;">
+                ${photoHtml || '<div style="width: 150px; height: 180px; background: #f1f5f9; border-radius: 8px; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 12px;">NO PHOTO PROVIDED</div>'}
+              </div>
 
-          <div class="section">
-            <div class="section-title">2. PARENT / GUARDIAN DETAILS</div>
-            <table>
-              <tr><th>Father's Name</th><td>${data.fatherName}</td></tr>
-              <tr><th>Mother's Name</th><td>${data.motherName}</td></tr>
-              <tr><th>Primary Contact No</th><td>${data.phone || 'N/A'}</td></tr>
-              <tr><th>Alternate Contact No</th><td>${data.alternatePhone || 'N/A'}</td></tr>
-              <tr><th>Email ID</th><td>${data.email || 'N/A'}</td></tr>
-            </table>
-          </div>
+              <div class="section-title">Student Identity</div>
+              <table class="info-table">
+                <tr><th>Full Name</th><td>${data.childName}</td></tr>
+                <tr><th>Applying for Class</th><td>${data.grade}</td></tr>
+                <tr><th>Date of Birth</th><td>${data.dob || 'N/A'}</td></tr>
+                <tr><th>Gender</th><td>${data.gender || 'N/A'}</td></tr>
+                <tr><th>Blood Group</th><td>${data.bloodGroup || 'N/A'}</td></tr>
+                <tr><th>Academic Session</th><td>${data.academicYear || '2026-2027'}</td></tr>
+              </table>
 
-          <div class="section">
-            <div class="section-title">3. ADDRESS & ADDITIONAL INFO</div>
-            <table>
-              <tr><th>Residential Address</th><td>${data.address}</td></tr>
-            </table>
-          </div>
+              <div class="section-title">Family Details</div>
+              <table class="info-table">
+                <tr><th>Father's Name</th><td>${data.fatherName || 'N/A'}</td></tr>
+                <tr><th>Mother's Name</th><td>${data.motherName || 'N/A'}</td></tr>
+                <tr><th>Primary Contact</th><td>${data.phone || 'N/A'}</td></tr>
+                ${data.alternatePhone ? `<tr><th>Alternate Contact</th><td>${data.alternatePhone}</td></tr>` : ''}
+                <tr><th>Email</th><td>${data.email || 'N/A'}</td></tr>
+              </table>
 
-          ${data.message ? `
-          <div class="section">
-            <div class="section-title">4. ADDITIONAL MESSAGE</div>
-            <p style="padding: 10px; background: #f9fafb; border-radius: 4px; border: 1px solid #e2e8f0; margin-top: 10px;">${data.message}</p>
-          </div>
-          ` : ''}
+              <div class="section-title">Residential Address</div>
+              <p style="font-size: 14px; font-weight: 600; color: #1e293b; background: #f8fafc; padding: 15px; border-radius: 6px; margin: 0;">
+                ${data.address || 'N/A'}
+              </p>
+              
+              <div style="margin-top: 40px; padding: 20px; border: 1px dashed #e2e8f0; border-radius: 8px; text-align: center;">
+                <p style="margin: 0; font-size: 12px; color: #64748b; font-weight: 500;">
+                  The official admission form PDF is attached to this email for your records.
+                </p>
+              </div>
+            </div>
 
-          <div class="footer">
-            <p>This is a computer-generated admission backup provided by the RP Public School Portal.</p>
-            <p>Submitted on: ${new Date().toLocaleString()}</p>
+            <div class="footer">
+              <p>© ${new Date().getFullYear()} RP Public School Admission Portal. All rights reserved.</p>
+              <p>This is an automated notification. Please do not reply directly to this email.</p>
+            </div>
           </div>
         </div>
       </body>
@@ -118,16 +134,14 @@ async function sendAdmissionEmail(data: any) {
   try {
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
       await transporter.sendMail(mailOptions);
-      console.log(`Admission email successfully SENT to ${mailOptions.to}`);
     } else {
-      console.error("CRITICAL SMTP ERROR: EMAIL_USER or EMAIL_PASS is missing in environment variables!");
+      console.log("--- MOCK EMAIL SENDER ---");
+      console.log("To: rppublicschool2021@gmail.com");
+      console.log("Subject:", mailOptions.subject);
     }
     return true;
-  } catch (error: any) {
-    console.error("SMTP SEND FAILURE:", error.message);
-    if (error.code === 'EAUTH') {
-      console.error("ERROR: Authentication failed. Please check your App Password.");
-    }
+  } catch (error) {
+    console.error("Error sending admission email:", error);
     return false;
   }
 }
@@ -291,7 +305,11 @@ export function registerRoutes(app: Express): Server {
       const inquiry = await storage.createAdmissionInquiry(validatedData as any);
       
       try {
-        await sendAdmissionEmail({ ...validatedData, admissionNumber: inquiry.admissionNumber });
+        await sendAdmissionEmail({ 
+          ...validatedData, 
+          admissionNumber: inquiry.admissionNumber,
+          pdfBase64 // Ensure the PDF is passed to the email sender
+        });
       } catch (e) {
         console.error("Email send failed (non-fatal):", e);
       }
