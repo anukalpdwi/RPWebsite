@@ -263,15 +263,11 @@ export function registerRoutes(app: Express): Server {
       const data = inlineSchema.parse(formData);
       const inquiry = await storage.createAdmissionInquiry(data);
       
-      // Temporarily DISABLED email to rule out Vercel timeouts as the cause of 500
-      /*
       try {
         await sendAdmissionEmail(data);
       } catch (e) {
         console.error("Email send failed (non-fatal):", e);
       }
-      */
-      console.log("DIAGNOSTIC: Admission data reached storage successfully");
       
       res.status(201).json({ 
         success: true, 
