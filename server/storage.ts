@@ -3,7 +3,7 @@ import {
   contactSubmissions, type ContactSubmission, type InsertContact,
   admissionInquiries, type AdmissionInquiry, type InsertAdmissionInquiry,
   newsletterSubscriptions, type NewsletterSubscription, type InsertNewsletterSubscription
-} from "../shared/schema";
+} from "../shared/schema.js";
 // import { db } from "./db";
 // import { eq } from "drizzle-orm";
 import fs from "fs/promises";
