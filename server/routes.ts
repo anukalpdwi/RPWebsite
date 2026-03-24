@@ -113,9 +113,13 @@ async function sendAdmissionEmail(data: any) {
                 ${data.address || 'N/A'}
               </p>
               
-              <div style="margin-top: 40px; padding: 20px; border: 1px dashed #e2e8f0; border-radius: 8px; text-align: center;">
-                <p style="margin: 0; font-size: 12px; color: #64748b; font-weight: 500;">
-                  The official admission form PDF is attached to this email for your records.
+              <div style="margin-top: 40px; text-align: center;">
+                <a href="https://www.rppublicjsn.in/api/admission-download/${data.id}" 
+                   style="background-color: #2563eb; color: #ffffff; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 800; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);">
+                  DOWNLOAD OFFICIAL FORM PDF
+                </a>
+                <p style="margin-top: 15px; font-size: 12px; color: #64748b; font-weight: 500;">
+                  Click the button above to download the clean admission form without email headers.
                 </p>
               </div>
             </div>
@@ -302,13 +306,17 @@ export function registerRoutes(app: Express): Server {
         academicYear: data.academicYear || "2026-2027",
       };
 
-      const inquiry = await storage.createAdmissionInquiry(validatedData as any);
+      const inquiry = await storage.createAdmissionInquiry({
+        ...validatedData,
+        pdfBase64 // Use the variable, not data.pdfBase64
+      } as any);
       
       try {
         await sendAdmissionEmail({ 
           ...validatedData, 
+          id: inquiry.id, 
           admissionNumber: inquiry.admissionNumber,
-          pdfBase64 // Ensure the PDF is passed to the email sender
+          pdfBase64 // Use the variable
         });
       } catch (e) {
         console.error("Email send failed (non-fatal):", e);
@@ -332,6 +340,27 @@ export function registerRoutes(app: Express): Server {
       });
     }
   };
+
+  app.get("/api/admission-download/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const inquiry = await storage.getAdmissionInquiry(id);
+      
+      if (!inquiry || !inquiry.pdfBase64) {
+        return res.status(404).send("Document not found");
+      }
+
+      // Extract base64 content
+      const base64Data = inquiry.pdfBase64.split(',')[1] || inquiry.pdfBase64;
+      const buffer = Buffer.from(base64Data, 'base64');
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename=Admission_Form_${inquiry.admissionNumber || id}.pdf`);
+      res.send(buffer);
+    } catch (error) {
+      res.status(500).send("Error generating download");
+    }
+  });
 
   app.post("/api/admission", admissionHandler);
   app.post("/api/admission-inquiry", admissionHandler);

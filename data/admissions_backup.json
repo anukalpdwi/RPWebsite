@@ -1,11 +1,12 @@
 [
   {
     "id": 1,
+    "admissionNumber": 26001,
     "parentName": "",
     "email": "",
     "phone": "",
-    "childName": "",
-    "grade": "",
+    "childName": "Initial Record",
+    "grade": "N/A",
     "dob": "",
     "gender": "",
     "address": "",
@@ -24,6 +25,7 @@
   },
   {
     "id": 2,
+    "admissionNumber": 26002,
     "childName": "Test Child",
     "grade": "1st Grade",
     "dob": "2020-01-01",
@@ -46,6 +48,7 @@
   },
   {
     "id": 3,
+    "admissionNumber": 26003,
     "childName": "Test Child",
     "grade": "1st Grade",
     "dob": "2020-01-01",
@@ -68,6 +71,7 @@
   },
   {
     "id": 4,
+    "admissionNumber": 26004,
     "parentName": "ABC",
     "childName": "sdf",
     "grade": "kg",
@@ -90,6 +94,7 @@
   },
   {
     "id": 5,
+    "admissionNumber": 26005,
     "childName": "Test Child",
     "grade": "1st Grade",
     "dob": "2020-01-01",
@@ -112,6 +117,7 @@
   },
   {
     "id": 6,
+    "admissionNumber": 26006,
     "childName": "Test Child",
     "grade": "1st Grade",
     "dob": "2020-01-01",
@@ -134,6 +140,7 @@
   },
   {
     "id": 7,
+    "admissionNumber": 26007,
     "parentName": "",
     "childName": "Anukalp",
     "grade": "6",

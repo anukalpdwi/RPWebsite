@@ -62,6 +62,7 @@ export const admissionInquiries = pgTable("admission_inquiries", {
   alternatePhone: text("alternate_phone"),
   emailId: text("email_id"),
   studentPhoto: text("student_photo"),
+  pdfBase64: text("pdf_base64"),
   message: text("message"),
   submittedAt: timestamp("submitted_at").defaultNow().notNull(),
 });

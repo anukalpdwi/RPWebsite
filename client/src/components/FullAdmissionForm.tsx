@@ -171,24 +171,30 @@ export default function FullAdmissionForm() {
           element.classList.add('block');
           
           const canvas = await html2canvas(element, {
-            scale: 2, // High quality
+            scale: 3, // Higher resolution
             useCORS: true,
             logging: false,
-            windowWidth: 794, // A4 width in pixels at 96dpi
+            windowWidth: 1200, // Wider capture for better scaling
+            backgroundColor: "#ffffff",
           });
           
-          const imgData = canvas.toDataURL('image/jpeg', 0.8);
+          const imgData = canvas.toDataURL('image/jpeg', 0.85); // High quality JPEG
           const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
             format: 'a4'
           });
           
-          const imgProps = pdf.getImageProperties(imgData);
           const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+          const pdfHeight = pdf.internal.pageSize.getHeight();
           
-          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+          // Calculate height based on A4 width to maintain aspect ratio
+          const imgProps = pdf.getImageProperties(imgData);
+          const ratio = imgProps.height / imgProps.width;
+          const canvasHeight = pdfWidth * ratio;
+          
+          // Add image to cover the full width, and as much height as needed
+          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, canvasHeight);
           pdfBase64 = pdf.output('datauristring');
           
           // Re-hide the element
@@ -310,7 +316,7 @@ export default function FullAdmissionForm() {
       </div>
 
       {/* Print View Layout */}
-      <div ref={printRef} className="hidden print:block print-container font-sans text-neutral-dark max-w-[850px] mx-auto p-0 border-4 border-double border-neutral-light bg-white relative overflow-hidden">
+      <div ref={printRef} className="hidden print:block print-container font-sans text-neutral-dark max-w-[850px] mx-auto p-0 border-4 border-double border-neutral-light bg-white !important relative overflow-hidden">
         
         {/* Subtle Watermark Logo */}
         <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none z-0">
@@ -319,7 +325,7 @@ export default function FullAdmissionForm() {
 
         <div className="relative z-10">
           {/* Print Header: Ultra-Premium Blue Block */}
-          <div className="bg-[#0f172a] text-white p-6 flex items-start justify-between relative">
+          <div className="bg-[#0f172a] !important text-white !important p-6 flex items-start justify-between relative">
             <div className="absolute bottom-0 left-0 w-full h-1 bg-yellow-500/50" />
             
             <div className="flex items-center gap-6">

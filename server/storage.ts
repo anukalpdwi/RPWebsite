@@ -7,6 +7,7 @@ import {
 // import { db } from "./db";
 // import { eq } from "drizzle-orm";
 import fs from "fs/promises";
+import * as fs_sync from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -52,18 +53,20 @@ class MockStorage implements IStorage {
   private currentId = 1;
 
   constructor() {
-    this.loadAdmissions();
+    this.loadAdmissionsSync();
   }
 
-  private async loadAdmissions() {
+  private loadAdmissionsSync() {
     try {
-      const data = await fs.readFile(ADMISSIONS_FILE, "utf-8");
-      this.admissionInquiries = JSON.parse(data);
-      if (this.admissionInquiries.length > 0) {
-        this.currentId = Math.max(...this.admissionInquiries.map(i => i.id)) + 1;
+      if (fs_sync.existsSync(ADMISSIONS_FILE)) {
+        const data = fs_sync.readFileSync(ADMISSIONS_FILE, "utf-8");
+        this.admissionInquiries = JSON.parse(data);
+        if (this.admissionInquiries.length > 0) {
+          this.currentId = Math.max(...this.admissionInquiries.map(i => i.id)) + 1;
+        }
       }
     } catch (e) {
-      // No backup found yet, it's okay
+      console.error("Backup load error:", e);
     }
   }
 
@@ -134,6 +137,7 @@ class MockStorage implements IStorage {
       previousSchool: inquiry.previousSchool ?? null,
       bloodGroup: inquiry.bloodGroup ?? null,
       studentPhoto: inquiry.studentPhoto ?? null,
+      pdfBase64: (inquiry as any).pdfBase64 ?? null,
       mobileNo: inquiry.mobileNo ?? null,
       alternatePhone: inquiry.alternatePhone ?? null,
       emailId: inquiry.emailId ?? null,
