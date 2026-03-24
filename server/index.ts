@@ -15,12 +15,19 @@ process.on("unhandledRejection", (reason, promise) => {
 export const app = express();
 
 // ABSOLUTE TOP PRIORITY FOR DIAGNOSTICS
-app.get("/api/ping", (_req, res) => {
+app.get("/api/ping", async (_req, res) => {
+  const { storage } = await import("./storage.js");
+  const inquiries = await storage.getAllAdmissionInquiries();
+  const lastAdm = inquiries.reduce((max: number, curr: any) => {
+    const num = curr.admissionNumber || 0;
+    return num > max ? num : max;
+  }, 26000);
+
   res.json({ 
     status: "alive", 
     vercel: !!process.env.VERCEL,
-    emailConfigured: !!(process.env.EMAIL_USER && process.env.EMAIL_PASS),
-    emailTarget: process.env.EMAIL_TO || "rppublicschool2021@gmail.com",
+    storageCount: inquiries.length,
+    nextAdmissionNo: lastAdm + 1,
     time: new Date().toISOString() 
   });
 });

@@ -57,13 +57,21 @@ class MockStorage implements IStorage {
   }
 
   private loadAdmissionsSync() {
+    console.log(`[STORAGE] Initializing storage from CWD: ${process.cwd()}`);
+    console.log(`[STORAGE] Target backup file: ${path.resolve(ADMISSIONS_FILE)}`);
     try {
       if (fs_sync.existsSync(ADMISSIONS_FILE)) {
         const data = fs_sync.readFileSync(ADMISSIONS_FILE, "utf-8");
         this.admissionInquiries = JSON.parse(data);
+        console.log(`[STORAGE] Loaded ${this.admissionInquiries.length} inquiries from backup.`);
         if (this.admissionInquiries.length > 0) {
-          this.currentId = Math.max(...this.admissionInquiries.map(i => i.id)) + 1;
+          const maxId = Math.max(...this.admissionInquiries.map(i => i.id));
+          const maxAdm = Math.max(26000, ...this.admissionInquiries.map(i => i.admissionNumber || 0));
+          this.currentId = maxId + 1;
+          console.log(`[STORAGE] Resumed from entry ${maxId} (Next ID: ${this.currentId}) and Admission No: ${maxAdm}`);
         }
+      } else {
+        console.log(`[STORAGE] No backup file found at ${ADMISSIONS_FILE}`);
       }
     } catch (e) {
       console.error("Backup load error:", e);
@@ -106,6 +114,7 @@ class MockStorage implements IStorage {
         await this.ensureDataDir();
       }
       await fs.writeFile(ADMISSIONS_FILE, JSON.stringify(this.admissionInquiries, null, 2));
+      console.log(`[STORAGE] Persisted ${this.admissionInquiries.length} inquiries to backup.`);
     } catch (e: any) {
       console.error("Non-fatal backup error:", e.message);
     }
@@ -121,6 +130,7 @@ class MockStorage implements IStorage {
     }, 26000);
     
     const admissionNumber = lastAdmissionNo + 1;
+    console.log(`[STORAGE] Creating entry ${id} with Admission No: ${admissionNumber} (Prev max: ${lastAdmissionNo})`);
 
     const newInquiry: AdmissionInquiry = { 
       ...inquiry, 

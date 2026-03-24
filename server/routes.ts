@@ -362,6 +362,22 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  app.get("/api/debug-storage", async (_req, res) => {
+    const inquiries = await storage.getAllAdmissionInquiries();
+    const lastAdm = inquiries.reduce((max, curr) => {
+      const num = curr.admissionNumber || 0;
+      return num > max ? num : max;
+    }, 26000);
+    
+    res.json({
+      count: inquiries.length,
+      lastAdmissionNo: lastAdm,
+      cwd: process.cwd(),
+      env: process.env.VERCEL ? "VERCEL" : "LOCAL",
+      inquiries: inquiries.map(i => ({ id: i.id, adm: i.admissionNumber, name: i.childName }))
+    });
+  });
+
   app.post("/api/admission", admissionHandler);
   app.post("/api/admission-inquiry", admissionHandler);
 
