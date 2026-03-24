@@ -109,26 +109,42 @@ class MockStorage implements IStorage {
   }
 
   async createAdmissionInquiry(inquiry: InsertAdmissionInquiry): Promise<AdmissionInquiry> {
-    const admission: AdmissionInquiry = { 
-      id: this.currentId++, 
+    const id = this.currentId++;
+    
+    // Find the next admission number starting from 26001
+    const lastAdmissionNo = this.admissionInquiries.reduce((max, curr) => {
+      const num = curr.admissionNumber || 0;
+      return num > max ? num : max;
+    }, 26000);
+    
+    const admissionNumber = lastAdmissionNo + 1;
+
+    const newInquiry: AdmissionInquiry = { 
       ...inquiry, 
+      id,
+      admissionNumber,
       parentName: inquiry.parentName ?? null,
-      mobileNo: inquiry.mobileNo ?? null,
-      emailId: inquiry.emailId ?? null,
       email: inquiry.email ?? null,
       phone: inquiry.phone ?? null,
+      address: inquiry.address ?? null,
+      fatherName: inquiry.fatherName ?? null,
+      motherName: inquiry.motherName ?? null,
       fatherOccupation: inquiry.fatherOccupation ?? null,
       motherOccupation: inquiry.motherOccupation ?? null,
       previousSchool: inquiry.previousSchool ?? null,
       bloodGroup: inquiry.bloodGroup ?? null,
+      studentPhoto: inquiry.studentPhoto ?? null,
+      mobileNo: inquiry.mobileNo ?? null,
+      alternatePhone: inquiry.alternatePhone ?? null,
+      emailId: inquiry.emailId ?? null,
       message: inquiry.message ?? null,
       submittedAt: new Date() 
     };
-    this.admissionInquiries.push(admission);
+    this.admissionInquiries.push(newInquiry);
     if (!process.env.VERCEL) {
       await this.persistAdmissions();
     }
-    return admission;
+    return newInquiry;
   }
 
   async getNewsletterSubscription(id: number) { return this.newsletterSubscriptions.find(s => s.id === id); }

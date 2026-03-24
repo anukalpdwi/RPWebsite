@@ -131,5 +131,28 @@
     "previousSchool": null,
     "message": null,
     "submittedAt": "2026-03-24T05:59:22.059Z"
+  },
+  {
+    "id": 7,
+    "parentName": "",
+    "childName": "Anukalp",
+    "grade": "6",
+    "dob": "2005-09-11",
+    "gender": "male",
+    "address": "asdf",
+    "fatherName": "ABCD",
+    "motherName": "ABCDEF",
+    "academicYear": "2026-2027",
+    "email": "anukalpdwi1995@gmail.com",
+    "phone": "9131883433",
+    "alternatePhone": "9644552060",
+    "fatherOccupation": "",
+    "motherOccupation": "",
+    "previousSchool": "",
+    "bloodGroup": "A+",
+    "mobileNo": "",
+    "emailId": "",
+    "message": "adsfd",
+    "submittedAt": "2026-03-24T14:26:22.043Z"
   }
 ]

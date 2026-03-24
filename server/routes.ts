@@ -23,30 +23,32 @@ const transporter = nodemailer.createTransport({
 });
 
 async function sendAdmissionEmail(data: any) {
-  const mailOptions: any = {
-    from: '"RP Public School Admission" <rppublicschool2021@gmail.com>',
-    to: process.env.EMAIL_TO || "rppublicschool2021@gmail.com",
-    subject: `New Admission Inquiry - ${data.childName}`,
+  const mailOptions = {
+    from: process.env.EMAIL_USER || 'rppublicschool2021@gmail.com',
+    to: 'rppublicschool2021@gmail.com',
+    subject: `NEW ADMISSION [ID: ${data.admissionNumber || 'PENDING'}]: ${data.childName} | Grade: ${data.grade}`,
     html: `
-      <!DOCTYPE html>
-      <html>
+    <!DOCTYPE html>
+    <html>
       <head>
         <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-          .container { max-width: 800px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
-          .header { background-color: #1e3a8a; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }
-          .header h1 { margin: 0; font-size: 24px; letter-spacing: 1px; }
-          .header p { margin: 5px 0 0; font-size: 14px; opacity: 0.9; }
-          .section { margin-top: 25px; border-top: 2px solid #f1f5f9; padding-top: 15px; }
-          .section-title { color: #1e3a8a; font-size: 16px; font-weight: bold; background: #f8fafc; padding: 8px 12px; border-radius: 4px; border-left: 4px solid #1e3a8a; }
-          table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-          th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
-          th { font-weight: bold; color: #475569; width: 35%; }
-          td { color: #1e293b; font-weight: 500; }
-          .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #ddd; padding-top: 15px; }
-          .print-btn { display: inline-block; padding: 10px 20px; background-color: #1e3a8a; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 20px; text-align: center; cursor: pointer; border: none; }
+          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #1e293b; background: #f8fafc; margin: 0; padding: 20px; }
+          .container { max-width: 700px; margin: auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+          .header { background: #0f172a; color: #ffffff; padding: 30px; text-align: center; }
+          .header h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.025em; text-transform: uppercase; }
+          .header p { margin: 5px 0 0; opacity: 0.8; font-size: 14px; font-weight: 500; }
+          .section { padding: 25px; border-bottom: 1px solid #f1f5f9; }
+          .section-title { font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 15px; display: flex; align-items: center; }
+          .section-title::after { content: ''; flex: 1; height: 1px; background: #f1f5f9; margin-left: 15px; }
+          table { width: 100%; border-collapse: collapse; }
+          th { text-align: left; padding: 10px 0; font-size: 14px; font-weight: 600; color: #475569; width: 40%; vertical-align: top; }
+          td { text-align: right; padding: 10px 0; font-size: 15px; font-weight: 700; color: #0f172a; }
+          .photo-container { text-align: center; margin-bottom: 20px; }
+          .student-photo { width: 150px; height: 180px; object-fit: cover; border: 3px solid #f1f5f9; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+          .footer { background: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; }
+          .admission-no { font-size: 18px; font-weight: 800; color: #1e40af; background: #eff6ff; padding: 10px; border-radius: 6px; display: inline-block; margin-top: 10px; border: 1px solid #bfdbfe; }
           @media print {
-            .print-btn { display: none !important; }
+            body { background: white; padding: 0; }
             .container { border: none; padding: 0; }
           }
         </style>
@@ -57,11 +59,18 @@ async function sendAdmissionEmail(data: any) {
             <h1>RP PUBLIC SCHOOL</h1>
             <p>Jaisinghnagar, Shahdol, Madhya Pradesh</p>
             <p><strong>OFFICIAL ADMISSION APPLICATION | SESSION ${data.academicYear || '2026-2027'}</strong></p>
+            <div class="admission-no">Admission No: ${data.admissionNumber || 'N/A'}</div>
           </div>
 
           <div class="section">
             <div class="section-title">1. STUDENT IDENTITY</div>
+            ${data.studentPhoto ? `
+            <div class="photo-container">
+              <img src="${data.studentPhoto}" alt="Student Photo" class="student-photo" />
+            </div>
+            ` : ''}
             <table>
+              <tr><th>Admission No</th><td style="color: #1e40af;">${data.admissionNumber || 'N/A'}</td></tr>
               <tr><th>Student Name</th><td>${data.childName}</td></tr>
               <tr><th>Date of Birth</th><td>${data.dob}</td></tr>
               <tr><th>Gender</th><td>${data.gender}</td></tr>
@@ -76,16 +85,16 @@ async function sendAdmissionEmail(data: any) {
             <table>
               <tr><th>Father's Name</th><td>${data.fatherName}</td></tr>
               <tr><th>Mother's Name</th><td>${data.motherName}</td></tr>
-              <tr><th>Contact No</th><td>${data.phone || data.mobileNo || 'N/A'}</td></tr>
-              <tr><th>Email ID</th><td>${data.email || data.emailId || 'N/A'}</td></tr>
+              <tr><th>Primary Contact No</th><td>${data.phone || 'N/A'}</td></tr>
+              <tr><th>Alternate Contact No</th><td>${data.alternatePhone || 'N/A'}</td></tr>
+              <tr><th>Email ID</th><td>${data.email || 'N/A'}</td></tr>
             </table>
           </div>
 
           <div class="section">
-            <div class="section-title">3. ADDRESS & ACADEMIC HISTORY</div>
+            <div class="section-title">3. ADDRESS & ADDITIONAL INFO</div>
             <table>
               <tr><th>Residential Address</th><td>${data.address}</td></tr>
-              <tr><th>Previous School</th><td>${data.previousSchool || 'N/A'}</td></tr>
             </table>
           </div>
 
@@ -102,8 +111,8 @@ async function sendAdmissionEmail(data: any) {
           </div>
         </div>
       </body>
-      </html>
-    `,
+    </html>
+    `
   };
 
   try {
@@ -253,12 +262,14 @@ export function registerRoutes(app: Express): Server {
         academicYear: z.string().min(1),
         email: z.string().optional().nullable(),
         phone: z.string().optional().nullable(),
+        alternatePhone: z.string().optional().nullable(),
         fatherOccupation: z.string().optional().nullable(),
         motherOccupation: z.string().optional().nullable(),
         previousSchool: z.string().optional().nullable(),
         bloodGroup: z.string().optional().nullable(),
         mobileNo: z.string().optional().nullable(),
         emailId: z.string().optional().nullable(),
+        studentPhoto: z.string().min(1, "Student photo is required"),
         message: z.string().optional().nullable(),
       });
 

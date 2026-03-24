@@ -42,6 +42,7 @@ export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 // Admission inquiries schema
 export const admissionInquiries = pgTable("admission_inquiries", {
   id: serial("id").primaryKey(),
+  admissionNumber: integer("admission_number"),
   parentName: text("parent_name"),
   email: text("email"),
   phone: text("phone"),
@@ -58,16 +59,20 @@ export const admissionInquiries = pgTable("admission_inquiries", {
   bloodGroup: text("blood_group"),
   academicYear: text("academic_year").notNull(),
   mobileNo: text("mobile_no"),
+  alternatePhone: text("alternate_phone"),
   emailId: text("email_id"),
+  studentPhoto: text("student_photo"),
   message: text("message"),
   submittedAt: timestamp("submitted_at").defaultNow().notNull(),
 });
 
-export const insertAdmissionInquirySchema = z.object({
+export const insertAdmissionInquirySchema = createInsertSchema(admissionInquiries, {
+  admissionNumber: z.number().optional().nullable(),
+  childName: z.string().min(2, "Name must be at least 2 characters"),
+}).extend({
   parentName: z.string().optional().nullable(),
-  email: z.string().email("Invalid email").optional().nullable(),
+  email: z.string().email("Invalid email").optional().or(z.literal("")).nullable(),
   phone: z.string().min(10, "Phone must be at least 10 digits").optional().nullable(),
-  childName: z.string().min(1, "Child name is required"),
   grade: z.string().min(1, "Grade is required"),
   dob: z.string().min(1, "Date of birth is required"),
   gender: z.string().min(1, "Gender is required"),
@@ -80,7 +85,9 @@ export const insertAdmissionInquirySchema = z.object({
   previousSchool: z.string().optional().nullable(),
   bloodGroup: z.string().optional().nullable(),
   mobileNo: z.string().optional().nullable(),
+  alternatePhone: z.string().optional().nullable(),
   emailId: z.string().optional().nullable(),
+  studentPhoto: z.string().min(1, "Student photo is required"),
   message: z.string().optional().nullable(),
 });
 

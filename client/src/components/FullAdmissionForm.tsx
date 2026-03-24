@@ -13,9 +13,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { apiRequest } from "@/lib/queryClient";
 import { 
-  Printer, Send, User, Users, GraduationCap, MapPin, 
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter 
+} from "@/components/ui/dialog";
+import { 
+  Camera, Upload, Printer, Send, User, Users, GraduationCap, MapPin, 
   ChevronRight, ChevronLeft, CheckCircle2, Edit3, HeartPulse,
-  Mail, Phone, Calendar, School
+  Mail, Phone, Calendar, School, X, RotateCcw, Video
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { schoolInfo } from "@/lib/utils";
@@ -26,15 +29,18 @@ export default function FullAdmissionForm() {
   const { toast } = useToast();
   const [step, setStep] = useState<FormStep>("student");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const [admissionNo, setAdmissionNo] = useState<number | null>(null);
+  
   const printRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   
   const form = useForm({
     resolver: zodResolver(insertAdmissionInquirySchema),
     mode: "onBlur",
     defaultValues: {
-      parentName: "",
-      email: "",
-      phone: "",
       childName: "",
       grade: "",
       dob: "",
@@ -44,14 +50,90 @@ export default function FullAdmissionForm() {
       motherName: "",
       fatherOccupation: "",
       motherOccupation: "",
-      previousSchool: "",
       bloodGroup: "",
       academicYear: "2026-2027",
-      mobileNo: "",
-      emailId: "",
+      email: "",
+      phone: "",
+      alternatePhone: "",
+      studentPhoto: "",
       message: ""
     },
   });
+
+  const stopCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    setIsCameraOpen(false);
+  };
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: "user", width: { ideal: 480 }, height: { ideal: 600 } } 
+      });
+      setCameraStream(stream);
+      setIsCameraOpen(true);
+    } catch (err) {
+      console.error("Camera access error (trying fallback):", err);
+      try {
+        const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        setCameraStream(fallbackStream);
+        setIsCameraOpen(true);
+      } catch (fallbackErr) {
+        toast({
+          title: "Camera Error",
+          description: "Could not access camera. Please check permissions or upload from gallery.",
+          variant: "destructive"
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (isCameraOpen && videoRef.current && cameraStream) {
+      videoRef.current.srcObject = cameraStream;
+    }
+  }, [isCameraOpen, cameraStream]);
+
+  const capturePhoto = () => {
+    if (videoRef.current) {
+      const canvas = document.createElement("canvas");
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(videoRef.current, 0, 0);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+        form.setValue("studentPhoto", dataUrl);
+        stopCamera();
+        toast({
+          title: "Photo Captured",
+          description: "Student photo has been saved to the form.",
+        });
+      }
+    }
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Please upload an image smaller than 2MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        form.setValue("studentPhoto", reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const nextStep = async (currentFields: string[]) => {
     const isValid = await form.trigger(currentFields as any);
@@ -62,9 +144,9 @@ export default function FullAdmissionForm() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       toast({
-        variant: "destructive",
-        title: "Incomplete Details",
-        description: "Please fill all required fields correctly before proceeding.",
+        title: "Information Required",
+        description: "Please fill all mandatory fields to proceed.",
+        variant: "destructive"
       });
     }
   };
@@ -76,80 +158,70 @@ export default function FullAdmissionForm() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  async function onSubmit(data: any) {
+  const onSubmit = async (data: any) => {
     setIsSubmitting(true);
     try {
-      await apiRequest("POST", "/api/admission-inquiry", data);
-      setStep("success");
-      window.scrollTo({ top: 0, behavior: "instant" });
-      toast({
-        title: "Application Submitted!",
-        description: "We have received your admission inquiry. A copy has been sent to our desk.",
-      });
-    } catch (error: any) {
-      console.error("Submission Error:", error);
-      let errorMessage = "There was a problem submitting your form.";
-      if (error && typeof error.json === 'function') {
-        try {
-          const errData = await error.json();
-          if (errData.error) errorMessage += ` Details: ${errData.error}`;
-          else if (errData.message) errorMessage += ` Details: ${errData.message}`;
-        } catch (e) {}
-      } else if (error && error.message) {
-        errorMessage += ` (${error.message})`;
+      const res = await apiRequest("POST", "/api/admission", data);
+      const resData = await res.json();
+      if (resData.data && resData.data.admissionNumber) {
+        setAdmissionNo(resData.data.admissionNumber);
       }
-      
       toast({
+        title: "Success!",
+        description: "Application submitted successfully.",
+      });
+      setStep("success");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to submit application. Please try again.",
         variant: "destructive",
-        title: "Submission Error",
-        description: errorMessage,
       });
     } finally {
       setIsSubmitting(false);
     }
-  }
+  };
 
   const handlePrint = () => {
     window.print();
   };
 
   const renderProgress = () => {
-    const steps: { key: FormStep; label: string; icon: any }[] = [
-      { key: "student", label: "Student", icon: User },
-      { key: "parents", label: "Family", icon: Users },
-      { key: "academic", label: "Academic", icon: GraduationCap },
-      { key: "review", label: "Review", icon: Edit3 },
+    const steps = [
+      { id: "student", label: "Student", icon: User },
+      { id: "parents", label: "Family", icon: Users },
+      { id: "academic", label: "Academic", icon: GraduationCap },
+      { id: "review", label: "Review", icon: Edit3 }
     ];
 
     return (
-      <div className="flex justify-between items-center mb-12 px-2 max-w-2xl mx-auto print:hidden">
-        {steps.map((s, i) => {
+      <div className="flex justify-between items-center mb-12 max-w-4xl mx-auto px-4 relative overflow-hidden h-20 md:h-24">
+        {/* Progress Line */}
+        <div className="absolute top-1/2 left-0 w-full h-1 bg-neutral-light -translate-y-1/2 z-0 hidden md:block" />
+        <div 
+          className="absolute top-1/2 left-0 h-1 bg-primary -translate-y-1/2 z-0 transition-all duration-500 hidden md:block"
+          style={{ 
+            width: `${(steps.findIndex(s => s.id === step) / (steps.length - 1)) * 100}%` 
+          }}
+        />
+
+        {steps.map((s, idx) => {
           const Icon = s.icon;
-          const isActive = step === s.key;
-          const isCompleted = steps.findIndex(x => x.key === step) > i;
-          
+          const isActive = s.id === step;
+          const isCompleted = steps.findIndex(st => st.id === step) > idx;
+
           return (
-            <div key={s.key} className="flex flex-col items-center relative flex-1">
+            <div key={s.id} className="z-10 flex flex-col items-center group">
               <div 
-                className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-500 z-10 ${
-                  isActive ? "bg-primary text-white scale-110 shadow-lg ring-4 ring-primary/20" : 
-                  isCompleted ? "bg-green-500 text-white" : "bg-neutral-light text-neutral-dark"
+                className={`w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-500 border-4 shadow-xl ${
+                  isActive ? "bg-primary border-primary-light scale-110" : 
+                  isCompleted ? "bg-green-500 border-green-200" : "bg-white border-neutral-light"
                 }`}
               >
-                {isCompleted ? <CheckCircle2 className="w-6 h-6" /> : <Icon className="w-5 h-5" />}
+                {isCompleted ? <CheckCircle2 className="w-6 h-6 md:w-8 md:h-8 text-white" /> : 
+                <Icon className={`w-5 h-5 md:w-6 md:h-6 ${isActive ? "text-white" : "text-neutral-light group-hover:text-primary transition-colors"}`} />}
               </div>
-              <span className={`text-[10px] md:text-xs mt-2 font-bold uppercase tracking-wider ${isActive ? "text-primary" : "text-neutral-dark opacity-60"}`}>
-                {s.label}
-              </span>
-              {i < steps.length - 1 && (
-                <div className="absolute top-5 md:top-6 left-1/2 w-full h-[2px] bg-neutral-light -z-0 pointer-events-none">
-                  <motion.div 
-                    initial={false}
-                    animate={{ width: isCompleted ? "100%" : "0%" }}
-                    className="h-full bg-green-500"
-                  />
-                </div>
-              )}
+              <span className={`text-[10px] md:text-xs font-black uppercase mt-3 tracking-widest ${isActive ? "text-primary" : "text-neutral-light"}`}>{s.label}</span>
             </div>
           );
         })}
@@ -157,12 +229,45 @@ export default function FullAdmissionForm() {
     );
   };
 
-
   return (
-    <div className="max-w-5xl mx-auto p-4 md:p-10">
-      {/* Premium Print-only Header */}
-      {/* Premium Print-only Document (Ultimate Single Page Design) */}
-      <div ref={printRef} className="hidden print:block font-sans text-neutral-dark max-w-[850px] mx-auto p-0 border-4 border-double border-neutral-light bg-white relative overflow-hidden">
+    <div className="min-h-screen bg-[#f8fafc] py-6 px-4 md:py-12 md:px-8">
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          @page {
+            size: A4;
+            margin: 0;
+          }
+          body {
+            margin: 0;
+            padding: 0;
+            background: white !important;
+          }
+          .print-container {
+            width: 210mm !important;
+            min-height: 297mm !important;
+            height: auto !important;
+            margin: 0 auto !important;
+            padding: 0 !important;
+            border: none !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            overflow: visible !important;
+          }
+          .no-print {
+            display: none !important;
+          }
+        }
+      `}} />
+      <div className="max-w-6xl mx-auto mb-8 flex justify-end print:hidden">
+        <Button onClick={handlePrint} variant="outline" className="border-2 border-primary text-primary hover:bg-primary/5 font-bold">
+           <Printer className="mr-2 w-5 h-5" /> Print Blank Form
+        </Button>
+      </div>
+
+      {/* Print View Layout */}
+      <div ref={printRef} className="hidden print:block print-container font-sans text-neutral-dark max-w-[850px] mx-auto p-0 border-4 border-double border-neutral-light bg-white relative overflow-hidden">
         
         {/* Subtle Watermark Logo */}
         <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none z-0">
@@ -184,13 +289,20 @@ export default function FullAdmissionForm() {
                 <div className="mt-4 space-y-0.5">
                   <p className="text-[10px] font-medium opacity-80 uppercase leading-none">Jaisinghnagar, Shahdol, Madhya Pradesh</p>
                   <p className="text-[10px] font-medium opacity-80 uppercase leading-none">PH: +91 9893767392 • EMAIL: rppublicschool2021@gmail.com</p>
+                  <div className="mt-2 inline-block px-3 py-1 bg-yellow-500/20 border border-yellow-500/30 rounded">
+                    <p className="text-[10px] font-black tracking-widest text-yellow-500">ADMISSION NO: {admissionNo || "PENDING"}</p>
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="text-right flex flex-col items-end gap-2">
-               <div className="w-20 h-24 border border-white/20 bg-white/5 flex items-center justify-center text-[7px] font-bold text-white/30 uppercase text-center px-2 leading-tight">
-                 PASSPORT SIZE PHOTO
+               <div className="w-20 h-24 border border-white/20 bg-white/5 flex items-center justify-center overflow-hidden">
+                 {form.getValues("studentPhoto") ? (
+                   <img src={form.getValues("studentPhoto")} alt="Student" className="w-full h-full object-cover" />
+                 ) : (
+                   <span className="text-[7px] font-bold text-white/30 uppercase text-center px-2 leading-tight">PASSPORT SIZE PHOTO</span>
+                 )}
                </div>
                <div className="mt-auto">
                  <h2 className="text-2xl font-black tracking-tighter text-white leading-none">ADMISSION</h2>
@@ -269,21 +381,23 @@ export default function FullAdmissionForm() {
             {/* Row 5: Contact & Academic */}
             <div className="grid grid-cols-3 gap-6">
               <div className="border-b border-neutral-light pb-1">
-                <span className="text-[9px] font-black uppercase text-neutral-dark/50 tracking-widestone tracking-tight">Contact Number</span>
+                <span className="text-[9px] font-black uppercase text-neutral-dark/50 tracking-widestone tracking-tight">Primary Phone</span>
                 <p className="text-sm font-bold text-neutral-dark leading-tight mt-0.5">
                   {form.getValues("phone")}
                 </p>
               </div>
               <div className="border-b border-neutral-light pb-1">
-                <span className="text-[9px] font-black uppercase text-neutral-dark/50 tracking-widestone tracking-tight">Applying for Grade</span>
-                <p className="text-sm font-black text-neutral-dark uppercase leading-tight mt-0.5">
-                  GRADE {form.getValues("grade")}
+                <span className="text-[9px] font-black uppercase text-neutral-dark/50 tracking-widestone tracking-tight">Alternate Phone</span>
+                <p className="text-sm font-bold text-neutral-dark leading-tight mt-0.5">
+                  {form.getValues("alternatePhone") || "N/A"}
                 </p>
               </div>
               <div className="border-b border-neutral-light pb-1">
-                <span className="text-[9px] font-black uppercase text-neutral-dark/50 tracking-widestone tracking-tight">Previous School</span>
-                <p className="text-xs font-bold text-neutral-dark leading-tight mt-0.5">
-                  {form.getValues("previousSchool") || "Primary Level"}
+                <span className="text-[9px] font-black uppercase text-neutral-dark/50 tracking-widestone tracking-tight">Applying for Grade</span>
+                <p className="text-sm font-black text-neutral-dark uppercase leading-tight mt-0.5">
+                  {(form.getValues("grade") === "nursery" || form.getValues("grade") === "kg")
+                    ? form.getValues("grade").toUpperCase()
+                    : `CLASS ${form.getValues("grade")}`}
                 </p>
               </div>
             </div>
@@ -334,7 +448,11 @@ export default function FullAdmissionForm() {
             <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 className="w-12 h-12" />
             </div>
-            <h2 className="text-4xl font-heading font-bold text-primary mb-4">Application Successful!</h2>
+            <h2 className="text-4xl font-heading font-bold text-primary mb-2">Application Successful!</h2>
+            <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 mb-6 inline-block">
+              <p className="text-xs font-black uppercase tracking-widest text-primary/60">Your Admission Number</p>
+              <p className="text-3xl font-black text-primary tracking-tighter">{admissionNo || "26XXX"}</p>
+            </div>
             <p className="text-lg text-neutral-dark mb-8">
               Thank you for choosing {schoolInfo.name}. Our admissions office will review the details and contact you within 2-3 working days.
             </p>
@@ -373,6 +491,140 @@ export default function FullAdmissionForm() {
                     </div>
                     <h3 className="text-xl md:text-2xl font-bold text-primary">Student Information</h3>
                   </div>
+
+                  {/* Photo Upload Section */}
+                  <div className="col-span-full flex flex-col items-center justify-center p-6 bg-primary/5 rounded-2xl border-2 border-dashed border-primary/20 space-y-4">
+                    <div className="relative group">
+                      <div className="w-32 h-32 md:w-40 md:h-48 rounded-xl bg-white border-4 border-white shadow-xl overflow-hidden flex items-center justify-center">
+                        {form.watch("studentPhoto") ? (
+                          <img 
+                            src={form.watch("studentPhoto")} 
+                            alt="Student" 
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <User className="w-16 h-16 md:w-20 md:h-20 text-neutral-light" />
+                        )}
+                      </div>
+                      <div className="absolute bottom-2 right-2 flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="p-2 bg-white text-primary rounded-full shadow-lg hover:scale-110 transition-transform border border-primary/20"
+                          title="Upload from Gallery"
+                        >
+                          <Upload className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={startCamera}
+                          className="p-2 bg-primary text-white rounded-full shadow-lg hover:scale-110 transition-transform"
+                          title="Take Live Photo"
+                        >
+                          <Camera className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="text-center">
+                      <p className="text-sm font-bold text-primary">Student Passport Photo*</p>
+                      <p className="text-[10px] text-neutral-dark/60">Capture live or upload from gallery</p>
+                    </div>
+
+                    <input 
+                      type="file"
+                      ref={fileInputRef}
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handlePhotoChange}
+                    />
+                    
+                    <div className="flex gap-4">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm"
+                        onClick={startCamera}
+                        className="border-primary text-primary hover:bg-primary/10"
+                      >
+                        <Video className="mr-2 w-4 h-4" /> Live Capture
+                      </Button>
+                      <Button 
+                        type="button" 
+                        variant="secondary" 
+                        size="sm"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="bg-white border-neutral-light text-neutral-dark hover:bg-neutral-light/10"
+                      >
+                        <Upload className="mr-2 w-4 h-4" /> Gallery
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Camera Dialog */}
+                  <Dialog open={isCameraOpen} onOpenChange={(open) => !open && stopCamera()}>
+                    <DialogContent className="sm:max-w-md bg-white p-0 overflow-hidden border-none shadow-2xl">
+                    <DialogHeader className="p-4 bg-primary text-white">
+                        <DialogTitle className="flex items-center gap-2">
+                          <Camera className="w-5 h-5" /> Live Student Capture
+                        </DialogTitle>
+                        <DialogDescription className="text-white/80 text-xs">
+                          Align face within the frame and click capture.
+                        </DialogDescription>
+                      </DialogHeader>
+                      
+                      <div className="relative aspect-[3/4] bg-black flex items-center justify-center">
+                        <video 
+                          ref={(el) => {
+                            if (el) {
+                               videoRef.current = el;
+                               if (cameraStream) el.srcObject = cameraStream;
+                            }
+                          }}
+                          autoPlay 
+                          playsInline 
+                          muted
+                          className="w-full h-full object-cover grayscale-[0.2]"
+                        />
+                        {/* Overlay Frame */}
+                        <div className="absolute inset-0 border-[40px] border-black/40 pointer-events-none">
+                           <div className="w-full h-full border-2 border-dashed border-white/50 rounded-lg flex items-center justify-center">
+                             <div className="w-48 h-64 border-2 border-white/30 rounded-full opacity-30" />
+                           </div>
+                        </div>
+                      </div>
+
+                      <DialogFooter className="p-6 bg-neutral-light/10 flex justify-center items-center gap-6 sm:justify-center">
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={stopCamera}
+                          className="rounded-full w-12 h-12 p-0 border-neutral-light hover:bg-red-50 hover:text-red-500 hover:border-red-200"
+                        >
+                          <X className="w-6 h-6" />
+                        </Button>
+                        
+                        <Button 
+                          type="button" 
+                          onClick={capturePhoto}
+                          className="w-20 h-20 rounded-full bg-primary hover:bg-primary-dark shadow-xl hover:scale-105 transition-all p-0 flex items-center justify-center border-4 border-white"
+                        >
+                          <div className="w-14 h-14 rounded-full border-2 border-white/50 flex items-center justify-center">
+                            <div className="w-10 h-10 bg-white rounded-full" />
+                          </div>
+                        </Button>
+
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={() => { stopCamera(); startCamera(); }}
+                          className="rounded-full w-12 h-12 p-0 border-neutral-light"
+                        >
+                          <RotateCcw className="w-5 h-5 text-neutral-dark" />
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
 
                   <FormField
                     control={form.control}
@@ -450,28 +702,12 @@ export default function FullAdmissionForm() {
                       </FormItem>
                     )}
                   />
-
-                   <FormField
-                    control={form.control}
-                    name="previousSchool"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-bold flex items-center gap-2">
-                          <School className="w-4 h-4 text-primary" /> Previous School (if any)
-                        </FormLabel>
-                        <FormControl>
-                          <Input className="h-12 rounded-xl bg-white" placeholder="Full name of last school" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </div>
 
                 <div className="flex justify-end pt-4">
                   <Button 
                     type="button" 
-                    onClick={() => nextStep(["childName", "dob", "gender"])}
+                    onClick={() => nextStep(["childName", "dob", "gender", "studentPhoto"])}
                     className="h-14 px-10 bg-primary hover:bg-primary-dark rounded-2xl text-lg font-bold shadow-lg transition-all hover:scale-105 text-white"
                   >
                     Next: Family Details <ChevronRight className="ml-2 w-5 h-5" />
@@ -499,12 +735,30 @@ export default function FullAdmissionForm() {
 
                   <FormField
                     control={form.control}
-                    name="parentName"
+                    name="phone"
                     render={({ field }) => (
-                      <FormItem className="col-span-full">
-                        <FormLabel className="font-bold">Primary Guardian Name*</FormLabel>
+                      <FormItem>
+                        <FormLabel className="font-bold flex items-center gap-2">
+                          <Phone className="w-4 h-4 text-green-500" /> Primary Contact No*
+                        </FormLabel>
                         <FormControl>
-                          <Input className="h-12 rounded-xl bg-white" placeholder="Full name of Father/Mother/Guardian" {...field} />
+                          <Input className="h-12 rounded-xl bg-white" placeholder="10-digit mobile number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="alternatePhone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-bold flex items-center gap-2">
+                          <Phone className="w-4 h-4 text-blue-500" /> Alternate Phone No.
+                        </FormLabel>
+                        <FormControl>
+                          <Input className="h-12 rounded-xl bg-white" placeholder="Additional contact number" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -515,28 +769,12 @@ export default function FullAdmissionForm() {
                     control={form.control}
                     name="email"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="col-span-full">
                         <FormLabel className="font-bold flex items-center gap-2">
-                          <Mail className="w-4 h-4 text-blue-500" /> Professional Email*
+                          <Mail className="w-4 h-4 text-blue-500" /> Professional Email
                         </FormLabel>
                         <FormControl>
                           <Input className="h-12 rounded-xl bg-white" type="email" placeholder="email@example.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-bold flex items-center gap-2">
-                          <Phone className="w-4 h-4 text-green-500" /> Primary Contact No*
-                        </FormLabel>
-                        <FormControl>
-                          <Input className="h-12 rounded-xl bg-white" placeholder="10-digit mobile number" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -578,7 +816,7 @@ export default function FullAdmissionForm() {
                   </Button>
                   <Button 
                     type="button" 
-                    onClick={() => nextStep(["parentName", "email", "phone", "fatherName", "motherName"])}
+                    onClick={() => nextStep(["phone", "fatherName", "motherName"])}
                     className="h-14 px-10 bg-primary hover:bg-primary-dark rounded-2xl text-lg font-bold shadow-lg transition-all hover:scale-105 text-white"
                   >
                     Next: Academic Info <ChevronRight className="ml-2 w-5 h-5" />
@@ -620,7 +858,7 @@ export default function FullAdmissionForm() {
                             <SelectItem value="nursery">Nursery</SelectItem>
                             <SelectItem value="kg">Kindergarten</SelectItem>
                             {[...Array(12)].map((_, i) => (
-                              <SelectItem key={i} value={String(i + 1)}>Grade {i + 1}</SelectItem>
+                              <SelectItem key={i} value={String(i + 1)}>Grade {i + 1} (Class {i + 1})</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
@@ -715,10 +953,17 @@ export default function FullAdmissionForm() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-12 gap-y-6 md:gap-y-10">
                     {/* Student Records Summary */}
-                    <div className="space-y-3 md:space-y-4">
+                    <div className="space-y-4">
                       <h4 className="text-base md:text-lg font-black uppercase text-neutral-dark border-l-4 border-primary pl-3 flex items-center gap-2">
                         <User className="w-4 h-4 md:w-5 md:h-5" /> Student Identity
                       </h4>
+                      
+                      {form.getValues("studentPhoto") && (
+                        <div className="ml-4 w-24 h-32 md:w-32 md:h-40 rounded-lg overflow-hidden border-2 border-primary/20 shadow-md">
+                          <img src={form.getValues("studentPhoto")} alt="Student Preview" className="w-full h-full object-cover" />
+                        </div>
+                      )}
+
                       <div className="grid grid-cols-2 gap-3 md:gap-4 ml-4">
                         <div>
                           <p className="text-[10px] font-bold text-neutral-dark/60 uppercase">Full Name</p>
@@ -747,15 +992,15 @@ export default function FullAdmissionForm() {
                       <div className="grid grid-cols-2 gap-3 md:gap-4 ml-4">
                         <div>
                           <p className="text-[10px] font-bold text-neutral-dark/60 uppercase">Applying for Grade</p>
-                          <p className="font-bold text-base md:text-lg capitalize">{form.getValues("grade")}</p>
+                          <p className="font-bold text-base md:text-lg capitalize">
+                            {(form.getValues("grade") === "nursery" || form.getValues("grade") === "kg")
+                              ? form.getValues("grade")
+                              : `Class ${form.getValues("grade")}`}
+                          </p>
                         </div>
                         <div>
                           <p className="text-[10px] font-bold text-neutral-dark/60 uppercase">Academic Session</p>
                           <p className="font-bold text-base md:text-lg">{form.getValues("academicYear")}</p>
-                        </div>
-                        <div className="col-span-full">
-                          <p className="text-[10px] font-bold text-neutral-dark/60 uppercase">Previous School</p>
-                          <p className="font-bold text-sm md:text-base">{form.getValues("previousSchool") || "Primary Admission"}</p>
                         </div>
                       </div>
                     </div>
@@ -767,16 +1012,16 @@ export default function FullAdmissionForm() {
                       </h4>
                       <div className="grid grid-cols-1 gap-4 ml-4">
                         <div className="flex justify-between items-center text-sm p-3 bg-white rounded-lg border border-neutral-light shadow-sm">
-                          <span className="text-neutral-dark/70 font-bold">Guardian Name</span>
-                          <span className="font-black text-primary">{form.getValues("parentName")}</span>
-                        </div>
-                        <div className="flex justify-between items-center text-sm p-3 bg-white rounded-lg border border-neutral-light shadow-sm">
-                          <span className="text-neutral-dark/70 font-bold">Contact Phone</span>
+                          <span className="text-neutral-dark/70 font-bold">Primary Phone</span>
                           <span className="font-black text-primary">{form.getValues("phone")}</span>
                         </div>
                         <div className="flex justify-between items-center text-sm p-3 bg-white rounded-lg border border-neutral-light shadow-sm">
+                          <span className="text-neutral-dark/70 font-bold">Alternate Phone</span>
+                          <span className="font-black text-primary">{form.getValues("alternatePhone") || "N/A"}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm p-3 bg-white rounded-lg border border-neutral-light shadow-sm">
                           <span className="text-neutral-dark/70 font-bold">Email Id</span>
-                          <span className="font-black text-primary">{form.getValues("email")}</span>
+                          <span className="font-black text-primary">{form.getValues("email") || "N/A"}</span>
                         </div>
                         <div className="flex justify-between items-center text-sm p-3 bg-white rounded-lg border border-neutral-light shadow-sm">
                           <span className="text-neutral-dark/70 font-bold">Father's Name</span>
@@ -834,7 +1079,7 @@ export default function FullAdmissionForm() {
            <Users className="w-5 h-5" />
         </div>
             <p className="font-bold text-neutral-dark">RP Public School is an ISO Certified Leading Institution</p>
-            <p className="mt-1">© 2026-27 Secure Admission Portal. All rights reserved.</p>
+            <p className="mt-1">© {new Date().getFullYear()}-{(new Date().getFullYear() + 1).toString().slice(-2)} Secure Admission Portal. All rights reserved.</p>
           </div>
         </>
         )}
