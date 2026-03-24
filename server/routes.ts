@@ -14,18 +14,18 @@ import nodemailer from "nodemailer";
 // For production, you would use real SMTP credentials
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // true for 465, false for other ports
+  port: 465, // Use 465 for SSL instead of 587 for better reliability on some cloud providers
+  secure: true, 
   auth: {
-    user: process.env.EMAIL_USER || "placeholder@gmail.com",
-    pass: process.env.EMAIL_PASS || "placeholder",
+    user: process.env.EMAIL_USER || "", 
+    pass: process.env.EMAIL_PASS || "", 
   },
 });
 
 async function sendAdmissionEmail(data: any) {
   const mailOptions: any = {
     from: '"RP Public School Admission" <rppublicschool2021@gmail.com>',
-    to: "rppublicschool2021@gmail.com",
+    to: process.env.EMAIL_TO || "rppublicschool2021@gmail.com",
     subject: `New Admission Inquiry - ${data.childName}`,
     html: `
       <!DOCTYPE html>
@@ -109,13 +109,16 @@ async function sendAdmissionEmail(data: any) {
   try {
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
       await transporter.sendMail(mailOptions);
-      console.log("Admission email sent successfully");
+      console.log(`Admission email successfully SENT to ${mailOptions.to}`);
     } else {
-      console.log("Mock email logged (Credentials missing)");
+      console.error("CRITICAL SMTP ERROR: EMAIL_USER or EMAIL_PASS is missing in environment variables!");
     }
     return true;
-  } catch (error) {
-    console.error("Error sending admission email:", error);
+  } catch (error: any) {
+    console.error("SMTP SEND FAILURE:", error.message);
+    if (error.code === 'EAUTH') {
+      console.error("ERROR: Authentication failed. Please check your App Password.");
+    }
     return false;
   }
 }

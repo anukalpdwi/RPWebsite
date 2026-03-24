@@ -19,6 +19,8 @@ app.get("/api/ping", (_req, res) => {
   res.json({ 
     status: "alive", 
     vercel: !!process.env.VERCEL,
+    emailConfigured: !!(process.env.EMAIL_USER && process.env.EMAIL_PASS),
+    emailTarget: process.env.EMAIL_TO || "rppublicschool2021@gmail.com",
     time: new Date().toISOString() 
   });
 });
