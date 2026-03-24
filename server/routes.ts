@@ -9,7 +9,6 @@ import {
 import { z, ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import nodemailer from "nodemailer";
-import PDFDocument from "pdfkit";
 
 // Email transporter configuration
 // For production, you would use real SMTP credentials
@@ -23,101 +22,13 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-async function generateAdmissionPDF(data: any): Promise<Buffer> {
-  return new Promise((resolve) => {
-    const doc = new PDFDocument({ margin: 50, size: "A4" });
-    const chunks: Buffer[] = [];
-    doc.on("data", (chunk) => chunks.push(chunk));
-    doc.on("end", () => resolve(Buffer.concat(chunks)));
-
-    // 1. Header with Logo & School Info
-    doc.rect(0, 0, 595, 120).fill("#1e3a8a");
-    doc.fillColor("#ffffff");
-    doc.fontSize(24).font("Helvetica-Bold").text("RP PUBLIC SCHOOL", 50, 35, { characterSpacing: 2 });
-    doc.fontSize(10).font("Helvetica").text("Jaisinghnagar, Shahdol, Madhya Pradesh", 50, 65);
-    doc.text("Official Admission Application | Session 2026-27", 50, 80);
-    doc.fontSize(14).font("Helvetica-Bold").text("ADMISSION FORM", 430, 45, { align: "right" });
-
-    doc.moveDown(5);
-    doc.fillColor("#1e293b");
-
-    // 2. Helper for Sections
-    const drawSection = (title: string, y: number) => {
-      doc.rect(50, y, 495, 20).fill("#f1f5f9");
-      doc.fillColor("#1e3a8a").fontSize(12).font("Helvetica-Bold").text(title.toUpperCase(), 60, y + 5);
-      doc.moveDown(1.5);
-    };
-
-    let currentY = 140;
-
-    // 3. Student Identity
-    drawSection("1. Student Identity", currentY);
-    currentY += 30;
-    doc.fillColor("#334155").fontSize(10).font("Helvetica-Bold");
-    
-    // Labels & Data in grid
-    const drawField = (label: string, value: string, x: number, y: number) => {
-        doc.font("Helvetica-Bold").text(label, x, y);
-        doc.font("Helvetica").text(value || "N/A", x + 100, y);
-    };
-
-    drawField("Student Name:", data.childName, 50, currentY);
-    drawField("Date of Birth:", data.dob, 300, currentY);
-    currentY += 20;
-    drawField("Gender:", data.gender, 50, currentY);
-    drawField("Grade Applying:", data.grade, 300, currentY);
-    currentY += 20;
-    drawField("Blood Group:", data.bloodGroup, 50, currentY);
-    drawField("Academic Year:", data.academicYear, 300, currentY);
-    
-    currentY += 40;
-
-    // 4. Family & Guardian Details
-    drawSection("2. Parent / Guardian Details", currentY);
-    currentY += 30;
-    drawField("Father's Name:", data.fatherName, 50, currentY);
-    drawField("Occupation:", data.fatherOccupation, 300, currentY);
-    currentY += 20;
-    drawField("Mother's Name:", data.motherName, 50, currentY);
-    drawField("Occupation:", data.motherOccupation, 300, currentY);
-    currentY += 20;
-    drawField("Contact No:", data.phone, 50, currentY);
-    drawField("Email ID:", data.email, 300, currentY);
-    
-    currentY += 40;
-
-    // 5. Address & History
-    drawSection("3. Address & Academic History", currentY);
-    currentY += 30;
-    doc.font("Helvetica-Bold").text("Residential Address:", 50, currentY);
-    doc.font("Helvetica").text(data.address, 150, currentY, { width: 400 });
-    currentY += 40;
-    drawField("Previous School:", data.previousSchool, 50, currentY);
-    
-    currentY += 60;
-
-    // 6. Signatures
-    doc.fontSize(10).font("Helvetica-Bold").text("_______________________", 50, currentY);
-    doc.text("_______________________", 350, currentY);
-    currentY += 15;
-    doc.fontSize(8).text("Parent / Guardian Signature", 50, currentY);
-    doc.text("Admissions Authority", 350, currentY);
-
-    // 7. Footer
-    doc.fontSize(9).font("Helvetica-Oblique").fillColor("#94a3b8")
-       .text("This document is a computer-generated admission backup provided by RP Public School Portal.", 50, 750, { align: "center" });
-
-    doc.end();
-  });
-}
-
-async function sendAdmissionEmail(data: any, pdfBase64?: string) {
+async function sendAdmissionEmail(data: any) {
   const mailOptions: any = {
     from: '"RP Public School Admission" <rppublicschool2021@gmail.com>',
     to: "rppublicschool2021@gmail.com",
     subject: `RPPS ADMISSION FORM [2026-27]: ${data.childName}`,
     html: `
-      <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; border: 12px double #e2e8f0; padding: 40px; color: #1e293b; background-color: #ffffff;">
+      <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 0 auto; border: 1px solid #e2e8f0; padding: 40px; color: #1e293b; background-color: #ffffff;">
         <!-- Official Header -->
         <div style="text-align: center; border-bottom: 3px solid #1e3a8a; padding-bottom: 20px; margin-bottom: 30px;">
           <h1 style="color: #1e3a8a; margin: 0; font-size: 28px; text-transform: uppercase; letter-spacing: 2px;">RP Public School</h1>
@@ -128,80 +39,101 @@ async function sendAdmissionEmail(data: any, pdfBase64?: string) {
           </div>
         </div>
 
-        <p style="font-size: 14px; margin-bottom: 25px;">A new online admission application has been successfully submitted. Below are the verified details from the portal.</p>
+        <p style="font-size: 14px; margin-bottom: 20px;">A new online admission application has been successfully submitted. Below are the verified details from the portal.</p>
+        
+        <!-- Print Button specifically for the email receiver -->
+        <div style="text-align: center; margin-bottom: 30px;">
+          <a href="#" style="background-color: #2563eb; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;" onclick="window.print(); return false;">🖨️ Print This Application</a>
+        </div>
 
         <!-- Section: Student Identity -->
-        <div style="background-color: #f8fafc; padding: 15px; border-left: 5px solid #3b82f6; margin-bottom: 25px;">
+        <div style="background-color: #f8fafc; padding: 10px 15px; border-left: 4px solid #3b82f6; margin-bottom: 15px;">
           <h2 style="font-size: 16px; margin: 0; color: #1e3a8a; text-transform: uppercase;">1. Student Identity</h2>
         </div>
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
           <tr>
-            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; width: 30%; font-weight: bold;">Full Name:</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; width: 35%; font-weight: 600;">Full Name:</td>
             <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">${data.childName}</td>
           </tr>
           <tr>
-            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: bold;">Date of Birth:</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: 600;">Date of Birth:</td>
             <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">${data.dob}</td>
           </tr>
           <tr>
-            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: bold;">Gender:</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: 600;">Gender:</td>
             <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; text-transform: capitalize;">${data.gender}</td>
           </tr>
           <tr>
-            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: bold;">Blood Group:</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: 600;">Blood Group:</td>
             <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">${data.bloodGroup || "Not Specified"}</td>
           </tr>
           <tr>
-            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: bold;">Academic Session:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">${data.academicYear}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: bold;">Applying for Grade:</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: 600;">Applying for Grade:</td>
             <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: bold; color: #1e3a8a;">${data.grade}</td>
           </tr>
         </table>
 
         <!-- Section: Family Information -->
-        <div style="background-color: #f8fafc; padding: 15px; border-left: 5px solid #10b981; margin-bottom: 25px;">
+        <div style="background-color: #f8fafc; padding: 10px 15px; border-left: 4px solid #10b981; margin-bottom: 15px;">
           <h2 style="font-size: 16px; margin: 0; color: #047857; text-transform: uppercase;">2. Family Information</h2>
         </div>
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
           <tr>
-            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; width: 30%; font-weight: bold;">Parent/Guardian Name:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">${data.parentName}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; width: 35%; font-weight: 600;">Parent/Guardian Name:</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">${data.parentName || (data.fatherName + " / " + data.motherName)}</td>
           </tr>
           <tr>
-            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: bold;">Father's Name:</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: 600;">Father's Name:</td>
             <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">${data.fatherName}</td>
           </tr>
           <tr>
-            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: bold;">Mother's Name:</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: 600;">Mother's Name:</td>
             <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">${data.motherName}</td>
           </tr>
           <tr>
-            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: bold;">Contact Number:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: bold;">${data.phone}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: 600;">Contact Number:</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: bold;">${data.phone || data.mobileNo || "N/A"}</td>
           </tr>
           <tr>
-            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: bold;">Email Address:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">${data.email}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: 600;">Email Address:</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">${data.email || data.emailId || "N/A"}</td>
           </tr>
         </table>
 
          <!-- Section: Residence & Remarks -->
-        <div style="background-color: #f8fafc; padding: 15px; border-left: 5px solid #f59e0b; margin-bottom: 25px;">
+        <div style="background-color: #f8fafc; padding: 10px 15px; border-left: 4px solid #f59e0b; margin-bottom: 15px;">
           <h2 style="font-size: 16px; margin: 0; color: #b45309; text-transform: uppercase;">3. Residence & Remarks</h2>
         </div>
-        <div style="margin-bottom: 30px;">
-          <p style="margin: 0 0 5px 0; font-weight: bold; font-size: 14px;">Residential Address:</p>
-          <p style="background-color: #f1f5f9; padding: 10px; border-radius: 5px; margin: 0;">${data.address}</p>
-        </div>
-        <div style="margin-bottom: 30px;">
-          <p style="margin: 0 0 5px 0; font-weight: bold; font-size: 14px;">Additional Remarks:</p>
-          <p style="background-color: #f1f5f9; padding: 10px; border-radius: 5px; margin: 0;">${data.message || "No remarks provided."}</p>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; width: 35%; font-weight: 600; vertical-align: top;">Residential Address:</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">${data.address}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: 600; vertical-align: top;">Previous School:</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">${data.previousSchool || "N/A"}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: 600; vertical-align: top;">Additional Remarks:</td>
+            <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">${data.message || "No remarks provided."}</td>
+          </tr>
+        </table>
+
+        <!-- Signatures (for printing) -->
+        <div style="margin-top: 50px; margin-bottom: 20px;">
+          <table style="width: 100%;">
+            <tr>
+              <td style="text-align: left;">
+                <p style="margin: 0; border-top: 1px solid #333; display: inline-block; padding-top: 5px; width: 200px;">Parent / Guardian Signature</p>
+              </td>
+              <td style="text-align: right;">
+                <p style="margin: 0; border-top: 1px solid #333; display: inline-block; padding-top: 5px; width: 200px;">Admissions Authority</p>
+              </td>
+            </tr>
+          </table>
         </div>
 
-        <div style="border-top: 1px solid #e2e8f0; padding-top: 20px; margin-top: 40px; text-align: center; font-size: 11px; color: #94a3b8;">
+        <div style="border-top: 1px solid #e2e8f0; padding-top: 20px; text-align: center; font-size: 11px; color: #94a3b8;">
           <p>This is an electronically generated official document from the RP Public School Admission Portal.</p>
           <p>&copy; 2026-27 RP Public School. All rights reserved.</p>
         </div>
@@ -210,22 +142,9 @@ async function sendAdmissionEmail(data: any, pdfBase64?: string) {
   };
 
   try {
-    const pdfBuffer = await generateAdmissionPDF(data).catch(err => {
-      console.error("PDF generation failed:", err);
-      return null;
-    });
-
-    if (pdfBuffer) {
-      mailOptions.attachments = [
-        {
-          filename: `RPPS_Admission_${data.childName?.replace(/\s+/g, "_") || "Form"}_2026.pdf`,
-          content: pdfBuffer
-        }
-      ];
-    }
-
+    // We removed pdfkit entirely. So attachments has been removed.
+    
     // Only attempt to send if credentials are provided
-    // Only attempt to send if credentials are provided, otherwise log the "email"
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
       await transporter.sendMail(mailOptions);
       console.log("Admission email sent successfully to rppublicschool2021@gmail.com");
@@ -391,7 +310,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const inquiry = await storage.createAdmissionInquiry(data);
       
       // Send email notification (and don't block the response)
-      sendAdmissionEmail(data, pdfBase64).catch(err => console.error("Non-blocking email error:", err));
+      sendAdmissionEmail(data).catch(err => console.error("Non-blocking email error:", err));
       
       res.status(201).json({ 
         success: true,
