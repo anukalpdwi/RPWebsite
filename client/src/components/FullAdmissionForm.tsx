@@ -23,7 +23,10 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { schoolInfo } from "@/lib/utils";
 
+import { z } from "zod";
+
 type FormStep = "student" | "parents" | "academic" | "review" | "success";
+type InsertAdmissionInquiry = z.infer<typeof insertAdmissionInquirySchema>;
 
 export default function FullAdmissionForm() {
   const { toast } = useToast();
@@ -135,6 +138,12 @@ export default function FullAdmissionForm() {
     }
   };
 
+  useEffect(() => {
+    if (step === "success") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [step]);
+
   const nextStep = async (currentFields: string[]) => {
     const isValid = await form.trigger(currentFields as any);
     if (isValid) {
@@ -158,52 +167,66 @@ export default function FullAdmissionForm() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const onSubmit = async (data: any) => {
+  const generatePDF = async (): Promise<string> => {
+    const element = printRef.current;
+    if (!element) return "";
+    
+    try {
+      // Temporarily show the element
+      element.classList.remove('hidden');
+      element.classList.add('block');
+      
+      // Give mobile browsers time to repaint
+      await new Promise(resolve => setTimeout(resolve, 600));
+      
+      const canvas = await html2canvas(element, {
+        scale: 2.2, // Balanced for mobile memory and quality
+        useCORS: true,
+        logging: false,
+        windowWidth: 1200,
+        backgroundColor: "#ffffff",
+        onclone: (clonedDoc) => {
+          const el = clonedDoc.querySelector('.print-container') as HTMLElement;
+          if (el) {
+            el.style.display = 'block';
+            el.style.visibility = 'visible';
+          }
+        }
+      });
+      
+      const imgData = canvas.toDataURL('image/jpeg', 0.75); 
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+      
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const imgProps = pdf.getImageProperties(imgData);
+      const ratio = imgProps.height / imgProps.width;
+      const canvasHeight = pdfWidth * ratio;
+      
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, canvasHeight);
+      
+      // Re-hide the element
+      element.classList.remove('block');
+      element.classList.add('hidden');
+      
+      return pdf.output('datauristring');
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+      // Ensure element is hidden even on error
+      element.classList.remove('block');
+      element.classList.add('hidden');
+      return "";
+    }
+  };
+
+  const onSubmit = async (data: InsertAdmissionInquiry) => {
     setIsSubmitting(true);
     try {
       // 1. Generate PDF for the application
-      let pdfBase64 = "";
-      try {
-        const element = printRef.current;
-        if (element) {
-          // Temporarily show the element to capture it
-          element.classList.remove('hidden');
-          element.classList.add('block');
-          
-          const canvas = await html2canvas(element, {
-            scale: 3, // Higher resolution
-            useCORS: true,
-            logging: false,
-            windowWidth: 1200, // Wider capture for better scaling
-            backgroundColor: "#ffffff",
-          });
-          
-          const imgData = canvas.toDataURL('image/jpeg', 0.85); // High quality JPEG
-          const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4'
-          });
-          
-          const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = pdf.internal.pageSize.getHeight();
-          
-          // Calculate height based on A4 width to maintain aspect ratio
-          const imgProps = pdf.getImageProperties(imgData);
-          const ratio = imgProps.height / imgProps.width;
-          const canvasHeight = pdfWidth * ratio;
-          
-          // Add image to cover the full width, and as much height as needed
-          pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, canvasHeight);
-          pdfBase64 = pdf.output('datauristring');
-          
-          // Re-hide the element
-          element.classList.remove('block');
-          element.classList.add('hidden');
-        }
-      } catch (pdfError) {
-        console.error("PDF generation failed, falling back to data-only submission:", pdfError);
-      }
+      const pdfBase64 = await generatePDF();
 
       // 2. Submit data + PDF
       const payload = { ...data, pdfBase64 };
@@ -218,6 +241,7 @@ export default function FullAdmissionForm() {
         title: "Success!",
         description: "Application submitted successfully.",
       });
+      window.scrollTo({ top: 0, behavior: "smooth" });
       setStep("success");
     } catch (error) {
       console.error("Submission error:", error);
@@ -231,8 +255,23 @@ export default function FullAdmissionForm() {
     }
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handlePrint = async () => {
+    toast({
+      title: "Generating PDF",
+      description: "Please wait while we prepare your official form...",
+    });
+    
+    const pdfDataUri = await generatePDF();
+    if (pdfDataUri) {
+      const link = document.createElement('a');
+      link.href = pdfDataUri;
+      link.download = `RP_Admission_Form_${admissionNo || 'Application'}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      window.print(); // Fallback to window.print if jsPDF fails
+    }
   };
 
   const renderProgress = () => {
@@ -492,7 +531,7 @@ export default function FullAdmissionForm() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="max-w-2xl mx-auto py-20 text-center"
+            className="max-w-2xl mx-auto py-10 md:py-20 text-center min-h-[60vh] flex flex-col justify-center"
           >
             <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 className="w-12 h-12" />
