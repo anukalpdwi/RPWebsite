@@ -13,6 +13,16 @@ process.on("unhandledRejection", (reason, promise) => {
 });
 
 export const app = express();
+
+// ABSOLUTE TOP PRIORITY FOR DIAGNOSTICS
+app.get("/api/ping", (_req, res) => {
+  res.json({ 
+    status: "alive", 
+    vercel: !!process.env.VERCEL,
+    time: new Date().toISOString() 
+  });
+});
+
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: false, limit: "50mb" }));
 

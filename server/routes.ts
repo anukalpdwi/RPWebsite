@@ -5,7 +5,7 @@ import {
   insertContactSchema, 
   insertAdmissionInquirySchema, 
   insertNewsletterSubscriptionSchema 
-} from "@shared/schema";
+} from "../shared/schema";
 import { z, ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import nodemailer from "nodemailer";
