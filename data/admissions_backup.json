@@ -65,5 +65,27 @@
     "emailId": null,
     "previousSchool": null,
     "submittedAt": "2026-03-23T17:50:07.784Z"
+  },
+  {
+    "id": 4,
+    "parentName": "ABC",
+    "childName": "sdf",
+    "grade": "kg",
+    "dob": "2005-09-11",
+    "gender": "male",
+    "address": "sdf",
+    "fatherName": "ABCD",
+    "motherName": "ABCDEF",
+    "academicYear": "2026-2027",
+    "email": "anukalpdwi1995@gmail.com",
+    "phone": "9131883433",
+    "fatherOccupation": "",
+    "motherOccupation": "",
+    "previousSchool": "",
+    "bloodGroup": "O+",
+    "mobileNo": "",
+    "emailId": "",
+    "message": "df",
+    "submittedAt": "2026-03-24T05:44:24.944Z"
   }
 ]
