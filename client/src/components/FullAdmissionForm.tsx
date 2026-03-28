@@ -241,29 +241,43 @@ export default function FullAdmissionForm() {
   const onSubmit = async (data: InsertAdmissionInquiry) => {
     setIsSubmitting(true);
     try {
-      // 1. Generate PDF for the application
-      const pdfBase64 = await generatePDF();
-
-      // 2. Submit data + PDF
-      const payload = { ...data, pdfBase64 };
-      const res = await apiRequest("POST", "/api/admission", payload);
+      // 1. Submit form data first to get the ID and Admission Number
+      // This ensures we have a real admission number before generating the PDF
+      const res = await apiRequest("POST", "/api/admission", data);
       const resData = await res.json();
       
-      if (resData.data && resData.data.admissionNumber) {
-        setAdmissionNo(resData.data.admissionNumber);
+      if (resData.data && resData.data.id) {
+        const newId = resData.data.id;
+        const newAdm = resData.data.admissionNumber;
+        
+        // Update state so the hidden print template renders the real number
+        setAdmissionNo(newAdm);
+        
+        // Brief pause to allow React to update the DOM in the hidden print containers
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // 2. Generate the FINAL PDF which now includes the correct Admission Number
+        const finalPdfBase64 = await generatePDF();
+        
+        // 3. Finalize the submission: Update storage with the PDF and trigger the email
+        await apiRequest("POST", "/api/admission-finalize", { 
+          id: newId, 
+          pdfBase64: finalPdfBase64 
+        });
+
+        toast({
+          title: "Registration Complete!",
+          description: `Form submitted successfully with Admission No: ${newAdm}`,
+        });
+        
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        setStep("success");
       }
-      
-      toast({
-        title: "Success!",
-        description: "Application submitted successfully.",
-      });
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      setStep("success");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Submission error:", error);
       toast({
-        title: "Error",
-        description: "Failed to submit application. Please try again.",
+        title: "Submission Failed",
+        description: "An error occurred while finalizing your application. Please try again.",
         variant: "destructive",
       });
     } finally {

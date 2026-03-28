@@ -31,6 +31,7 @@ export interface IStorage {
   getAdmissionInquiry(id: number): Promise<AdmissionInquiry | undefined>;
   getAllAdmissionInquiries(): Promise<AdmissionInquiry[]>;
   createAdmissionInquiry(inquiry: InsertAdmissionInquiry): Promise<AdmissionInquiry>;
+  updateAdmissionInquiry(id: number, data: Partial<AdmissionInquiry>): Promise<AdmissionInquiry | undefined>;
   
   // Newsletter subscription methods
   getNewsletterSubscription(id: number): Promise<NewsletterSubscription | undefined>;
@@ -92,6 +93,11 @@ export class DatabaseStorage implements IStorage {
     }).returning();
     
     return newInquiry;
+  }
+
+  async updateAdmissionInquiry(id: number, data: Partial<AdmissionInquiry>) {
+    const [updated] = await db.update(admissionInquiries).set(data).where(eq(admissionInquiries.id, id)).returning();
+    return updated;
   }
 
   async getNewsletterSubscription(id: number) {
@@ -233,6 +239,17 @@ class MockStorage implements IStorage {
       await this.persistAdmissions();
     }
     return newInquiry;
+  }
+
+  async updateAdmissionInquiry(id: number, data: Partial<AdmissionInquiry>) {
+    const index = this.admissionInquiries.findIndex(i => i.id === id);
+    if (index === -1) return undefined;
+    
+    this.admissionInquiries[index] = { ...this.admissionInquiries[index], ...data };
+    if (!process.env.VERCEL) {
+      await this.persistAdmissions();
+    }
+    return this.admissionInquiries[index];
   }
 
   async getNewsletterSubscription(id: number) { return this.newsletterSubscriptions.find(s => s.id === id); }

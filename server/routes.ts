@@ -308,23 +308,12 @@ export function registerRoutes(app: Express): Server {
 
       const inquiry = await storage.createAdmissionInquiry({
         ...validatedData,
-        pdfBase64 // Use the variable, not data.pdfBase64
+        pdfBase64: null // Provisional PDF will be replaced by finalize step
       } as any);
-      
-      try {
-        await sendAdmissionEmail({ 
-          ...validatedData, 
-          id: inquiry.id, 
-          admissionNumber: inquiry.admissionNumber,
-          pdfBase64 // Use the variable
-        });
-      } catch (e) {
-        console.error("Email send failed (non-fatal):", e);
-      }
       
       res.status(201).json({ 
         success: true, 
-        message: "Admission inquiry submitted successfully.", 
+        message: "Data received. Finalizing PDF...", 
         data: inquiry 
       });
     } catch (error: any) {
@@ -378,7 +367,43 @@ export function registerRoutes(app: Express): Server {
     });
   });
 
+  const finalizeHandler = async (req: any, res: any) => {
+    try {
+      const { id, pdfBase64 } = req.body;
+      if (!id || !pdfBase64) {
+        return res.status(400).json({ success: false, message: "ID and PDF are required" });
+      }
+
+      const inquiry = await storage.getAdmissionInquiry(id);
+      if (!inquiry) {
+        return res.status(404).json({ success: false, message: "Inquiry not found" });
+      }
+
+      const updated = await storage.updateAdmissionInquiry(id, { pdfBase64 });
+      
+      // Now send the email with the final PDF containing the admission number
+      try {
+        await sendAdmissionEmail({ 
+          ...updated, 
+          pdfBase64 
+        });
+      } catch (e) {
+        console.error("Finalization email send failed (non-fatal):", e);
+      }
+      
+      res.status(200).json({ 
+        success: true, 
+        message: "Admission inquiry finalized successfully.", 
+        data: updated 
+      });
+    } catch (error: any) {
+      console.error("FINALIZE ERROR:", error);
+      res.status(500).json({ success: false, message: "Internal server error" });
+    }
+  };
+
   app.post("/api/admission", admissionHandler);
+  app.post("/api/admission-finalize", finalizeHandler);
   app.post("/api/admission-inquiry", admissionHandler);
 
   // Newsletter subscription
