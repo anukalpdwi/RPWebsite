@@ -4,8 +4,8 @@ import {
   admissionInquiries, type AdmissionInquiry, type InsertAdmissionInquiry,
   newsletterSubscriptions, type NewsletterSubscription, type InsertNewsletterSubscription
 } from "../shared/schema.js";
-// import { db } from "./db";
-// import { eq } from "drizzle-orm";
+import { db } from "./db.js";
+import { eq, desc, sql } from "drizzle-orm";
 import fs from "fs/promises";
 import * as fs_sync from "fs";
 import path from "path";
@@ -39,11 +39,77 @@ export interface IStorage {
   createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription>;
 }
 
-/*
 export class DatabaseStorage implements IStorage {
-  // ... (Database implementation commented out to avoid Vercel crashes)
+  async getUser(id: number) {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+  async getUserByUsername(username: string) {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+  async createUser(insertUser: InsertUser) {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  async getContactSubmission(id: number) {
+    const [submission] = await db.select().from(contactSubmissions).where(eq(contactSubmissions.id, id));
+    return submission;
+  }
+  async getAllContactSubmissions() {
+    return await db.select().from(contactSubmissions);
+  }
+  async createContactSubmission(submission: InsertContact) {
+    const [newSubmission] = await db.insert(contactSubmissions).values(submission).returning();
+    return newSubmission;
+  }
+
+  async getAdmissionInquiry(id: number) {
+    const [inquiry] = await db.select().from(admissionInquiries).where(eq(admissionInquiries.id, id));
+    return inquiry;
+  }
+  async getAllAdmissionInquiries() {
+    return await db.select().from(admissionInquiries).orderBy(desc(admissionInquiries.submittedAt));
+  }
+  
+  async createAdmissionInquiry(inquiry: InsertAdmissionInquiry): Promise<AdmissionInquiry> {
+    // 1. Find the next admission number
+    const result = await db
+      .select({ max: sql<number>`max(${admissionInquiries.admissionNumber})` })
+      .from(admissionInquiries);
+    
+    const lastAdmissionNo = result[0]?.max || 26000;
+    const admissionNumber = lastAdmissionNo + 1;
+    
+    console.log(`[DB STORAGE] Calculated next admission number: ${admissionNumber}`);
+
+    // 2. Insert with the calculated number
+    const [newInquiry] = await db.insert(admissionInquiries).values({
+      ...inquiry,
+      admissionNumber,
+      submittedAt: new Date()
+    }).returning();
+    
+    return newInquiry;
+  }
+
+  async getNewsletterSubscription(id: number) {
+    const [sub] = await db.select().from(newsletterSubscriptions).where(eq(newsletterSubscriptions.id, id));
+    return sub;
+  }
+  async getNewsletterSubscriptionByEmail(email: string) {
+    const [sub] = await db.select().from(newsletterSubscriptions).where(eq(newsletterSubscriptions.email, email));
+    return sub;
+  }
+  async getAllNewsletterSubscriptions() {
+    return await db.select().from(newsletterSubscriptions);
+  }
+  async createNewsletterSubscription(subscription: InsertNewsletterSubscription) {
+    const [newSub] = await db.insert(newsletterSubscriptions).values(subscription).returning();
+    return newSub;
+  }
 }
-*/
 
 class MockStorage implements IStorage {
   private users: User[] = [];
@@ -184,4 +250,5 @@ class MockStorage implements IStorage {
   }
 }
 
-export const storage = new MockStorage();
+// Export the appropriate storage based on environment
+export const storage = process.env.DATABASE_URL ? new DatabaseStorage() : new MockStorage();
