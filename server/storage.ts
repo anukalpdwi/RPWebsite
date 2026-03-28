@@ -113,24 +113,32 @@ class MockStorage implements IStorage {
       if (!process.env.VERCEL) {
         await this.ensureDataDir();
       }
-      await fs.writeFile(ADMISSIONS_FILE, JSON.stringify(this.admissionInquiries, null, 2));
-      console.log(`[STORAGE] Persisted ${this.admissionInquiries.length} inquiries to backup.`);
+      const data = JSON.stringify(this.admissionInquiries, null, 2);
+      await fs.writeFile(ADMISSIONS_FILE, data);
+      console.log(`[STORAGE] Successfully persisted ${this.admissionInquiries.length} inquiries to ${ADMISSIONS_FILE}`);
     } catch (e: any) {
-      console.error("Non-fatal backup error:", e.message);
+      console.error("[STORAGE] CRITICAL PERSISTENCE ERROR:", e.message);
     }
+  }
+
+  private getNextAdmissionNumber(): number {
+    if (this.admissionInquiries.length === 0) {
+      return 26001;
+    }
+    
+    const maxNumber = this.admissionInquiries.reduce((max, curr) => {
+      const num = Number(curr.admissionNumber) || 0;
+      return num > max ? num : max;
+    }, 26000);
+    
+    return maxNumber + 1;
   }
 
   async createAdmissionInquiry(inquiry: InsertAdmissionInquiry): Promise<AdmissionInquiry> {
     const id = this.currentId++;
+    const admissionNumber = this.getNextAdmissionNumber();
     
-    // Find the next admission number starting from 26001
-    const lastAdmissionNo = this.admissionInquiries.reduce((max, curr) => {
-      const num = curr.admissionNumber || 0;
-      return num > max ? num : max;
-    }, 26000);
-    
-    const admissionNumber = lastAdmissionNo + 1;
-    console.log(`[STORAGE] Creating entry ${id} with Admission No: ${admissionNumber} (Prev max: ${lastAdmissionNo})`);
+    console.log(`[STORAGE] Creating entry ${id} with Admission No: ${admissionNumber}`);
 
     const newInquiry: AdmissionInquiry = { 
       ...inquiry, 

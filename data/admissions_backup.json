@@ -161,5 +161,31 @@
     "emailId": "",
     "message": "adsfd",
     "submittedAt": "2026-03-24T14:26:22.043Z"
+  },
+  {
+    "childName": "Test Auto Increment",
+    "grade": "1",
+    "dob": "2020-01-01",
+    "gender": "Male",
+    "address": "Test Address",
+    "fatherName": "Test Father",
+    "motherName": "Test Mother",
+    "academicYear": "2026-2027",
+    "studentPhoto": "data:image/png;base64,...",
+    "id": 8,
+    "admissionNumber": 26008,
+    "parentName": null,
+    "email": null,
+    "phone": null,
+    "fatherOccupation": null,
+    "motherOccupation": null,
+    "previousSchool": null,
+    "bloodGroup": null,
+    "pdfBase64": null,
+    "mobileNo": null,
+    "alternatePhone": null,
+    "emailId": null,
+    "message": null,
+    "submittedAt": "2026-03-28T07:00:24.178Z"
   }
 ]
