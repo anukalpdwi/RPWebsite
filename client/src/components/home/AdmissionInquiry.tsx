@@ -121,10 +121,10 @@ export default function AdmissionInquiry() {
             </div>
             
             <Link 
-              href="/admissions" 
+              href="/apply-now" 
               className="inline-block px-6 py-3 bg-white text-primary font-medium rounded-md shadow-md hover:bg-neutral-light transition"
             >
-              Learn More About Admissions
+              Apply Now
             </Link>
           </motion.div>
           

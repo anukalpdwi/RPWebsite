@@ -14,8 +14,8 @@ const programs = [
       "Development of motor skills",
       "Introduction to basic concepts"
     ],
-    link: "/academics#pre-primary",
-    linkText: "Learn More"
+    link: "/apply-now",
+    linkText: "Apply Now"
   },
   {
     icon: <FaBookReader className="text-2xl" />,
@@ -26,8 +26,8 @@ const programs = [
       "Activity-based learning",
       "Regular assessments and feedback"
     ],
-    link: "/academics#primary",
-    linkText: "Learn More"
+    link: "/apply-now",
+    linkText: "Apply Now"
   },
   {
     icon: <FaGraduationCap className="text-2xl" />,
@@ -38,8 +38,8 @@ const programs = [
       "Project-based learning",
       "Critical thinking development"
     ],
-    link: "/academics#middle",
-    linkText: "Learn More"
+    link: "/apply-now",
+    linkText: "Apply Now"
   }
 ];
 

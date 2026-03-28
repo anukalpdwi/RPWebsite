@@ -68,7 +68,7 @@ export default function Footer() {
             <div className="grid grid-cols-2 gap-x-4 gap-y-2">
               <Link href="/about" className="hover:text-accent transition flex items-center text-sm"><FaChevronRight className="mr-1 text-[10px]" /> About Us</Link>
               <Link href="/academics" className="hover:text-accent transition flex items-center text-sm"><FaChevronRight className="mr-1 text-[10px]" /> Academics</Link>
-              <Link href="/admissions" className="hover:text-accent transition flex items-center text-sm"><FaChevronRight className="mr-1 text-[10px]" /> Admissions</Link>
+              <Link href="/apply-now" className="hover:text-accent transition flex items-center text-sm"><FaChevronRight className="mr-1 text-[10px]" /> Apply Now</Link>
               <Link href="/facilities" className="hover:text-accent transition flex items-center text-sm"><FaChevronRight className="mr-1 text-[10px]" /> Facilities</Link>
               <Link href="/faculty" className="hover:text-accent transition flex items-center text-sm"><FaChevronRight className="mr-1 text-[10px]" /> Faculty</Link>
               <Link href="/gallery" className="hover:text-accent transition flex items-center text-sm"><FaChevronRight className="mr-1 text-[10px]" /> Gallery</Link>

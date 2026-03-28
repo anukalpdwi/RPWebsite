@@ -11,7 +11,7 @@ const heroSlides = [
     title: "Welcome  to  RP Public School",
     subtitle: "Nurturing Excellence, Building Character, Creating Future Leaders",
     buttons: [
-      { text: "Apply Now", link: "/admissions#inquiry", primary: true },
+      { text: "Apply Now", link: "/apply-now", primary: true },
       { text: "Discover More", link: "#about", primary: false }
     ]
   },
@@ -38,7 +38,7 @@ const heroSlides = [
     title: "Welcome  to  RP Public School",
     subtitle: "Nurturing Excellence, Building Character, Creating Future Leaders",
     buttons: [
-      { text: "Apply Now", link: "/admissions#inquiry", primary: true },
+      { text: "Apply Now", link: "/apply-now", primary: true },
       { text: "Discover More", link: "#about", primary: false }
     ]
   },

@@ -18,7 +18,7 @@ import {
 import { 
   Camera, Upload, Printer, Send, User, Users, GraduationCap, MapPin, 
   ChevronRight, ChevronLeft, CheckCircle2, Edit3, HeartPulse,
-  Mail, Phone, Calendar, School, X, RotateCcw, Video
+  Mail, Phone, Calendar, School, X, RotateCcw, Video, RefreshCw
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { schoolInfo } from "@/lib/utils";
@@ -34,6 +34,7 @@ export default function FullAdmissionForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const [facingMode, setFacingMode] = useState<"user" | "environment">("environment");
   const [admissionNo, setAdmissionNo] = useState<number | null>(null);
   
   const printRef = useRef<HTMLDivElement>(null);
@@ -72,9 +73,14 @@ export default function FullAdmissionForm() {
   };
 
   const startCamera = async () => {
+    // Stop any existing stream first
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: "user", width: { ideal: 480 }, height: { ideal: 600 } } 
+        video: { facingMode: facingMode, width: { ideal: 480 }, height: { ideal: 600 } } 
       });
       setCameraStream(stream);
       setIsCameraOpen(true);
@@ -93,6 +99,16 @@ export default function FullAdmissionForm() {
       }
     }
   };
+
+  const toggleCamera = () => {
+    setFacingMode(prev => prev === "user" ? "environment" : "user");
+  };
+
+  useEffect(() => {
+    if (isCameraOpen) {
+      startCamera();
+    }
+  }, [facingMode]);
 
   useEffect(() => {
     if (isCameraOpen && videoRef.current && cameraStream) {
@@ -705,10 +721,11 @@ export default function FullAdmissionForm() {
                         <Button 
                           type="button" 
                           variant="outline" 
-                          onClick={() => { stopCamera(); startCamera(); }}
-                          className="rounded-full w-12 h-12 p-0 border-neutral-light"
+                          onClick={toggleCamera}
+                          className="rounded-full w-12 h-12 p-0 border-neutral-light bg-white hover:bg-primary/10 hover:text-primary transition-colors"
+                          title="Switch Camera"
                         >
-                          <RotateCcw className="w-5 h-5 text-neutral-dark" />
+                          <RefreshCw className="w-5 h-5" />
                         </Button>
                       </DialogFooter>
                     </DialogContent>

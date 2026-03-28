@@ -8,8 +8,8 @@ const quickLinks = [
     icon: <FaUserGraduate className="text-4xl" />,
     title: "Admissions Open 2026-27",
     description: "Applications are now being accepted for the academic year 2026-27. Limited seats available.",
-    link: "/admissions",
-    linkText: "Learn More"
+    link: "/apply-now",
+    linkText: "Apply Now"
   },
   {
     icon: <FaCalendarAlt className="text-4xl" />,

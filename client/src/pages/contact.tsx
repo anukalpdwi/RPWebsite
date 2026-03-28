@@ -1,4 +1,5 @@
 import PageHeader from "@/components/ui/page-header";
+import { Link } from "wouter";
 import ContactForm from "@/components/contact/ContactForm";
 import ContactInfo from "@/components/contact/ContactInfo";
 import { motion } from "framer-motion";
@@ -87,9 +88,11 @@ export default function ContactPage() {
               <Button className="bg-white text-primary hover:bg-neutral-light">
                 Schedule a Tour
               </Button>
-              <Button variant="outline" className="border-white text-white hover:bg-white/10">
-                Learn More About Admissions
-              </Button>
+              <Link href="/apply-now">
+                <Button variant="outline" className="border-white text-white hover:bg-white/10">
+                  Apply Now
+                </Button>
+              </Link>
             </div>
           </motion.div>
         </div>
