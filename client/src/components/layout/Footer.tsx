@@ -86,7 +86,7 @@ export default function Footer() {
               </li>
               <li className="flex">
                 <FaPhoneAlt className="mt-1 mr-3 flex-shrink-0" />
-                <span>{schoolInfo.phone}</span>
+                <span className="whitespace-nowrap">{schoolInfo.phone}</span>
               </li>
               <li className="flex">
                 <FaEnvelope className="mt-1 mr-3 flex-shrink-0" />

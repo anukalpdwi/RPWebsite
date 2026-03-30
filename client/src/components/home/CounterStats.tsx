@@ -3,17 +3,16 @@ import { motion } from "framer-motion";
 
 // Stats data
 const stats = [
-  { value: 220, label: "Students" },
-  { value: 15, label: "Expert Faculty" },
-  { value: 3, label: "Years of Excellence" },
-  { value: 10, label: "Extracurricular Activities" }
+  { value: 300, label: "Students", suffix: "+" },
+  { value: 25, label: "Expert Faculty", suffix: "+" },
+  { value: 5, label: "Years of Excellence" }
 ];
 
 export default function CounterStats() {
   return (
     <section className="py-16 bg-primary text-white">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center">
           {stats.map((stat, index) => (
             <motion.div
               key={index}
@@ -22,7 +21,7 @@ export default function CounterStats() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true, margin: "-100px" }}
             >
-              <StatCounter value={stat.value} label={stat.label} />
+              <StatCounter value={stat.value} label={stat.label} suffix={stat.suffix} />
             </motion.div>
           ))}
         </div>
@@ -34,9 +33,10 @@ export default function CounterStats() {
 interface StatCounterProps {
   value: number;
   label: string;
+  suffix?: string;
 }
 
-function StatCounter({ value, label }: StatCounterProps) {
+function StatCounter({ value, label, suffix }: StatCounterProps) {
   const counter = useCounter({
     end: value,
     duration: 2,
@@ -45,7 +45,7 @@ function StatCounter({ value, label }: StatCounterProps) {
 
   return (
     <div>
-      <div className="text-4xl font-bold mb-2">{counter}</div>
+      <div className="text-4xl font-bold mb-2">{counter}{suffix}</div>
       <p className="text-lg">{label}</p>
     </div>
   );

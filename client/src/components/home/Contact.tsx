@@ -37,9 +37,9 @@ const contactInfoItems = [
     title: "Call Us",
     content: (
       <>
-        <span className="block">Main Office: {schoolInfo.phone}</span>
-        <span className="block">Admissions: {schoolInfo.admissionsPhone}</span>
-        <span className="block">Principal's Office: {schoolInfo.principalPhone}</span>
+        <span className="block whitespace-nowrap">Main Office: {schoolInfo.phone}</span>
+        <span className="block whitespace-nowrap">Admissions: {schoolInfo.admissionsPhone}</span>
+        <span className="block whitespace-nowrap">Principal's Office: {schoolInfo.principalPhone}</span>
       </>
     ),
   },

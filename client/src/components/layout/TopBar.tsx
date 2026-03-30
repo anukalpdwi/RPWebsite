@@ -8,15 +8,15 @@ export default function TopBar() {
         <div className="mb-2 md:mb-0 flex items-center text-sm">
           <a 
             href={`tel:${schoolInfo.phone}`} 
-            className="flex items-center mr-4 hover:text-accent-light transition"
+            className="flex items-center mr-4 hover:text-accent-light transition whitespace-nowrap"
           >
-            <FaPhone className="mr-1" /> {schoolInfo.phone}
+            <FaPhone className="mr-1 flex-shrink-0" /> {schoolInfo.phone}
           </a>
           <a 
             href={`mailto:${schoolInfo.email}`} 
-            className="flex items-center hover:text-accent-light transition"
+            className="flex items-center hover:text-accent-light transition whitespace-nowrap"
           >
-            <FaEnvelope className="mr-1" /> {schoolInfo.email}
+            <FaEnvelope className="mr-1 flex-shrink-0" /> {schoolInfo.email}
           </a>
         </div>
         <div className="flex items-center">

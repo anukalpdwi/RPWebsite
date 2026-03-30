@@ -16,9 +16,9 @@ const contactInfoItems = [
     title: "Call Us",
     content: (
       <>
-        <span className="block">Main Office: <a href={`tel:${schoolInfo.phone}`} className="hover:text-primary transition">{schoolInfo.phone}</a></span>
-        <span className="block">Admissions: <a href={`tel:${schoolInfo.admissionsPhone}`} className="hover:text-primary transition">{schoolInfo.admissionsPhone}</a></span>
-        <span className="block">Principal's Office: <a href={`tel:${schoolInfo.principalPhone}`} className="hover:text-primary transition">{schoolInfo.principalPhone}</a></span>
+        <span className="block whitespace-nowrap">Main Office: <a href={`tel:${schoolInfo.phone}`} className="hover:text-primary transition">{schoolInfo.phone}</a></span>
+        <span className="block whitespace-nowrap">Admissions: <a href={`tel:${schoolInfo.admissionsPhone}`} className="hover:text-primary transition">{schoolInfo.admissionsPhone}</a></span>
+        <span className="block whitespace-nowrap">Principal's Office: <a href={`tel:${schoolInfo.principalPhone}`} className="hover:text-primary transition">{schoolInfo.principalPhone}</a></span>
       </>
     ),
   },
