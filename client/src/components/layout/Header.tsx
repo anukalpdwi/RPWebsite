@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { schoolInfo } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaChevronDown, FaBars } from "react-icons/fa";
+import { FaChevronDown, FaBars, FaLock } from "react-icons/fa";
 
 // Navigation items with dropdowns
 const navigationItems = [
@@ -145,6 +145,12 @@ export default function Header() {
           ))}
           
           <Link 
+            href="/admin/login" 
+            className="ml-4 px-4 py-2 border border-primary text-primary font-bold rounded-md shadow-sm hover:bg-primary/5 transition flex items-center gap-2"
+          >
+            <FaLock className="text-sm" /> Admin
+          </Link>
+          <Link 
             href="/apply-now" 
             className="ml-2 px-4 py-2 bg-accent text-white rounded-md shadow-sm hover:bg-accent-dark transition animate-pulse"
           >
@@ -207,6 +213,12 @@ export default function Header() {
               )
             ))}
             
+            <Link 
+              href="/admin/login" 
+              className="mt-4 px-4 py-2 border border-primary text-primary font-bold rounded-md shadow-sm text-center hover:bg-primary/5 transition flex items-center justify-center gap-2"
+            >
+              <FaLock className="text-sm" /> Admin Login
+            </Link>
             <Link 
               href="/apply-now" 
               className="mt-3 px-4 py-2 bg-accent text-white rounded-md shadow-sm text-center hover:bg-accent-dark transition"

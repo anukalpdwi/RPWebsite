@@ -64,6 +64,7 @@ export const admissionInquiries = pgTable("admission_inquiries", {
   studentPhoto: text("student_photo"),
   pdfBase64: text("pdf_base64"),
   message: text("message"),
+  status: text("status").default("pending").notNull(), // pending, approved, rejected
   submittedAt: timestamp("submitted_at").defaultNow().notNull(),
 });
 
@@ -110,3 +111,107 @@ export const insertNewsletterSubscriptionSchema = createInsertSchema(newsletterS
 
 export type InsertNewsletterSubscription = z.infer<typeof insertNewsletterSubscriptionSchema>;
 export type NewsletterSubscription = typeof newsletterSubscriptions.$inferSelect;
+
+// Students table
+export const students = pgTable("students", {
+  id: serial("id").primaryKey(),
+  rollNumber: text("roll_number").notNull().unique(),
+  name: text("name").notNull(),
+  grade: text("grade").notNull(),
+  dob: text("dob").notNull(),
+  gender: text("gender").notNull(),
+  address: text("address").notNull(),
+  fatherName: text("father_name").notNull(),
+  motherName: text("mother_name").notNull(),
+  parentPhone: text("parent_phone").notNull(),
+  parentEmail: text("parent_email"),
+  photoUrl: text("photo_url"),
+  academicYear: text("academic_year").notNull(),
+  admittedAt: timestamp("admitted_at").defaultNow().notNull(),
+});
+
+export const insertStudentSchema = createInsertSchema(students);
+export type InsertStudent = z.infer<typeof insertStudentSchema>;
+export type Student = typeof students.$inferSelect;
+
+// Staff/Faculty table
+export const staff = pgTable("staff", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  role: text("role").notNull(), // Teacher, Principal, Admin, etc.
+  department: text("department").notNull(),
+  qualification: text("qualification"),
+  experience: text("experience"),
+  photoUrl: text("photo_url"),
+  phone: text("phone"),
+  email: text("email"),
+  order: integer("order").default(0),
+});
+
+export const insertStaffSchema = createInsertSchema(staff);
+export type InsertStaff = z.infer<typeof insertStaffSchema>;
+export type Staff = typeof staff.$inferSelect;
+
+// Homepage Sliders
+export const sliders = pgTable("sliders", {
+  id: serial("id").primaryKey(),
+  imageUrl: text("image_url").notNull(),
+  title: text("title"),
+  description: text("description"),
+  order: integer("order").default(0),
+  isActive: boolean("is_active").default(true).notNull(),
+});
+
+// News Ticker
+export const newsTicker = pgTable("news_ticker", {
+  id: serial("id").primaryKey(),
+  content: text("content").notNull(),
+  priority: text("priority").default("normal").notNull(), // normal, high
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Gallery Events
+export const galleryEvents = pgTable("gallery_events", {
+  id: serial("id").primaryKey(),
+  eventName: text("event_name").notNull(),
+  description: text("description"),
+  eventDate: text("event_date"),
+  coverImageUrl: text("cover_image_url"),
+});
+
+// Gallery Images
+export const galleryImages = pgTable("gallery_images", {
+  id: serial("id").primaryKey(),
+  eventId: integer("event_id").references(() => galleryEvents.id).notNull(),
+  imageUrl: text("image_url").notNull(),
+  caption: text("caption"),
+});
+
+// Popup Manager
+export const popups = pgTable("popups", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  imageUrl: text("image_url"),
+  linkUrl: text("link_url"),
+  isActive: boolean("is_active").default(false).notNull(),
+  type: text("type").default("image").notNull(), // image, text, info
+});
+
+export const insertSliderSchema = createInsertSchema(sliders);
+export const insertNewsTickerSchema = createInsertSchema(newsTicker);
+export const insertGalleryEventSchema = createInsertSchema(galleryEvents);
+export const insertGalleryImageSchema = createInsertSchema(galleryImages);
+export const insertPopupSchema = createInsertSchema(popups);
+
+export type InsertSlider = z.infer<typeof insertSliderSchema>;
+export type InsertNewsTicker = z.infer<typeof insertNewsTickerSchema>;
+export type InsertGalleryEvent = z.infer<typeof insertGalleryEventSchema>;
+export type InsertGalleryImage = z.infer<typeof insertGalleryImageSchema>;
+export type InsertPopup = z.infer<typeof insertPopupSchema>;
+
+export type Slider = typeof sliders.$inferSelect;
+export type NewsTicker = typeof newsTicker.$inferSelect;
+export type GalleryEvent = typeof galleryEvents.$inferSelect;
+export type GalleryImage = typeof galleryImages.$inferSelect;
+export type Popup = typeof popups.$inferSelect;

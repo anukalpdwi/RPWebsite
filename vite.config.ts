@@ -11,6 +11,7 @@ const __dirname = dirname(__filename);
 export default defineConfig({
   root: './client', // 👈 tell Vite where your entry point is
   plugins: [react()],
+  envDir: path.resolve(__dirname),
   build: {
     outDir: '../dist', // 👈 output to root-level dist
     emptyOutDir: true,

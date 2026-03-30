@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { useEffect } from "react";
 import NotFound from "@/pages/not-found";
 import { Analytics } from '@vercel/analytics/next';
+import { AuthProvider } from "@/hooks/use-auth";
+import ProtectedRoute from "@/components/layout/ProtectedRoute";
 
 // Layout components
 import Header from "@/components/layout/Header";
@@ -25,6 +27,14 @@ import Gallery from "@/pages/gallery";
 import Contact from "@/pages/contact";
 import AdmissionFormPage from "@/pages/admission-form";
 
+// Admin Pages
+import AdminLogin from "@/pages/admin/Login";
+import AdminDashboard from "@/pages/admin/Dashboard";
+import AdmissionsManager from "@/pages/admin/Admissions";
+import StudentManager from "@/pages/admin/Students";
+import StaffManager from "@/pages/admin/Staff";
+import CMSManager from "@/pages/admin/CMS";
+
 function ScrollToTop() {
   const [location] = useLocation();
   
@@ -38,6 +48,7 @@ function ScrollToTop() {
 function Router() {
   return (
     <Switch>
+      {/* Public Routes */}
       <Route path="/" component={Home} />
       <Route path="/about" component={About} />
       <Route path="/academics" component={Academics} />
@@ -47,34 +58,81 @@ function Router() {
       <Route path="/gallery" component={Gallery} />
       <Route path="/contact" component={Contact} />
       <Route path="/apply-now" component={AdmissionFormPage} />
+
+      {/* Admin Routes */}
+      <Route path="/admin/login" component={AdminLogin} />
+      <Route path="/admin/dashboard">
+        <ProtectedRoute>
+          <AdminDashboard />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/admissions">
+        <ProtectedRoute>
+          <AdmissionsManager />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/students">
+        <ProtectedRoute>
+          <StudentManager />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/staff">
+        <ProtectedRoute>
+          <StaffManager />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/news">
+        <ProtectedRoute>
+          <CMSManager />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/gallery">
+        <ProtectedRoute>
+          <CMSManager />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/cms">
+        <ProtectedRoute>
+          <CMSManager />
+        </ProtectedRoute>
+      </Route>
+
+      {/* Fallback */}
       <Route component={NotFound} />
     </Switch>
   );
 }
 
-
-
 function App() {
+  const [location] = useLocation();
+  const isAdminPath = location.startsWith("/admin");
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className="flex flex-col min-h-screen">
-        <div className="print:hidden">
-          <TopBar />
-          <Header />
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <div className="flex flex-col min-h-screen">
+          {!isAdminPath && (
+            <div className="print:hidden">
+              <TopBar />
+              <Header />
+            </div>
+          )}
+          <main className="flex-grow">
+            <ScrollToTop />
+            <Router />
+          </main>
+          {!isAdminPath && (
+            <div className="print:hidden">
+              <Footer />
+              <BackToTop />
+              <WhatsAppButton phoneNumber="9243998770" />
+            </div>
+          )}
         </div>
-        <main className="flex-grow">
-          <Router />
-        </main>
-        <div className="print:hidden">
-          <Footer />
-          <BackToTop />
-          <WhatsAppButton phoneNumber="9243998770" />
-        </div>
-      </div>
-      <Toaster />
-      <AdmissionPopup />
-    </QueryClientProvider>
-    
+        <Toaster />
+        {!isAdminPath && <AdmissionPopup />}
+      </QueryClientProvider>
+    </AuthProvider>
   );
 }
 

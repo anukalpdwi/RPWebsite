@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { schoolInfo } from "@/lib/utils";
-import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube, FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaClock, FaChevronRight, FaPaperPlane } from "react-icons/fa";
+import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube, FaMapMarkerAlt, FaPhoneAlt, FaEnvelope, FaClock, FaChevronRight, FaPaperPlane, FaLock } from "react-icons/fa";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -107,9 +107,13 @@ export default function Footer() {
           <p className="text-sm mb-2 md:mb-0">&copy; {new Date().getFullYear()} {schoolInfo.name}, {schoolInfo.location}. All Rights Reserved.</p>
           <p className="text-center text-sm text-white-500">
            Developed by: <a href="https://www.linkedin.com/in/anukalp-dwivedi" target="_blank" className="text-yellow-200 hover:underline">Anukalp Dwivedi</a></p>
-          <div className="flex text-sm">
+          <div className="flex items-center text-sm">
             <Link href="/privacy" className="mr-4 hover:text-accent transition">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-accent transition">Terms of Use</Link>
+            <span className="mx-2 text-white/30">|</span>
+            <Link href="/admin/login" className="ml-2 text-white/50 hover:text-white transition group flex items-center gap-1">
+              <FaLock className="w-3 h-3 group-hover:scale-110 transition-transform" /> Admin Portal
+            </Link>
           </div>
         </div>
       </div>
