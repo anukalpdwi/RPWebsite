@@ -3,18 +3,35 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles, GraduationCap, ArrowRight, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 
 export default function AdmissionPopup() {
   const [isOpen, setIsOpen] = useState(false);
   const [, setLocation] = useLocation();
 
+  const { data: popups } = useQuery<any[]>({
+    queryKey: ["/api/popups"]
+  });
+
   useEffect(() => {
-    // Show popup on every reload after a short delay
+    // Show popup on every reload after a short delay if active and scheduled
     const timer = setTimeout(() => {
-      setIsOpen(true);
+      if (popups && popups.length > 0) {
+        const popup = popups[0];
+        if (!popup.isActive) return;
+
+        // Check Scheduler Dates
+        const now = new Date().getTime();
+        const start = popup.startDate ? new Date(popup.startDate).getTime() : 0;
+        const end = popup.endDate ? new Date(popup.endDate).getTime() : Infinity;
+
+        if (now >= start && now <= end) {
+          setIsOpen(true);
+        }
+      }
     }, 1500);
     return () => clearTimeout(timer);
-  }, []);
+  }, [popups]);
 
   const handleApply = () => {
     setIsOpen(false);
@@ -51,8 +68,7 @@ export default function AdmissionPopup() {
 
                 <div className="space-y-1">
                   <h2 className="text-2xl md:text-3xl font-black text-primary tracking-tighter leading-tight">
-                    ADMISSIONS OPEN! <br />
-                    <span className="text-neutral-dark">प्रवेश प्रारंभ!</span>
+                    {popups?.[0]?.title || "ADMISSIONS OPEN!"} <br />
                   </h2>
                   <div className="h-1 w-12 bg-yellow-500 mx-auto rounded-full" />
                 </div>
@@ -62,10 +78,7 @@ export default function AdmissionPopup() {
                     "Nurturing Excellence, Building Character"
                   </p>
                   <p className="text-neutral-mid text-xs md:text-sm font-medium leading-relaxed">
-                    Join Central India's leading ISO Certified school. Give your child the foundation they deserve.
-                  </p>
-                  <p className="text-primary font-black text-lg md:text-xl">
-                    उत्कृष्टता की ओर पहला कदम बढ़ाएं।
+                    {popups?.[0]?.imageUrl || "Join Central India's leading ISO Certified school. Give your child the foundation they deserve."}
                   </p>
                 </div>
 

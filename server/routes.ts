@@ -10,7 +10,11 @@ import {
   insertSliderSchema,
   insertNewsTickerSchema,
   insertPopupSchema,
-  insertGalleryEventSchema
+  insertGalleryEventSchema,
+  insertStudentNotificationSchema,
+  insertStudentAcademicSchema,
+  insertFeeTransactionSchema,
+  studentNotifications, type StudentNotification, type InsertStudentNotification
 } from "../shared/schema.js";
 import { z, ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -245,6 +249,101 @@ export function registerRoutes(app: Express): Server {
     res.json({ status: "alive", time: new Date().toISOString() });
   });
 
+  // Visit Analytics Tracking (public - called by frontend on route change)
+  app.post("/api/track-visit", async (req, res) => {
+    try {
+      const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip || 'unknown';
+      await storage.recordVisit(ip);
+      res.json({ success: true });
+    } catch (e) {
+      res.json({ success: false }); // Non-critical, always return 200
+    }
+  });
+
+  // Visit Stats (admin only)
+  app.get("/api/admin/visit-stats", async (_req, res) => {
+    try {
+      const stats = await storage.getVisitStats();
+      res.json(stats);
+    } catch (e) {
+      res.status(500).json({ error: "Failed to fetch visit stats" });
+    }
+  });
+
+  // --- Public Content Routes (Dynamic) ---
+  app.get("/api/sliders", async (_req, res) => {
+    const items = await storage.getAllSliders();
+    res.json(items.filter(i => i.isActive));
+  });
+
+  app.get("/api/news", async (_req, res) => {
+    const items = await storage.getAllNewsTickers();
+    res.json(items.filter(i => i.isActive));
+  });
+
+  app.get("/api/gallery", async (_req, res) => {
+    const events = await storage.getAllGalleryEvents();
+    res.json(events);
+  });
+
+  // --- 360 DEGREE STUDENT PROFILE (PRIORITY) ---
+  app.get("/api/admin/students/:id/details", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      console.log(`[API_GET] Fetching 360 Details for Student ID: ${id}`);
+      const details = await storage.getStudentDetails(id);
+      if (!details) return res.status(404).json({ message: "Student not found" });
+      res.json(details);
+    } catch (error) {
+      console.error("Student Details Error:", error);
+      res.status(500).json({ message: "Error fetching student details" });
+    }
+  });
+
+  // --- STUDENT NOTIFICATIONS (TOP PRIORITY) ---
+  app.get("/api/student-notifications", async (_req, res) => {
+    try {
+      const items = await storage.getAllStudentNotifications();
+      console.log(`[PUBLIC_GET] Notifications count: ${items.length}`);
+      res.json(items.filter(i => i.isActive));
+    } catch (e) { res.status(500).json({ error: "Failed to fetch student notifications" }); }
+  });
+
+  app.get("/api/admin/student-notifications", async (_req, res) => {
+    try {
+      const items = await storage.getAllStudentNotifications();
+      console.log(`[ADMIN_GET] Notifications count: ${items.length}`);
+      res.json(items);
+    } catch (error) { res.status(500).json({ message: "Error fetching notifications" }); }
+  });
+
+  app.post("/api/admin/student-notifications", async (req, res) => {
+    try {
+      console.log("[ADMIN_POST] Received body:", req.body);
+      const data = insertStudentNotificationSchema.parse(req.body);
+      const item = await storage.createStudentNotification(data);
+      console.log("[ADMIN_POST] Created successfully:", item);
+      res.status(201).json(item);
+    } catch (error: any) { 
+      console.error("[ADMIN_POST] Error:", error);
+      res.status(400).json({ message: error.message || "Invalid notification data" }); 
+    }
+  });
+
+  app.patch("/api/admin/student-notifications/:id", async (req, res) => {
+    try {
+      const item = await storage.updateStudentNotification(parseInt(req.params.id), req.body);
+      res.json(item);
+    } catch (error) { res.status(500).json({ message: "Error updating notification" }); }
+  });
+
+  app.delete("/api/admin/student-notifications/:id", async (req, res) => {
+    try {
+      await storage.deleteStudentNotification(parseInt(req.params.id));
+      res.json({ success: true });
+    } catch (error) { res.status(500).json({ message: "Error deleting notification" }); }
+  });
+
   // API routes for handling form submissions
   
   // Contact form submission
@@ -452,6 +551,17 @@ export function registerRoutes(app: Express): Server {
     } catch (e) { res.status(500).json({ error: "Failed to fetch gallery" }); }
   });
 
+
+  app.get("/api/staff", async (_req, res) => {
+    try {
+      const items = await storage.getAllStaff();
+      res.json(items);
+    } catch (e) {
+      res.status(500).json({ error: "Failed to fetch staff" });
+    }
+  });
+
+
   // --- ADMIN API ROUTES ---
 
   // Dashboard Stats
@@ -486,24 +596,33 @@ export function registerRoutes(app: Express): Server {
 
       // Logic for Approval: Create a student record
       if (status === 'approved') {
-        await storage.createStudent({
-          rollNumber: inquiry.admissionNumber?.toString() || `REG-${id}`,
-          name: inquiry.childName,
-          grade: inquiry.grade,
-          dob: inquiry.dob,
-          gender: inquiry.gender,
-          address: inquiry.address,
-          fatherName: inquiry.fatherName,
-          motherName: inquiry.motherName,
-          parentPhone: inquiry.phone || inquiry.mobileNo || "N/A",
-          parentEmail: inquiry.email || inquiry.emailId || null,
-          photoUrl: inquiry.studentPhoto,
-          academicYear: inquiry.academicYear,
-        });
+        try {
+          console.log(`Processing approval for inquiry ID ${id}...`);
+          await storage.createStudent({
+            rollNumber: inquiry.admissionNumber?.toString() || `REG-${id}`,
+            name: inquiry.childName,
+            grade: inquiry.grade,
+            dob: inquiry.dob,
+            gender: inquiry.gender,
+            address: inquiry.address,
+            fatherName: inquiry.fatherName,
+            motherName: inquiry.motherName,
+            parentPhone: inquiry.phone || inquiry.mobileNo || "N/A",
+            parentEmail: inquiry.email || inquiry.emailId || null,
+            photoUrl: inquiry.studentPhoto,
+            academicYear: inquiry.academicYear || "2026-27", // Strict default to ensure registration
+            bloodGroup: inquiry.bloodGroup || null,
+          });
+          console.log(`Student record successfully created for inquiry ID ${id}.`);
+        } catch (studentErr: any) {
+          console.error("Student Creation Error during Admission Approval:", studentErr);
+          // In Phase 2, we should probably throw here to alert the UI that registration failed
+        }
       }
 
       res.json(updated);
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Admission Update Error:", error);
       res.status(500).json({ success: false, message: "Error updating admission" });
     }
   });
@@ -518,6 +637,7 @@ export function registerRoutes(app: Express): Server {
   });
 
   // Student Management
+
   app.get("/api/admin/students", async (_req, res) => {
     try {
       const students = await storage.getAllStudents();
@@ -554,6 +674,54 @@ export function registerRoutes(app: Express): Server {
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ message: "Error deleting student" });
+    }
+  });
+
+
+  app.patch("/api/admin/students/:id/documents", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      // Data contains aadhaarStatus, birthCertStatus, tcStatus, aadhaarUrl, etc.
+      const updated = await storage.updateStudent(id, req.body);
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ message: "Error updating documents" });
+    }
+  });
+
+  app.post("/api/admin/students/:id/academics", async (req, res) => {
+    try {
+      const studentId = parseInt(req.params.id);
+      const data = insertStudentAcademicSchema.parse({ ...req.body, studentId });
+      const academic = await storage.createStudentAcademic(data);
+      res.status(201).json(academic);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message || "Invalid academic data" });
+    }
+  });
+
+  app.post("/api/admin/students/:id/fees", async (req, res) => {
+    try {
+      const studentId = parseInt(req.params.id);
+      const data = insertFeeTransactionSchema.parse({ ...req.body, studentId });
+      
+      const transaction = await storage.createFeeTransaction(data);
+      res.status(201).json(transaction);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message || "Invalid fee transaction data" });
+    }
+  });
+  
+  app.patch("/api/admin/students/:id/fees/summary", async (req, res) => {
+    try {
+      const studentId = parseInt(req.params.id);
+      const { academicYear, ...data } = req.body;
+      if (!academicYear) return res.status(400).json({ message: "Academic Year required" });
+      
+      const summary = await storage.updateStudentFeeSummary(studentId, academicYear, data);
+      res.json(summary);
+    } catch (error: any) {
+      res.status(500).json({ message: "Error updating fee summary" });
     }
   });
 
@@ -663,12 +831,52 @@ export function registerRoutes(app: Express): Server {
     } catch (error) { res.status(400).json({ message: "Invalid gallery data" }); }
   });
   
+  app.patch("/api/admin/gallery/:id", async (req, res) => {
+    try {
+      const item = await storage.updateGalleryEvent(parseInt(req.params.id), req.body);
+      res.json(item);
+    } catch (error) { res.status(500).json({ message: "Error updating item" }); }
+  });
+  
   app.delete("/api/admin/gallery/:id", async (req, res) => {
     try {
       await storage.deleteGalleryEvent(parseInt(req.params.id));
       res.json({ success: true });
     } catch (error) { res.status(500).json({ message: "Error deleting item" }); }
   });
+
+  // Media Assets
+  app.get("/api/admin/media", async (_req, res) => {
+    try {
+      const assets = await storage.getAllMediaAssets();
+      res.json(assets);
+    } catch (e) {
+      res.status(500).json({ error: "Failed to fetch media assets" });
+    }
+  });
+
+  app.post("/api/admin/media", async (req, res) => {
+    try {
+      const { insertMediaAssetSchema } = await import("../shared/schema.js");
+      const data = insertMediaAssetSchema.parse(req.body);
+      const asset = await storage.createMediaAsset(data);
+      res.status(201).json(asset);
+    } catch (e) {
+      console.error(e);
+      res.status(400).json({ error: "Invalid media asset" });
+    }
+  });
+
+  app.delete("/api/admin/media/:id", async (req, res) => {
+    try {
+      await storage.deleteMediaAsset(parseInt(req.params.id));
+      res.json({ success: true });
+    } catch (e) {
+      res.status(500).json({ error: "Failed to delete media asset" });
+    }
+  });
+
+
 
   // Create HTTP server
   const httpServer = createServer(app);

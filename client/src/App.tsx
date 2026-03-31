@@ -35,6 +35,7 @@ import StudentManager from "@/pages/admin/Students";
 import StaffManager from "@/pages/admin/Staff";
 import CMSManager from "@/pages/admin/CMS";
 import GalleryManager from "@/pages/admin/Gallery";
+import StudentDetail from "@/pages/admin/StudentDetail";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -43,6 +44,20 @@ function ScrollToTop() {
     window.scrollTo(0, 0);
   }, [location]);
   
+  return null;
+}
+
+// Tracks public page visits by pinging the analytics endpoint on route change
+function VisitTracker() {
+  const [location] = useLocation();
+  const isAdmin = location.startsWith("/admin");
+
+  useEffect(() => {
+    if (!isAdmin) {
+      fetch("/api/track-visit", { method: "POST" }).catch(() => {});
+    }
+  }, [location, isAdmin]);
+
   return null;
 }
 
@@ -75,6 +90,11 @@ function Router() {
       <Route path="/admin/students">
         <ProtectedRoute>
           <StudentManager />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/students/:id">
+        <ProtectedRoute>
+          <StudentDetail />
         </ProtectedRoute>
       </Route>
       <Route path="/admin/staff">
@@ -120,6 +140,7 @@ function App() {
           )}
           <main className="flex-grow">
             <ScrollToTop />
+            <VisitTracker />
             <Router />
           </main>
           {!isAdminPath && (

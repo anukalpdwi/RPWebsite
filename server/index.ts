@@ -33,6 +33,21 @@ app.get("/api/ping", async (_req, res) => {
   });
 });
 
+// --- 360 DEGREE STUDENT PROFILE (MAX PRIORITY FOR DIAGNOSTICS) ---
+app.get("/api/admin/students/:id/details", async (req, res) => {
+  try {
+    const { storage } = await import("./storage.js");
+    const id = parseInt(req.params.id);
+    console.log(`[TOP_API_GET] Fetching 360 Details for Student ID: ${id}`);
+    const details = await storage.getStudentDetails(id);
+    if (!details) return res.status(404).json({ message: "Student not found" });
+    res.json(details);
+  } catch (error) {
+    console.error("Student Details Error:", error);
+    res.status(500).json({ message: "Error fetching student details" });
+  }
+});
+
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: false, limit: "50mb" }));
 
@@ -98,3 +113,5 @@ setupAsync().catch(err => {
 });
 
 export default app;
+
+// Reload Trigger: 2026-03-31T08:29:04.074Z

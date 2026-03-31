@@ -2,41 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { FaEnvelope, FaLinkedinIn } from "react-icons/fa";
 
-// Faculty data
-const facultyMembers = [
-  {
-    image: "/Images/Faculty/Prakash_narayan.jpeg",
-    name: "Mr. Prakash Narayan Tiwari",
-    position: "Director",
-    bio: "Successful entrepreneur with extensive experience in leadership and education. His vision focuses on fostering excellence and nurturing future leaders.",
-    email: "#",
-    linkedin: "#"
-  },
-  {
-    image: "/Images/Faculty/Deepti.jpg",
-    name: "Mrs. Deepti Tiwari",
-    position: "Principal",
-    bio: "Masters in Mathematics with expertise in curriculum development and teacher training.",
-    email: "#",
-    linkedin: "#"
-  },
-  {
-    image: "/Images/Faculty/bharti.jpg",
-    name: "Mrs. Bharti Pandey",
-    position: "Vice Principal",
-    bio: "Masters in Education with 10+ years of experience in academic leadership.",
-    email: "#",
-    linkedin: "#"
-  },
-  {
-    image: "https://static.vecteezy.com/system/resources/thumbnails/003/524/750/small_2x/a-man-working-with-laptop-free-vector.jpg",
-    name: "Mr. Pradeep Pandey",
-    position: "Head of Staff",
-    bio: "Experienced in leadership and education. His vision focuses on fostering excellence and nurturing future leaders.",
-    email: "#",
-    linkedin: "#"
-  }
-];
+import { useQuery } from "@tanstack/react-query";
 
 // Animation variants
 const containerVariants = {
@@ -61,6 +27,30 @@ const itemVariants = {
 };
 
 export default function Faculty() {
+  const { data: staff, isLoading } = useQuery<any[]>({
+    queryKey: ["/api/staff"],
+  });
+
+  // Take first 4 for home page display
+  const facultyMembers = staff?.slice(0, 4).map(member => ({
+    image: member.photoUrl || "https://images.unsplash.com/photo-1544161515-4af6b1d462c2?q=80&w=2070&auto=format&fit=crop",
+    name: member.name,
+    position: member.role,
+    bio: member.bio || "Dedicated faculty member at RP Public School.",
+    email: member.email ? `mailto:${member.email}` : "#",
+    linkedin: member.linkedin || "#"
+  })) || [];
+
+  if (isLoading) {
+    return (
+       <section id="faculty" className="py-16 bg-neutral-light">
+         <div className="container mx-auto px-4 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+         </div>
+       </section>
+    );
+  }
+
   return (
     <section id="faculty" className="py-16 bg-neutral-light">
       <div className="container mx-auto px-4">
