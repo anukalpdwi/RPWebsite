@@ -5,7 +5,8 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { getGoogleDriveDirectLink } from "@/lib/utils";
-import { Image as ImageIcon, Plus, Trash2, Calendar } from "lucide-react";
+import { Image as ImageIcon, Plus, Trash2, Calendar, Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -101,20 +102,52 @@ export default function GalleryManager() {
                   </div>
                   <div className="space-y-2">
                     <Label>Cover Image Asset (Google Drive URL)</Label>
-                    <div className="flex flex-col gap-2">
-                      {formData.coverImageUrl && getGoogleDriveDirectLink(formData.coverImageUrl).includes('drive.google.com') === false ? (
-                        <div className="relative aspect-square rounded-xl overflow-hidden border">
-                          <img src={getGoogleDriveDirectLink(formData.coverImageUrl)} className="w-full h-full object-cover" />
-                          <div className="absolute top-2 right-2">
-                            <Button size="sm" variant="destructive" onClick={() => setFormData({...formData, coverImageUrl: ""})}>Clear Selection</Button>
+                    <div className="flex flex-col gap-3">
+                      <div className="relative">
+                        <Input 
+                          id="coverImageUrl"
+                          value={formData.coverImageUrl} 
+                          onChange={(e) => setFormData({...formData, coverImageUrl: e.target.value})} 
+                          placeholder="https://drive.google.com/..." 
+                          className={cn(
+                            "pr-10",
+                            formData.coverImageUrl && (formData.coverImageUrl.match(/\/d\/([^/]+)/)?.[1] || formData.coverImageUrl.match(/id=([^&]+)/)?.[1]) ? "border-emerald-500/50 bg-emerald-50/50" : ""
+                          )}
+                        />
+                        {formData.coverImageUrl && (formData.coverImageUrl.match(/\/d\/([^/]+)/)?.[1] || formData.coverImageUrl.match(/id=([^&]+)/)?.[1]) && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500 bg-white rounded-full p-0.5 shadow-sm">
+                            <Check className="w-4 h-4" />
                           </div>
+                        )}
+                      </div>
+
+                      {formData.coverImageUrl && (
+                        <div className="flex flex-col items-center gap-2 px-3 py-3 border border-slate-100 rounded-2xl bg-slate-50/50 shadow-sm animate-in fade-in zoom-in duration-300">
+                          {/* Extracted ID Diagnostic */}
+                          {(() => {
+                            const fileId = formData.coverImageUrl.match(/\/d\/([^/]+)/)?.[1] || formData.coverImageUrl.match(/id=([^&]+)/)?.[1];
+                            return fileId ? (
+                              <div className="w-full flex items-center justify-between px-2 pb-2 mb-2 border-b border-white">
+                                <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Extracted ID</span>
+                                <code className="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-slate-200 text-primary truncate max-w-[150px]">{fileId}</code>
+                              </div>
+                            ) : null;
+                          })()}
+
+                          <div className="relative aspect-video w-full rounded-xl overflow-hidden border-2 border-white shadow-xl bg-white flex items-center justify-center ring-1 ring-slate-200">
+                            <img 
+                              src={getGoogleDriveDirectLink(formData.coverImageUrl)} 
+                              className="w-full h-full object-cover" 
+                              referrerPolicy="no-referrer"
+                              onError={(e) => (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400?text=Invalid+Image+Link'}
+                            />
+                            <div className="absolute top-2 right-2">
+                              <Button size="sm" variant="destructive" onClick={() => setFormData({...formData, coverImageUrl: ""})}>Clear Selection</Button>
+                            </div>
+                          </div>
+                          <p className="text-[10px] text-center mt-1 text-slate-500 font-black uppercase tracking-widest">Cover Preview</p>
                         </div>
-                      ) : null}
-                      <Input 
-                        value={formData.coverImageUrl} 
-                        onChange={(e) => setFormData({...formData, coverImageUrl: e.target.value})} 
-                        placeholder="https://drive.google.com/..." 
-                      />
+                      )}
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -147,9 +180,10 @@ export default function GalleryManager() {
                 <div className="aspect-square bg-slate-100 dark:bg-slate-800 overflow-hidden relative">
                   {event.coverImageUrl ? (
                     <img 
-                      src={event.coverImageUrl} 
+                      src={getGoogleDriveDirectLink(event.coverImageUrl)} 
                       alt={event.eventName} 
                       className="w-full h-full object-cover aspect-square group-hover:scale-110 transition-transform duration-700" 
+                      referrerPolicy="no-referrer"
                     />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
@@ -214,7 +248,7 @@ export default function GalleryManager() {
           <DialogContent className="bg-white/95 backdrop-blur-2xl border border-white/20 sm:max-w-[500px] p-0 overflow-hidden rounded-3xl shadow-2xl">
               <div className="h-48 relative bg-slate-900">
                 {editingEvent?.coverImageUrl && (
-                  <img src={getGoogleDriveDirectLink(editingEvent.coverImageUrl)} className="w-full h-full object-cover opacity-60" />
+                  <img src={getGoogleDriveDirectLink(editingEvent.coverImageUrl)} className="w-full h-full object-cover opacity-60" referrerPolicy="no-referrer" />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent" />
                 <div className="absolute bottom-6 left-6">

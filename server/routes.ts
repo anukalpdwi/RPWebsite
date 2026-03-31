@@ -249,13 +249,38 @@ export function registerRoutes(app: Express): Server {
     res.json({ status: "alive", time: new Date().toISOString() });
   });
 
+  function isBot(userAgent: string | undefined): boolean {
+    if (!userAgent) return false;
+    // Comprehensive bot regex
+    const botPattern = /bot|crawler|spider|crawling|slurp|facebookexternalhit|embedly|quora link preview|outbrain|pinterest|vkShare|Wget|curl|WhatsApp|twitterbot|applebot|bingbot|googlebot|duckduckbot|yandexbot|serpstatbot|mj12bot|ahrefsbot|semrushbot|dotbot|rogerbot|exabot|konqueror|gigabot|ia_archiver|seznambot|naverbot|ltx71|hubspot|petalbot|vadsbot|barkrowler/i;
+    return botPattern.test(userAgent);
+  }
+
   // Visit Analytics Tracking (public - called by frontend on route change)
   app.post("/api/track-visit", async (req, res) => {
     try {
+      const userAgent = req.headers['user-agent'];
       const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0] || req.ip || 'unknown';
+
+      console.log(`[ANALYTICS] Request from IP: ${ip}, UA: ${userAgent}`);
+
+      // 1. Filter out bots/crawlers
+      if (isBot(userAgent)) {
+        console.log(`[ANALYTICS] IGNORED (Bot): ${userAgent}`);
+        return res.json({ success: true, status: "ignored", reason: "bot" });
+      }
+
+      // 2. Filter out localhost/development traffic in production
+      if (process.env.NODE_ENV === 'production' && (ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1' || ip.includes('localhost'))) {
+        console.log(`[ANALYTICS] IGNORED (Localhost in Prod): ${ip}`);
+        return res.json({ success: true, status: "ignored", reason: "localhost" });
+      }
+
       await storage.recordVisit(ip);
-      res.json({ success: true });
+      console.log(`[ANALYTICS] RECORDED Visit from IP: ${ip}`);
+      res.json({ success: true, status: "recorded" });
     } catch (e) {
+      console.error('[ANALYTICS] Error:', e);
       res.json({ success: false }); // Non-critical, always return 200
     }
   });

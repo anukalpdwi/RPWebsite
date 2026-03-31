@@ -127,8 +127,30 @@ export default function StaffManager() {
     if (isEditMode && editingId) {
       updateMutation.mutate({ id: editingId, data: payload });
     } else {
-      createMutation.mutate(payload);
+      // Calculate next order weight if creating new
+      const maxOrder = staff && staff.length > 0 
+        ? Math.max(...staff.map(s => s.order || 0)) 
+        : 0;
+      createMutation.mutate({ ...payload, order: maxOrder + 1 });
     }
+  };
+
+  const handleMoveUp = (id: number, currentOrder: number, index: number) => {
+    if (index === 0 || !staff) return;
+    const prevMember = staff[index - 1];
+    
+    // Swap orders
+    updateMutation.mutate({ id, data: { order: prevMember.order } });
+    updateMutation.mutate({ id: prevMember.id, data: { order: currentOrder } });
+  };
+
+  const handleMoveDown = (id: number, currentOrder: number, index: number) => {
+    if (!staff || index === staff.length - 1) return;
+    const nextMember = staff[index + 1];
+    
+    // Swap orders
+    updateMutation.mutate({ id, data: { order: nextMember.order } });
+    updateMutation.mutate({ id: nextMember.id, data: { order: currentOrder } });
   };
 
   const handleEdit = (member: any) => {
@@ -236,7 +258,62 @@ export default function StaffManager() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="photoUrl" className="text-xs font-bold uppercase">Photo URL</Label>
-                      <Input id="photoUrl" placeholder="Google Drive Link..." value={formData.photoUrl} onChange={(e) => setFormData({...formData, photoUrl: e.target.value})} />
+                      <div className="flex flex-col gap-3">
+                        <div className="relative">
+                          <Input 
+                            id="photoUrl" 
+                            placeholder="Google Drive Link..." 
+                            value={formData.photoUrl} 
+                            onChange={(e) => setFormData({...formData, photoUrl: e.target.value})} 
+                            className={cn(
+                              "pr-10",
+                              formData.photoUrl && (formData.photoUrl.match(/\/d\/([^/]+)/)?.[1] || formData.photoUrl.match(/id=([^&]+)/)?.[1]) ? "border-emerald-500/50 bg-emerald-50/50" : ""
+                            )}
+                          />
+                          {formData.photoUrl && (formData.photoUrl.match(/\/d\/([^/]+)/)?.[1] || formData.photoUrl.match(/id=([^&]+)/)?.[1]) && (
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500 bg-white rounded-full p-0.5 shadow-sm">
+                              <Check className="w-4 h-4" />
+                            </div>
+                          )}
+                        </div>
+                        
+                        {formData.photoUrl && (
+                          <div className="flex flex-col items-center gap-2 px-3 py-3 border border-slate-100 rounded-2xl bg-slate-50/50 shadow-sm animate-in fade-in zoom-in duration-300">
+                            {/* Extracted ID Diagnostic */}
+                            {(() => {
+                              const fileId = formData.photoUrl.match(/\/d\/([^/]+)/)?.[1] || formData.photoUrl.match(/id=([^&]+)/)?.[1];
+                              return fileId ? (
+                                <div className="w-full flex items-center justify-between px-2 pb-2 mb-2 border-b border-white">
+                                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Extracted ID</span>
+                                  <code className="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-slate-200 text-primary truncate max-w-[150px]">{fileId}</code>
+                                </div>
+                              ) : null;
+                            })()}
+
+                            <div className="relative group">
+                              <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white shadow-xl bg-white flex items-center justify-center ring-1 ring-slate-200">
+                                <img 
+                                  src={getGoogleDriveDirectLink(formData.photoUrl)} 
+                                  alt="Preview" 
+                                  className="w-full h-full object-cover object-top"
+                                  referrerPolicy="no-referrer"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150?text=Invalid+Link';
+                                  }}
+                                />
+                              </div>
+                              <p className="text-[10px] text-center mt-2 text-slate-500 font-black uppercase tracking-widest mb-1">Live Identity Preview</p>
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="flex items-start gap-2 bg-amber-50/50 p-2.5 rounded-xl border border-amber-100/50">
+                          <Check className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                          <p className="text-[10px] text-amber-700 font-bold leading-relaxed tracking-tight">
+                            FILE CONFIG: Must be shared as <span className="underline italic">"Anyone with the link can view"</span> with <span className="underline italic">"Viewer"</span> access level.
+                          </p>
+                        </div>
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="bio" className="text-xs font-bold uppercase">Biography</Label>
@@ -297,8 +374,24 @@ export default function StaffManager() {
                       <TableRow key={member.id} className="group hover:bg-slate-50 transition-colors duration-200">
                         <TableCell className="text-center relative w-20 h-16">
                            <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-inherit">
-                              <Button variant="ghost" size="icon" className="h-6 w-6"><MoveUp className="w-3 h-3 text-slate-500" /></Button>
-                              <Button variant="ghost" size="icon" className="h-6 w-6"><MoveDown className="w-3 h-3 text-slate-500" /></Button>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-6 w-6" 
+                                onClick={() => handleMoveUp(member.id, member.order, index)}
+                                disabled={index === 0}
+                              >
+                                <MoveUp className="w-3 h-3 text-slate-500" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-6 w-6" 
+                                onClick={() => handleMoveDown(member.id, member.order, index)}
+                                disabled={!staff || index === staff.length - 1}
+                              >
+                                <MoveDown className="w-3 h-3 text-slate-500" />
+                              </Button>
                            </div>
                            <span className="font-bold text-slate-400 group-hover:opacity-0 transition-opacity">{member.order}</span>
                         </TableCell>
@@ -306,7 +399,11 @@ export default function StaffManager() {
                           <div className="flex items-center gap-4">
                             <div className="relative">
                               <Avatar className="h-10 w-10 border-2 border-white shadow-sm ring-1 ring-slate-100">
-                                <AvatarImage src={member.photoUrl ?? undefined} />
+                                <AvatarImage 
+                                  src={member.photoUrl ? getGoogleDriveDirectLink(member.photoUrl) : undefined} 
+                                  className="object-cover object-top"
+                                  referrerPolicy="no-referrer"
+                                />
                                 <AvatarFallback className="bg-slate-200 text-slate-500">
                                   <UserCircle className="w-6 h-6" />
                                 </AvatarFallback>

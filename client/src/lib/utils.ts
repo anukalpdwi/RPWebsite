@@ -27,9 +27,10 @@ export function truncateText(text: string, length: number): string {
 }
 
 export const getGoogleDriveDirectLink = (url: string) => {
-  if (url && url.includes("drive.google.com")) {
+  if (url && (url.includes("drive.google.com") || url.includes("google.com/open?id="))) {
+    if (url.includes("lh3.googleusercontent.com")) return url;
     const fileId = url.match(/\/d\/([^/]+)/)?.[1] || url.match(/id=([^&]+)/)?.[1];
-    return fileId ? `https://drive.google.com/uc?export=view&id=${fileId}` : url;
+    return fileId ? `https://lh3.googleusercontent.com/d/${fileId}` : url;
   }
   return url;
 };

@@ -14,8 +14,10 @@ import {
   Clock,
   ExternalLink,
   Info,
-  Bell
+  Bell,
+  Check
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { 
   Tabs, 
   TabsContent, 
@@ -292,18 +294,55 @@ export default function CMSManager() {
                         <Input value={newsForm.content} onChange={e => setNewsForm({...newsForm, content: e.target.value})} placeholder="Announcement text" />
                       </div>
                       <div className="space-y-2">
-                         <Label>Thumbnail Image URL (Optional Google Drive Link)</Label>
-                         <div className="flex gap-2">
-                           <Input 
-                             value={newsForm.imageUrl} 
-                             onChange={e => setNewsForm({...newsForm, imageUrl: e.target.value})} 
-                             placeholder="https://drive.google.com/..." 
-                             className="flex-1"
-                           />
-                           <MediaLibraryPicker 
-                             onSelect={(url) => setNewsForm({...newsForm, imageUrl: url})}
-                             trigger={<Button variant="secondary" size="icon"><Plus className="w-4 h-4"/></Button>}
-                           />
+                         <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Thumbnail Image URL (Google Drive Link)</Label>
+                         <div className="flex flex-col gap-3">
+                           <div className="relative">
+                             <Input 
+                               id="newsImageUrl"
+                               value={newsForm.imageUrl} 
+                               onChange={e => setNewsForm({...newsForm, imageUrl: e.target.value})} 
+                               placeholder="https://drive.google.com/..." 
+                               className={cn(
+                                 "pr-10 h-11",
+                                 newsForm.imageUrl && (newsForm.imageUrl.match(/\/d\/([^/]+)/)?.[1] || newsForm.imageUrl.match(/id=([^&]+)/)?.[1]) ? "border-emerald-500/50 bg-emerald-50/50" : ""
+                               )}
+                             />
+                             {newsForm.imageUrl && (newsForm.imageUrl.match(/\/d\/([^/]+)/)?.[1] || newsForm.imageUrl.match(/id=([^&]+)/)?.[1]) && (
+                               <div className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500 bg-white rounded-full p-0.5 shadow-sm">
+                                 <Check className="w-4 h-4" />
+                               </div>
+                             )}
+                           </div>
+                           
+                           {newsForm.imageUrl && (
+                              <div className="flex flex-col items-center gap-2 px-3 py-3 border border-slate-100 rounded-2xl bg-slate-50/50 shadow-sm animate-in fade-in zoom-in duration-300">
+                                {(() => {
+                                  const fileId = newsForm.imageUrl.match(/\/d\/([^/]+)/)?.[1] || newsForm.imageUrl.match(/id=([^&]+)/)?.[1];
+                                  return fileId ? (
+                                    <div className="w-full flex items-center justify-between px-2 pb-2 mb-2 border-b border-white">
+                                      <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Extracted ID</span>
+                                      <code className="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-slate-200 text-primary truncate max-w-[150px]">{fileId}</code>
+                                    </div>
+                                  ) : null;
+                                })()}
+                                <div className="w-16 h-16 rounded-lg overflow-hidden border-2 border-white shadow-lg bg-white ring-1 ring-slate-200">
+                                  <img 
+                                    src={getGoogleDriveDirectLink(newsForm.imageUrl)} 
+                                    className="w-full h-full object-cover object-top" 
+                                    referrerPolicy="no-referrer"
+                                    onError={(e) => (e.target as HTMLImageElement).src = 'https://via.placeholder.com/100?text=Invalid'}
+                                  />
+                                </div>
+                                <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">News Icon Preview</p>
+                              </div>
+                           )}
+                           
+                           <div className="flex gap-2">
+                             <MediaLibraryPicker 
+                               onSelect={(url) => setNewsForm({...newsForm, imageUrl: url})}
+                               trigger={<Button variant="outline" className="w-full h-10"><ImageIcon className="w-4 h-4 mr-2"/> Browse Media Library</Button>}
+                             />
+                           </div>
                          </div>
                       </div>
                       <div className="space-y-2">
@@ -436,18 +475,55 @@ export default function CMSManager() {
                     <DialogHeader><DialogTitle className="text-xl font-bold">Add Slider Hero Image</DialogTitle></DialogHeader>
                     <div className="grid gap-4 py-4">
                       <div className="space-y-2">
-                        <Label>Hero Image Asset (Google Drive URL)</Label>
-                        <div className="flex gap-2">
-                          <Input 
-                            value={sliderForm.imageUrl} 
-                            onChange={e => setSliderForm({...sliderForm, imageUrl: e.target.value})} 
-                            placeholder="https://drive.google.com/..." 
-                            className="flex-1"
-                          />
-                          <MediaLibraryPicker 
-                            onSelect={(url) => setSliderForm({...sliderForm, imageUrl: url})}
-                            trigger={<Button variant="secondary" size="icon"><Plus className="w-4 h-4"/></Button>}
-                          />
+                        <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Hero Image Asset (Google Drive URL)</Label>
+                        <div className="flex flex-col gap-3">
+                          <div className="relative">
+                            <Input 
+                              id="sliderImageUrl"
+                              value={sliderForm.imageUrl} 
+                              onChange={e => setSliderForm({...sliderForm, imageUrl: e.target.value})} 
+                              placeholder="https://drive.google.com/..." 
+                              className={cn(
+                                "pr-10 h-11",
+                                sliderForm.imageUrl && (sliderForm.imageUrl.match(/\/d\/([^/]+)/)?.[1] || sliderForm.imageUrl.match(/id=([^&]+)/)?.[1]) ? "border-emerald-500/50 bg-emerald-50/50" : ""
+                              )}
+                            />
+                            {sliderForm.imageUrl && (sliderForm.imageUrl.match(/\/d\/([^/]+)/)?.[1] || sliderForm.imageUrl.match(/id=([^&]+)/)?.[1]) && (
+                              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500 bg-white rounded-full p-0.5 shadow-sm">
+                                <Check className="w-4 h-4" />
+                              </div>
+                            )}
+                          </div>
+
+                          {sliderForm.imageUrl && (
+                             <div className="flex flex-col items-center gap-2 px-3 py-3 border border-slate-100 rounded-2xl bg-slate-50/50 shadow-sm animate-in fade-in zoom-in duration-300">
+                               {(() => {
+                                 const fileId = sliderForm.imageUrl.match(/\/d\/([^/]+)/)?.[1] || sliderForm.imageUrl.match(/id=([^&]+)/)?.[1];
+                                 return fileId ? (
+                                   <div className="w-full flex items-center justify-between px-2 pb-2 mb-2 border-b border-white">
+                                     <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Extracted ID</span>
+                                     <code className="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-slate-200 text-primary truncate max-w-[150px]">{fileId}</code>
+                                   </div>
+                                 ) : null;
+                               })()}
+                               <div className="relative aspect-video w-full rounded-xl overflow-hidden border-2 border-white shadow-lg bg-white ring-1 ring-slate-200">
+                                 <img 
+                                   src={getGoogleDriveDirectLink(sliderForm.imageUrl)} 
+                                   className="w-full h-full object-cover" 
+                                   referrerPolicy="no-referrer"
+                                   onError={(e) => (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400?text=Invalid'}
+                                 />
+                               </div>
+                               <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Slider Preview</p>
+                             </div>
+                          )}
+
+                          <div className="flex gap-2">
+                             <MediaLibraryPicker 
+                               onSelect={(url) => setSliderForm({...sliderForm, imageUrl: url})}
+                               trigger={<Button variant="outline" className="w-full h-10"><ImageIcon className="w-4 h-4 mr-2"/> Browse Media Library</Button>}
+                             />
+                          </div>
                         </div>
                       </div>
                       <div className="space-y-2">
@@ -475,7 +551,7 @@ export default function CMSManager() {
                    <Card className="glass-card border-none shadow-xl overflow-hidden group rounded-2xl">
                      <div className="relative h-56 overflow-hidden bg-slate-900">
                        <img 
-                         src={slider.imageUrl} 
+                         src={getGoogleDriveDirectLink(slider.imageUrl)} referrerPolicy="no-referrer" 
                          alt={slider.title} 
                          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-80 group-hover:opacity-100" 
                        />
@@ -525,7 +601,7 @@ export default function CMSManager() {
               <DialogContent className="bg-white/95 backdrop-blur-xl border border-white/20 sm:max-w-[500px] p-0 overflow-hidden shadow-2xl rounded-2xl">
                  <div className="relative h-40 bg-slate-900">
                     {editingSlider?.imageUrl && (
-                      <img src={getGoogleDriveDirectLink(editingSlider.imageUrl)} className="w-full h-full object-cover opacity-50" />
+                      <img src={getGoogleDriveDirectLink(editingSlider.imageUrl)} className="w-full h-full object-cover opacity-50" referrerPolicy="no-referrer" />
                     )}
                     <div className="absolute inset-0 flex items-center justify-center">
                        <DialogHeader><DialogTitle className="text-3xl font-black text-white tracking-tighter drop-shadow-lg">Edit Hero Content</DialogTitle></DialogHeader>
@@ -594,18 +670,55 @@ export default function CMSManager() {
                         <Input value={galleryForm.eventDate} onChange={e => setGalleryForm({...galleryForm, eventDate: e.target.value})} placeholder="e.g. March 15, 2026" />
                       </div>
                       <div className="space-y-2">
-                        <Label>Cover Image Asset</Label>
-                        <div className="flex gap-2">
-                           <Input 
-                             value={galleryForm.coverImageUrl} 
-                             onChange={e => setGalleryForm({...galleryForm, coverImageUrl: e.target.value})} 
-                             placeholder="Google Drive URL or Upload..." 
-                             className="flex-1"
-                           />
-                           <MediaLibraryPicker 
-                             onSelect={(url) => setGalleryForm({...galleryForm, coverImageUrl: url})}
-                             trigger={<Button variant="secondary" size="icon" className="shrink-0"><Plus className="w-4 h-4"/></Button>}
-                           />
+                        <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Cover Image Asset</Label>
+                        <div className="flex flex-col gap-3">
+                          <div className="relative">
+                            <Input 
+                              id="galleryImageUrl"
+                              value={galleryForm.coverImageUrl} 
+                              onChange={e => setGalleryForm({...galleryForm, coverImageUrl: e.target.value})} 
+                              placeholder="https://drive.google.com/..." 
+                              className={cn(
+                                "pr-10 h-11",
+                                galleryForm.coverImageUrl && (galleryForm.coverImageUrl.match(/\/d\/([^/]+)/)?.[1] || galleryForm.coverImageUrl.match(/id=([^&]+)/)?.[1]) ? "border-emerald-500/50 bg-emerald-50/50" : ""
+                              )}
+                            />
+                            {galleryForm.coverImageUrl && (galleryForm.coverImageUrl.match(/\/d\/([^/]+)/)?.[1] || galleryForm.coverImageUrl.match(/id=([^&]+)/)?.[1]) && (
+                              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500 bg-white rounded-full p-0.5 shadow-sm">
+                                <Check className="w-4 h-4" />
+                              </div>
+                            )}
+                          </div>
+
+                          {galleryForm.coverImageUrl && (
+                             <div className="flex flex-col items-center gap-2 px-3 py-3 border border-slate-100 rounded-2xl bg-slate-50/50 shadow-sm animate-in fade-in zoom-in duration-300">
+                               {(() => {
+                                 const fileId = galleryForm.coverImageUrl.match(/\/d\/([^/]+)/)?.[1] || galleryForm.coverImageUrl.match(/id=([^&]+)/)?.[1];
+                                 return fileId ? (
+                                   <div className="w-full flex items-center justify-between px-2 pb-2 mb-2 border-b border-white">
+                                     <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Extracted ID</span>
+                                     <code className="text-[10px] font-mono bg-white px-2 py-0.5 rounded border border-slate-200 text-primary truncate max-w-[150px]">{fileId}</code>
+                                   </div>
+                                 ) : null;
+                               })()}
+                               <div className="relative aspect-video w-full rounded-xl overflow-hidden border-2 border-white shadow-lg bg-white ring-1 ring-slate-200">
+                                 <img 
+                                   src={getGoogleDriveDirectLink(galleryForm.coverImageUrl)} 
+                                   className="w-full h-full object-cover" 
+                                   referrerPolicy="no-referrer"
+                                   onError={(e) => (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400?text=Invalid'}
+                                 />
+                               </div>
+                               <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest">Album Cover Preview</p>
+                             </div>
+                          )}
+
+                          <div className="flex gap-2">
+                             <MediaLibraryPicker 
+                               onSelect={(url) => setGalleryForm({...galleryForm, coverImageUrl: url})}
+                               trigger={<Button variant="outline" className="w-full h-10"><ImageIcon className="w-4 h-4 mr-2"/> Browse Media Library</Button>}
+                             />
+                          </div>
                         </div>
                       </div>
                       <div className="space-y-2">
@@ -629,7 +742,7 @@ export default function CMSManager() {
                    <Card className="glass-card border-none shadow-xl overflow-hidden group rounded-2xl relative">
                      <div className="relative h-64 overflow-hidden bg-slate-900">
                        <img 
-                         src={event.coverImageUrl} 
+                         src={getGoogleDriveDirectLink(event.coverImageUrl)} referrerPolicy="no-referrer" 
                          alt={event.eventName} 
                          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
                        />
@@ -655,7 +768,7 @@ export default function CMSManager() {
               <DialogContent className="bg-white/95 backdrop-blur-xl border border-white/20 sm:max-w-[500px] p-0 overflow-hidden shadow-2xl rounded-2xl">
                  <div className="relative h-40 bg-slate-900">
                     {editingGallery?.coverImageUrl && (
-                      <img src={getGoogleDriveDirectLink(editingGallery.coverImageUrl)} className="w-full h-full object-cover opacity-50" />
+                      <img src={getGoogleDriveDirectLink(editingGallery.coverImageUrl)} className="w-full h-full object-cover opacity-50" referrerPolicy="no-referrer" />
                     )}
                     <div className="absolute inset-0 flex items-center justify-center">
                        <DialogHeader><DialogTitle className="text-3xl font-black text-white tracking-tighter drop-shadow-lg">Edit Event</DialogTitle></DialogHeader>

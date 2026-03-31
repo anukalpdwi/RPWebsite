@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { FaEnvelope, FaLinkedinIn } from "react-icons/fa";
 
 import { useQuery } from "@tanstack/react-query";
+import { getGoogleDriveDirectLink } from "@/lib/utils";
 
 // Animation variants
 const containerVariants = {
@@ -33,7 +34,7 @@ export default function Faculty() {
 
   // Take first 4 for home page display
   const facultyMembers = staff?.slice(0, 4).map(member => ({
-    image: member.photoUrl || "https://images.unsplash.com/photo-1544161515-4af6b1d462c2?q=80&w=2070&auto=format&fit=crop",
+    image: getGoogleDriveDirectLink(member.photoUrl) || "https://images.unsplash.com/photo-1544161515-4af6b1d462c2?q=80&w=2070&auto=format&fit=crop",
     name: member.name,
     position: member.role,
     bio: member.bio || "Dedicated faculty member at RP Public School.",
@@ -80,11 +81,12 @@ export default function Faculty() {
               className="bg-white rounded-lg shadow-md overflow-hidden card-hover transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
               variants={itemVariants}
             >
-              <div className="h-64 overflow-hidden">
+              <div className="aspect-[4/5] overflow-hidden">
                 <img 
                   src={faculty.image} 
                   alt={faculty.name} 
-                  className="w-full h-full object-cover" 
+                  className="w-full h-full object-cover object-top" 
+                  referrerPolicy="no-referrer"
                 />
               </div>
               <div className="p-4 text-center">

@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { useEffect } from "react";
 import NotFound from "@/pages/not-found";
 import { Analytics } from '@vercel/analytics/react';
-import { AuthProvider } from "@/hooks/use-auth";
+import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
 
 // Layout components
@@ -50,13 +50,15 @@ function ScrollToTop() {
 // Tracks public page visits by pinging the analytics endpoint on route change
 function VisitTracker() {
   const [location] = useLocation();
-  const isAdmin = location.startsWith("/admin");
+  const { user } = useAuth();
+  const isAdminPath = location.startsWith("/admin");
 
   useEffect(() => {
-    if (!isAdmin) {
+    // Only track if we are NOT on an admin path AND NOT logged in as an admin
+    if (!isAdminPath && !user) {
       fetch("/api/track-visit", { method: "POST" }).catch(() => {});
     }
-  }, [location, isAdmin]);
+  }, [location, isAdminPath, user]);
 
   return null;
 }

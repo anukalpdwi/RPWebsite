@@ -185,7 +185,7 @@ export default function StudentDetail() {
                 <CardHeader className="text-center pb-2">
                   <div className="mx-auto w-32 h-32 rounded-xl bg-slate-100 flex items-center justify-center mb-4 overflow-hidden border-4 border-white shadow-sm">
                     {student.photoUrl ? (
-                       <img src={student.photoUrl} alt={student.name} className="w-full h-full object-cover" />
+                       <img src={student.photoUrl} alt={student.name} className="w-full h-full object-cover object-top" />
                     ) : (
                        <User className="h-12 w-12 text-slate-300" />
                     )}

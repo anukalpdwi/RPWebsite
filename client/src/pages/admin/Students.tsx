@@ -413,7 +413,7 @@ export default function StudentManager() {
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar className="h-10 w-10 border-2 border-white shadow-sm ring-1 ring-slate-100 group-hover:scale-105 transition-transform">
-                            <AvatarImage src={student.photoUrl || ""} />
+                            <AvatarImage src={student.photoUrl || ""} className="object-cover object-top" />
                             <AvatarFallback className="bg-slate-100 text-slate-400 font-black text-xs">
                               {student.name.charAt(0)}
                             </AvatarFallback>
@@ -493,7 +493,7 @@ export default function StudentManager() {
                       
                       <div className="relative flex flex-col md:flex-row items-center md:items-end gap-6">
                         <Avatar className="h-32 w-32 border-4 border-white/20 shadow-2xl rounded-2xl">
-                            <AvatarImage src={selectedStudent.photoUrl || ""} className="object-cover" />
+                            <AvatarImage src={selectedStudent.photoUrl || ""} className="object-cover object-top" />
                             <AvatarFallback className="bg-white/10 text-white text-3xl font-bold">
                               {selectedStudent.name.charAt(0)}
                             </AvatarFallback>

@@ -4,7 +4,7 @@ import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import ws from "ws";
 import * as schema from "./shared/schema.js";
-import { sql } from 'drizzle-orm';
+import { sql, desc, eq } from 'drizzle-orm';
 
 neonConfig.webSocketConstructor = ws;
 
@@ -17,8 +17,14 @@ async function check() {
   const db = drizzle({ client: pool, schema });
   
   try {
-    const res = await db.select().from(schema.studentNotifications);
-    console.log("RECORDS:", JSON.stringify(res, null, 2));
+    const logsCount = await db.select({ count: sql`count(*)` }).from(schema.visitorLogs);
+    console.log("TOTAL VISITOR LOGS:", logsCount[0].count);
+    
+    const logsToday = await db.select().from(schema.visitorLogs).where(eq(schema.visitorLogs.visitDate, new Date().toISOString().split('T')[0]));
+    console.log("VISITOR LOG ENTRIES TODAY:", logsToday.length);
+    
+    const stats = await db.select().from(schema.websiteVisits).orderBy(desc(schema.websiteVisits.date)).limit(5);
+    console.log("VISIT STATS (last 5 days):", JSON.stringify(stats, null, 2));
   } catch (e) {
     console.error("DB ERROR:", e.message);
   } finally {

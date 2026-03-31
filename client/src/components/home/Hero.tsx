@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import AnimatedText from "@/components/ui/animated-text";
 import { useQuery } from "@tanstack/react-query";
+import { getGoogleDriveDirectLink } from "@/lib/utils";
 
 // Hero slider data
 const heroSlides = [
@@ -73,7 +74,7 @@ export default function Hero() {
 
   const displaySlides = dbSliders && dbSliders.length > 0 
     ? dbSliders.map(s => ({
-        image: s.imageUrl,
+        image: getGoogleDriveDirectLink(s.imageUrl),
         title: s.title || "RP Public School",
         subtitle: s.description || "Nurturing Excellence",
         buttons: [
@@ -131,9 +132,10 @@ export default function Hero() {
             transition={{ duration: 1.2 }}
           >
             <img 
-              src={slide.image} 
+              src={getGoogleDriveDirectLink(slide.image)} 
               alt={slide.title} 
               className="object-cover w-full h-full" 
+              referrerPolicy="no-referrer"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/60"></div>
             

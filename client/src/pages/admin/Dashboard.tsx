@@ -174,7 +174,16 @@ export default function AdminDashboard() {
                     </div>
                     <div>
                       <CardTitle className="text-xl font-black text-slate-800">Website Traffic</CardTitle>
-                      <CardDescription className="text-xs font-bold uppercase tracking-wider text-slate-400 mt-0.5">30-Day Visitor Trends</CardDescription>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <CardDescription className="text-xs font-bold uppercase tracking-wider text-slate-400">30-Day Visitor Trends</CardDescription>
+                        <div className="group relative">
+                          <div className="cursor-help px-1.5 py-0.5 rounded-full bg-slate-100 text-[8px] font-black text-slate-500 border border-slate-200">ACCURACY</div>
+                          <div className="absolute left-0 top-full mt-2 w-64 p-3 bg-slate-900 text-white text-[10px] rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none font-medium leading-relaxed">
+                            <p className="mb-2 text-primary font-black uppercase tracking-widest text-[9px]">Data Filtering Active</p>
+                            We now automatically filter out bots, crawlers, and admin sessions. Note: This count may still be higher than Vercel because it sums daily unique visits, while Vercel deduplicates over the entire month.
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Lightbox from "@/components/ui/lightbox";
+import { getGoogleDriveDirectLink } from "@/lib/utils";
 
 interface Image {
   src: string;
@@ -60,9 +61,10 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
             onClick={() => openLightbox(index)}
           >
             <img 
-              src={image.src} 
+              src={getGoogleDriveDirectLink(image.src)} 
               alt={image.alt} 
               className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+              referrerPolicy="no-referrer"
             />
           </motion.div>
         ))}

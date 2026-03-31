@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "wouter";
 import Lightbox from "@/components/ui/lightbox";
 import { useQuery } from "@tanstack/react-query";
+import { getGoogleDriveDirectLink } from "@/lib/utils";
 
 // Gallery images
 const galleryImages = [
@@ -107,7 +108,7 @@ export default function Gallery() {
   // Map database gallery events into the image format, or fallback to default
   const displayImages = dbEvents && dbEvents.length > 0 
     ? dbEvents.filter(e => e.coverImageUrl).map(e => ({
-        src: e.coverImageUrl,
+        src: getGoogleDriveDirectLink(e.coverImageUrl),
         alt: e.eventName,
         className: ""
       }))
@@ -152,9 +153,10 @@ export default function Gallery() {
               onClick={() => openLightbox(index)}
             >
               <img 
-                src={image.src} 
+                src={getGoogleDriveDirectLink(image.src)} 
                 alt={image.alt} 
                 className="w-full h-full object-cover aspect-square md:aspect-auto transition-transform duration-500 hover:scale-105" 
+                referrerPolicy="no-referrer"
               />
             </motion.div>
           ))}

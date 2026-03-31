@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/tabs";
 
 import { useQuery } from "@tanstack/react-query";
+import { getGoogleDriveDirectLink } from "@/lib/utils";
 
 // Department names mapping
 const departmentNames: Record<string, string> = {
@@ -51,7 +52,7 @@ export default function FacultyPage() {
     acc[dept].push({
       name: member.name,
       position: member.role,
-      image: member.photoUrl || "https://images.unsplash.com/photo-1544161515-4af6b1d462c2?q=80&w=2070&auto=format&fit=crop",
+      image: getGoogleDriveDirectLink(member.photoUrl) || "https://images.unsplash.com/photo-1544161515-4af6b1d462c2?q=80&w=2070&auto=format&fit=crop",
       bio: member.bio || "Dedicated faculty member at RP Public School, committed to fostering academic excellence and holistic development in every student.",
       education: member.qualification || "Degrees not specified",
       experience: member.experience || "Years of experience not specified",
@@ -117,7 +118,8 @@ export default function FacultyPage() {
                         <img 
                           src={faculty.image} 
                           alt={faculty.name} 
-                          className="w-full h-full object-cover" 
+                          className="w-full h-full object-cover object-top" 
+                          referrerPolicy="no-referrer"
                         />
                       </div>
                       <div className="p-6 md:w-2/3 lg:w-3/4">

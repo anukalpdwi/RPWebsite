@@ -385,172 +385,209 @@ export default function FullAdmissionForm() {
       </div>
 
       {/* Print View Layout */}
-      <div ref={printRef} className="hidden print:block print-container font-sans text-neutral-dark max-w-[850px] mx-auto p-0 border-4 border-double border-neutral-light bg-white !important relative overflow-hidden">
+      <div ref={printRef} className="hidden print:block print-container font-sans text-slate-900 max-w-[850px] mx-auto p-0 border-[12px] border-double border-slate-200 bg-white !important relative overflow-hidden">
         
+        {/* Decorative Corner Ornaments */}
+        <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-slate-300 pointer-events-none z-20 m-4" />
+        <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-slate-300 pointer-events-none z-20 m-4" />
+        <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 border-slate-300 pointer-events-none z-20 m-4" />
+        <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-slate-300 pointer-events-none z-20 m-4" />
+
         {/* Subtle Watermark Logo */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none z-0">
-          <img src="/Images/logo/favicon.jpg" alt="Watermark" className="w-[500px] h-[500px] object-contain grayscale" />
+        <div className="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none z-0">
+          <img src="/Images/logo/favicon.jpg" alt="Watermark" className="w-[550px] h-[550px] object-contain grayscale" />
         </div>
 
         <div className="relative z-10">
-          {/* Print Header: Ultra-Premium Blue Block */}
-          <div className="bg-[#0f172a] !important text-white !important p-6 flex items-start justify-between relative">
-            <div className="absolute bottom-0 left-0 w-full h-1 bg-yellow-500/50" />
+          {/* Print Header: Ultra-Premium Clean Layout */}
+          <div className="bg-white !important text-slate-900 !important p-10 flex items-start justify-between relative border-b-4 border-slate-900">
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-amber-500" />
             
-            <div className="flex items-center gap-6">
-              <div className="bg-white p-2 rounded shadow-lg">
-                 <img src="/Images/logo/favicon.jpg" alt="Logo" className="w-16 h-16 object-contain" />
+            <div className="flex items-center gap-8">
+              <div className="bg-white p-1 border-2 border-slate-200 shadow-sm rounded-sm">
+                 <img src="/Images/logo/favicon.jpg" alt="Logo" className="w-20 h-20 object-contain" />
               </div>
               <div>
-                <h1 className="text-3xl font-black tracking-tight leading-none uppercase text-white shadow-sm">{schoolInfo.name}</h1>
-                <p className="text-[11px] font-bold text-yellow-500 mt-1 uppercase tracking-widest leading-none">Nurturing Excellence, Building Character</p>
-                <div className="mt-4 space-y-0.5">
-                  <p className="text-[10px] font-medium opacity-80 uppercase leading-none">Jaisinghnagar, Shahdol, Madhya Pradesh</p>
-                  <p className="text-[10px] font-medium opacity-80 uppercase leading-none">PH: +91 9893767392 • EMAIL: rppublicschool2021@gmail.com</p>
-                  <div className="mt-2 inline-block px-3 py-1 bg-yellow-500/20 border border-yellow-500/30 rounded">
-                    <p className="text-[10px] font-black tracking-widest text-yellow-500">ADMISSION NO: {admissionNo || "PENDING"}</p>
-                  </div>
+                <h1 className="text-4xl font-black tracking-tight leading-none uppercase text-slate-900 mb-1">{schoolInfo.name}</h1>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-[2px] w-8 bg-amber-500" />
+                  <p className="text-[12px] font-extrabold text-amber-600 uppercase tracking-[0.2em] leading-none">Nurturing Excellence, Building Character</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold text-slate-500 uppercase leading-none flex items-center gap-1">
+                    <MapPin className="w-2 h-2" /> Jaisinghnagar, Shahdol, Madhya Pradesh - 484771
+                  </p>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase leading-none flex items-center gap-3">
+                    <span className="flex items-center gap-1"><Phone className="w-2 h-2" /> +91 9893767392</span>
+                    <span className="flex items-center gap-1"><Mail className="w-2 h-2" /> rppublicschool2021@gmail.com</span>
+                  </p>
                 </div>
               </div>
             </div>
 
-            <div className="text-right flex flex-col items-end gap-2">
-               <div className="w-20 h-24 border border-white/20 bg-white/5 flex items-center justify-center overflow-hidden">
+            <div className="text-right flex flex-col items-end gap-3">
+               <div className="w-24 h-28 border-2 border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden shadow-inner relative">
+                 <div className="absolute inset-0 border border-slate-100 m-1" />
                  {form.getValues("studentPhoto") ? (
                    <img src={form.getValues("studentPhoto")} alt="Student" className="w-full h-full object-cover" />
                  ) : (
-                   <span className="text-[7px] font-bold text-white/30 uppercase text-center px-2 leading-tight">PASSPORT SIZE PHOTO</span>
+                   <div className="flex flex-col items-center gap-1 opacity-20">
+                     <User className="w-8 h-8" />
+                     <span className="text-[6px] font-black uppercase text-center leading-tight">AFFIX PHOTO HERE</span>
+                   </div>
                  )}
                </div>
                <div className="mt-auto">
-                 <h2 className="text-2xl font-black tracking-tighter text-white leading-none">ADMISSION</h2>
-                 <h2 className="text-sm font-black tracking-[0.4em] text-yellow-500 leading-none">FORM</h2>
-                 <p className="text-[9px] font-black text-white/50 uppercase mt-2">SESSION: 2026 - 2027</p>
+                 <div className="bg-slate-900 px-4 py-2 text-white">
+                   <h2 className="text-xs font-black tracking-[0.3em] uppercase leading-none mb-1">Official Admission Form</h2>
+                   <p className="text-[14px] font-black text-amber-400 tracking-tighter leading-none">NO: {admissionNo || "APP-2026/XXXX"}</p>
+                 </div>
+                 <p className="text-[10px] font-black text-slate-400 uppercase mt-2 tracking-widest text-right">SESSION: 2026 - 2027</p>
                </div>
             </div>
           </div>
 
           {/* Print Body: Structured Data */}
-          <div className="p-8 space-y-6">
+          <div className="p-10 space-y-8">
             
-            {/* Row 1: Student Name */}
-            <div className="border-b-2 border-neutral-light pb-1">
-              <span className="text-[9px] font-black uppercase text-neutral-dark/50 tracking-widestone">Full Name of Student</span>
-              <p className="text-lg font-black text-neutral-dark uppercase leading-tight -mt-0.5">
-                {form.getValues("childName")}
-              </p>
-            </div>
-
-            {/* Row 2: Parents */}
-            <div className="grid grid-cols-2 gap-10">
-              <div className="border-b border-neutral-light pb-1">
-                <span className="text-[9px] font-black uppercase text-neutral-dark/50 tracking-widestone">Father's Full Name</span>
-                <p className="text-sm font-bold text-neutral-dark uppercase leading-tight mt-0.5">
-                  {form.getValues("fatherName")}
-                </p>
-              </div>
-              <div className="border-b border-neutral-light pb-1">
-                <span className="text-[9px] font-black uppercase text-neutral-dark/50 tracking-widestone">Mother's Full Name</span>
-                <p className="text-sm font-bold text-neutral-dark uppercase leading-tight mt-0.5">
-                  {form.getValues("motherName")}
-                </p>
-              </div>
-            </div>
-
-            {/* Row 3: DOB & Gender */}
-            <div className="grid grid-cols-2 gap-10">
-              <div className="flex gap-10">
-                <div className="flex-1 border-b border-neutral-light pb-1">
-                  <span className="text-[9px] font-black uppercase text-neutral-dark/50 tracking-widestone">Date of Birth</span>
-                  <p className="text-sm font-bold text-neutral-dark leading-tight mt-0.5">
-                    {form.getValues("dob")}
+            {/* Section 1: Student Identity */}
+            <div className="relative">
+              <div className="absolute -left-4 top-0 bottom-0 w-1 bg-amber-500/30" />
+              <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4 flex items-center gap-2">
+                <span className="w-2 h-2 bg-slate-900 rounded-full" /> Personal Identification
+              </h3>
+              
+              <div className="grid grid-cols-1 gap-6">
+                <div className="border-b border-slate-200 pb-2 relative">
+                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider">Candidate's Full Name (In Block Letters)</span>
+                  <p className="text-xl font-black text-slate-900 uppercase leading-none mt-1">
+                    {form.getValues("childName") || "................................................................................"}
                   </p>
                 </div>
-                <div className="flex-1 border-b border-neutral-light pb-1">
-                  <span className="text-[9px] font-black uppercase text-neutral-dark/50 tracking-widestone">Blood Group</span>
-                  <p className="text-sm font-bold text-neutral-dark uppercase leading-tight mt-0.5">
-                    {form.getValues("bloodGroup") || "N/A"}
+
+                <div className="grid grid-cols-2 gap-10">
+                  <div className="border-b border-slate-200 pb-2">
+                    <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider">Date of Birth</span>
+                    <p className="text-sm font-bold text-slate-900 mt-1">
+                      {form.getValues("dob") || "DD / MM / YYYY"}
+                    </p>
+                  </div>
+                  <div className="border-b border-slate-200 pb-2">
+                    <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider">Blood Group</span>
+                    <p className="text-sm font-bold text-slate-900 uppercase mt-1">
+                      {form.getValues("bloodGroup") || "...................."}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-10">
+                  <div className="border-b border-slate-200 pb-2">
+                    <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider">Gender Identity</span>
+                    <div className="flex gap-8 mt-2 text-[10px] font-black text-slate-900">
+                       <label className="flex items-center gap-2 cursor-default">
+                         <div className={`w-4 h-4 border-2 border-slate-900 flex items-center justify-center ${form.getValues("gender") === 'male' ? 'bg-slate-900 text-white' : ''}`}>
+                           {form.getValues("gender") === 'male' && <CheckCircle2 className="w-3 h-3" />}
+                         </div>
+                         MALE
+                       </label>
+                       <label className="flex items-center gap-2 cursor-default">
+                         <div className={`w-4 h-4 border-2 border-slate-900 flex items-center justify-center ${form.getValues("gender") === 'female' ? 'bg-slate-900 text-white' : ''}`}>
+                           {form.getValues("gender") === 'female' && <CheckCircle2 className="w-3 h-3" />}
+                         </div>
+                         FEMALE
+                       </label>
+                    </div>
+                  </div>
+                  <div className="border-b border-slate-200 pb-2">
+                    <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider">Applying for Academic Class</span>
+                    <p className="text-sm font-black text-slate-900 uppercase mt-1">
+                      {form.getValues("grade") 
+                        ? (form.getValues("grade") === "nursery" || form.getValues("grade") === "kg" 
+                           ? form.getValues("grade").toUpperCase() 
+                           : `CLASS - ${form.getValues("grade")}`)
+                        : "...................."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 2: Parentage & Contact */}
+            <div className="relative">
+              <div className="absolute -left-4 top-0 bottom-0 w-1 bg-amber-500/30" />
+              <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4 flex items-center gap-2">
+                <span className="w-2 h-2 bg-slate-900 rounded-full" /> Guardian & Contact Information
+              </h3>
+
+              <div className="grid grid-cols-2 gap-10">
+                <div className="border-b border-slate-200 pb-2">
+                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider">Father / Guardian's Name</span>
+                  <p className="text-sm font-bold text-slate-900 uppercase mt-1">
+                    {form.getValues("fatherName") || "........................................................"}
+                  </p>
+                </div>
+                <div className="border-b border-slate-200 pb-2">
+                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider">Mother's Name</span>
+                  <p className="text-sm font-bold text-slate-900 uppercase mt-1">
+                    {form.getValues("motherName") || "........................................................"}
                   </p>
                 </div>
               </div>
-              <div className="border-b border-neutral-light pb-1">
-                <span className="text-[9px] font-black uppercase text-neutral-dark/50 tracking-widestone">Gender</span>
-                <div className="flex gap-6 mt-1 text-[11px] font-bold text-neutral-dark items-center">
-                   <div className="flex items-center gap-2">
-                     <div className={`w-3 h-3 rounded-full border-2 border-neutral-dark ${form.getValues("gender") === 'male' ? 'bg-neutral-dark' : ''}`} />
-                     MALE
-                   </div>
-                   <div className="flex items-center gap-2">
-                     <div className={`w-3 h-3 rounded-full border-2 border-neutral-dark ${form.getValues("gender") === 'female' ? 'bg-neutral-dark' : ''}`} />
-                     FEMALE
-                   </div>
+
+              <div className="grid grid-cols-2 gap-10 mt-6">
+                <div className="border-b border-slate-200 pb-2">
+                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider">Primary Telephone</span>
+                  <p className="text-sm font-bold text-slate-900 mt-1">
+                    {form.getValues("phone") || "+91 - XXXXXXXXXX"}
+                  </p>
+                </div>
+                <div className="border-b border-slate-200 pb-2">
+                  <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider">Alternate Contact</span>
+                  <p className="text-sm font-bold text-slate-900 mt-1">
+                    {form.getValues("alternatePhone") || "N/A"}
+                  </p>
                 </div>
               </div>
-            </div>
 
-            {/* Row 4: Address */}
-            <div className="border border-neutral-light p-4 rounded-md bg-neutral-light/5">
-              <span className="text-[9px] font-black uppercase text-neutral-dark/50 tracking-widestone">Permanent Residential Address</span>
-              <p className="text-sm font-bold text-neutral-dark italic leading-relaxed mt-1">
-                {form.getValues("address")}, Jaisinghnagar, Shahdol, Madhya Pradesh
-              </p>
-            </div>
-
-            {/* Row 5: Contact & Academic */}
-            <div className="grid grid-cols-3 gap-6">
-              <div className="border-b border-neutral-light pb-1">
-                <span className="text-[9px] font-black uppercase text-neutral-dark/50 tracking-widestone tracking-tight">Primary Phone</span>
-                <p className="text-sm font-bold text-neutral-dark leading-tight mt-0.5">
-                  {form.getValues("phone")}
-                </p>
-              </div>
-              <div className="border-b border-neutral-light pb-1">
-                <span className="text-[9px] font-black uppercase text-neutral-dark/50 tracking-widestone tracking-tight">Alternate Phone</span>
-                <p className="text-sm font-bold text-neutral-dark leading-tight mt-0.5">
-                  {form.getValues("alternatePhone") || "N/A"}
-                </p>
-              </div>
-              <div className="border-b border-neutral-light pb-1">
-                <span className="text-[9px] font-black uppercase text-neutral-dark/50 tracking-widestone tracking-tight">Applying for Grade</span>
-                <p className="text-sm font-black text-neutral-dark uppercase leading-tight mt-0.5">
-                  {(form.getValues("grade") === "nursery" || form.getValues("grade") === "kg")
-                    ? form.getValues("grade").toUpperCase()
-                    : `CLASS ${form.getValues("grade")}`}
+              <div className="mt-6 border border-slate-100 p-4 rounded bg-slate-50/50 relative">
+                <span className="absolute -top-2 left-4 px-2 bg-white text-[8px] font-black uppercase text-slate-400">Communication Address</span>
+                <p className="text-[11px] font-bold text-slate-700 italic leading-relaxed">
+                  {form.getValues("address") || "................................................................................................................................"}, Jaisinghnagar, Shahdol, Madhya Pradesh
                 </p>
               </div>
             </div>
 
-            {/* Declaration & Footer */}
-            <div className="pt-8 flex justify-between items-start">
-               {/* Declaration */}
-               <div className="max-w-md">
-                 <h3 className="text-[10px] font-black uppercase tracking-widest text-[#0f172a] mb-2 border-b-2 border-[#0f172a] inline-block">Declaration</h3>
-                 <p className="text-[9px] leading-relaxed text-neutral-dark/70 text-justify italic">
-                   I hereby declare that all information provided for my child to <strong>{schoolInfo.name}</strong> is true and authentic. I commit to following all academic and discipline protocols of the institution.
+            {/* Section 3: Legal Binding */}
+            <div className="pt-4 flex justify-between items-start gap-12">
+               <div className="flex-1">
+                 <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-900 mb-2 border-b-2 border-amber-500 inline-block">Institutional Declaration</h3>
+                 <p className="text-[9px] leading-relaxed text-slate-500 text-justify italic">
+                   I, the undersigned, hereby certify that the information provided herein is accurate to the best of my knowledge. I acknowledge that any falsification of records may result in the immediate cancellation of the candidate's admission. I agree to abide by the rules and regulations of <strong>{schoolInfo.name}</strong> as formulated from time to time.
                  </p>
                </div>
 
-               {/* Stamp/Seal */}
-               <div className="w-24 h-24 rounded-full border-4 border-double border-neutral-light/50 flex items-center justify-center text-center p-2 opacity-30 rotate-12">
-                  <span className="text-[8px] font-black uppercase leading-[0.8] tracking-widest">Official<br/>School<br/>Seal</span>
+               <div className="w-28 h-28 rounded-full border-4 border-double border-slate-100 flex items-center justify-center text-center p-3 opacity-20 -rotate-12">
+                  <span className="text-[7px] font-black uppercase leading-tight tracking-[0.2em] text-slate-400">OFFICIAL<br/>INSTITUTIONAL<br/>SEAL</span>
                </div>
             </div>
 
-            {/* Signature Area */}
-            <div className="pt-2 flex justify-between items-end h-20 px-8">
-              <div className="text-center">
-                 <div className="w-40 border-b-2 border-neutral-dark/20 mb-2" />
-                 <span className="text-[8px] font-black uppercase tracking-[0.2em] text-neutral-dark/40">Student / Guardian Signature</span>
+            {/* Section 4: Authorized Signatories */}
+            <div className="pt-4 flex justify-between items-end h-24">
+              <div className="text-center group">
+                 <div className="w-48 border-b-2 border-slate-200 mb-2 group-hover:border-slate-900 transition-colors" />
+                 <span className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">Parent / Guardian Signature</span>
               </div>
-              <div className="text-center">
-                 <div className="w-40 border-b-2 border-neutral-dark/20 mb-2" />
-                 <span className="text-[8px] font-black uppercase tracking-[0.2em] text-neutral-dark/40">Admissions Authority</span>
+              <div className="text-center group">
+                 <div className="w-48 border-b-2 border-slate-200 mb-2 group-hover:border-slate-900 transition-colors" />
+                 <span className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">Admissions Registrar</span>
               </div>
             </div>
 
-            {/* Page Footer */}
-            <div className="pt-8 text-center border-t border-neutral-light/30">
-               <p className="text-[8px] font-black tracking-[0.5em] text-neutral-dark/30 uppercase">RP PUBLIC SCHOOL • EXCELLENCE IN EDUCATION • {new Date().getFullYear()}</p>
+            {/* Page Traceability Footer */}
+            <div className="pt-6 text-center border-t border-slate-100 mt-auto">
+               <p className="text-[7px] font-black tracking-[0.8em] text-slate-300 uppercase">
+                 RP PUBLIC SCHOOL • EXCELLENCE • INTEGRITY • LEADERSHIP • {new Date().getFullYear()}
+               </p>
             </div>
           </div>
         </div>
