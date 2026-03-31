@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import Lightbox from "@/components/ui/lightbox";
+import { useQuery } from "@tanstack/react-query";
 
 // Gallery images
 const galleryImages = [
@@ -99,6 +100,22 @@ export default function Gallery() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  const { data: dbEvents } = useQuery<any[]>({
+    queryKey: ["/api/gallery"],
+  });
+
+  // Map database gallery events into the image format, or fallback to default
+  const displayImages = dbEvents && dbEvents.length > 0 
+    ? dbEvents.filter(e => e.coverImageUrl).map(e => ({
+        src: e.coverImageUrl,
+        alt: e.eventName,
+        className: ""
+      }))
+    : galleryImages;
+
+  // Since we only want to show a few on the homepage, slice it
+  const displayImagesSliced = displayImages.slice(0, 8);
+
   const openLightbox = (index: number) => {
     setCurrentImageIndex(index);
     setLightboxOpen(true);
@@ -127,7 +144,7 @@ export default function Gallery() {
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
         >
-          {galleryImages.map((image, index) => (
+          {displayImagesSliced.map((image, index) => (
             <motion.div 
               key={index}
               className={`gallery-item rounded-lg overflow-hidden shadow-md cursor-pointer ${image.className || ""}`}
@@ -137,7 +154,7 @@ export default function Gallery() {
               <img 
                 src={image.src} 
                 alt={image.alt} 
-                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+                className="w-full h-full object-cover aspect-square md:aspect-auto transition-transform duration-500 hover:scale-105" 
               />
             </motion.div>
           ))}
@@ -160,7 +177,7 @@ export default function Gallery() {
       </div>
       
       <Lightbox 
-        images={galleryImages}
+        images={displayImagesSliced}
         isOpen={lightboxOpen}
         initialIndex={currentImageIndex}
         onClose={() => setLightboxOpen(false)}

@@ -24,11 +24,35 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { getGoogleDriveDirectLink, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
 
 export default function StaffManager() {
   const { toast } = useToast();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    role: "",
+    department: "teaching",
+    qualification: "",
+    experience: "",
+    phone: "",
+    email: "",
+    photoUrl: ""
+  });
 
   const { data: staff, isLoading } = useQuery<any[]>({
     queryKey: ["/api/admin/staff"],
@@ -47,6 +71,39 @@ export default function StaffManager() {
     },
   });
 
+  const createMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return await apiRequest("POST", "/api/admin/staff", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/staff"] });
+      setIsAddModalOpen(false);
+      setFormData({
+        name: "", role: "", department: "teaching", qualification: "", experience: "", phone: "", email: "", photoUrl: ""
+      });
+      toast({
+        title: "Staff Added",
+        description: "New faculty member successfully added.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Could not add staff member. Check fields.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = {
+      ...formData,
+      photoUrl: getGoogleDriveDirectLink(formData.photoUrl)
+    };
+    createMutation.mutate(payload);
+  };
+
   const handleDelete = (id: number, name: string) => {
     if (window.confirm(`Are you sure you want to remove ${name} from the staff records?`)) {
       deleteMutation.mutate(id);
@@ -62,10 +119,61 @@ export default function StaffManager() {
             <p className="text-muted-foreground mt-1 text-sm font-medium uppercase tracking-wider opacity-70">Internal Management Portal</p>
           </div>
           <div className="flex items-center gap-3">
-            <Button size="sm" className="bg-primary hover:bg-primary-dark shadow-md">
-              <Plus className="w-4 h-4 mr-2" />
-              Register New Faculty
-            </Button>
+            <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="bg-primary hover:bg-primary-dark shadow-md">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Register New Faculty
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <form onSubmit={handleSubmit}>
+                  <DialogHeader>
+                    <DialogTitle>Register New Faculty</DialogTitle>
+                    <DialogDescription>
+                      Add a new member to the school's staff directory.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="name" className="text-right text-xs font-bold uppercase">Name</Label>
+                      <Input id="name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="col-span-3" required />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="role" className="text-right text-xs font-bold uppercase">Designation</Label>
+                      <Input id="role" placeholder="e.g. Mathematics Teacher" value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value})} className="col-span-3" required />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="department" className="text-right text-xs font-bold uppercase">Type</Label>
+                      <select 
+                        id="department" 
+                        value={formData.department} 
+                        onChange={(e) => setFormData({...formData, department: e.target.value})} 
+                        className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 col-span-3"
+                      >
+                        <option value="teaching">Teaching Staff</option>
+                        <option value="administration">Administration</option>
+                        <option value="support">Support Staff</option>
+                      </select>
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="qualification" className="text-right text-xs font-bold uppercase">Qualif.</Label>
+                      <Input id="qualification" placeholder="e.g. M.Sc, B.Ed" value={formData.qualification} onChange={(e) => setFormData({...formData, qualification: e.target.value})} className="col-span-3" />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="photoUrl" className="text-right text-xs font-bold uppercase">Photo URL</Label>
+                      <Input id="photoUrl" placeholder="https://..." value={formData.photoUrl} onChange={(e) => setFormData({...formData, photoUrl: e.target.value})} className="col-span-3" />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => setIsAddModalOpen(false)}>Cancel</Button>
+                    <Button type="submit" disabled={createMutation.isPending}>
+                      {createMutation.isPending ? "Saving..." : "Save Record"}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
@@ -110,7 +218,7 @@ export default function StaffManager() {
                           <div className="flex items-center gap-4">
                             <div className="relative">
                               <Avatar className="h-10 w-10 border-2 border-white shadow-sm ring-1 ring-slate-100">
-                                <AvatarImage src={member.imageUrl || ""} />
+                                <AvatarImage src={member.photoUrl || ""} />
                                 <AvatarFallback className="bg-slate-200 text-slate-500">
                                   <UserCircle className="w-6 h-6" />
                                 </AvatarFallback>
@@ -126,7 +234,7 @@ export default function StaffManager() {
                           </div>
                         </TableCell>
                         <TableCell className="font-semibold text-slate-700">
-                          {member.designation}
+                          {member.role}
                         </TableCell>
                         <TableCell>
                           <span className="text-xs font-bold text-slate-500 uppercase">{member.experience} EXP</span>
@@ -136,10 +244,10 @@ export default function StaffManager() {
                             variant="outline" 
                             className={cn(
                               "font-bold uppercase text-[9px] tracking-widest px-2 py-0.5",
-                              member.category === 'teaching' ? "border-blue-200 text-blue-700 bg-blue-50" : "border-slate-200 text-slate-700 bg-slate-50"
+                              member.department === 'teaching' ? "border-blue-200 text-blue-700 bg-blue-50" : "border-slate-200 text-slate-700 bg-slate-50"
                             )}
                           >
-                            {member.category}
+                            {member.department}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right px-6">
@@ -171,8 +279,4 @@ export default function StaffManager() {
       </div>
     </AdminLayout>
   );
-}
-
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(" ");
 }

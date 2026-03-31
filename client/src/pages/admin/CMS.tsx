@@ -26,12 +26,31 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { getGoogleDriveDirectLink } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { useState } from "react";
+
 export default function CMSManager() {
   const { toast } = useToast();
+  const [isNewsModalOpen, setIsNewsModalOpen] = useState(false);
+  const [isSliderModalOpen, setIsSliderModalOpen] = useState(false);
+
+  const [newsForm, setNewsForm] = useState({ content: "", priority: "normal", isActive: true });
+  const [sliderForm, setSliderForm] = useState({ title: "", description: "", imageUrl: "", isActive: true, order: 0 });
+  
+  // Existing Popup Form State
+  const [popupForm, setPopupForm] = useState({ title: "Admissions Open 2026-27", linkUrl: "/apply-now", imageUrl: "Join RP Public School - Where Excellence is a Habit.", isActive: true, type: "text" });
 
   const { data: news, isLoading: newsLoading } = useQuery<any[]>({
     queryKey: ["/api/admin/news"],
@@ -44,6 +63,60 @@ export default function CMSManager() {
   const { data: popups, isLoading: popupsLoading } = useQuery<any[]>({
     queryKey: ["/api/admin/popups"],
   });
+
+  // Mutations
+  const createNewsMutation = useMutation({
+    mutationFn: async (data: any) => await apiRequest("POST", "/api/admin/news", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/news"] });
+      setIsNewsModalOpen(false);
+      setNewsForm({ content: "", priority: "normal", isActive: true });
+      toast({ title: "News Added" });
+    }
+  });
+
+  const deleteNewsMutation = useMutation({
+    mutationFn: async (id: number) => await apiRequest("DELETE", `/api/admin/news/${id}`),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["/api/admin/news"] }); }
+  });
+
+  const toggleNewsMutation = useMutation({
+    mutationFn: async ({ id, isActive }: { id: number, isActive: boolean }) => await apiRequest("PATCH", `/api/admin/news/${id}`, { isActive }),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["/api/admin/news"] }); }
+  });
+
+  const createSliderMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const payload = { ...data, imageUrl: getGoogleDriveDirectLink(data.imageUrl) };
+      return await apiRequest("POST", "/api/admin/sliders", payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/sliders"] });
+      setIsSliderModalOpen(false);
+      setSliderForm({ title: "", description: "", imageUrl: "", isActive: true, order: 0 });
+      toast({ title: "Slider Added" });
+    }
+  });
+
+  const deleteSliderMutation = useMutation({
+    mutationFn: async (id: number) => await apiRequest("DELETE", `/api/admin/sliders/${id}`),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["/api/admin/sliders"] }); }
+  });
+
+  const handleSavePopup = () => {
+    const payload = { ...popupForm, imageUrl: getGoogleDriveDirectLink(popupForm.imageUrl) };
+    if (popups && popups.length > 0) {
+      apiRequest("PATCH", `/api/admin/popups/${popups[0].id}`, payload).then(() => {
+        toast({ title: "Popup Updated" });
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/popups"] });
+      });
+    } else {
+      apiRequest("POST", "/api/admin/popups", payload).then(() => {
+        toast({ title: "Popup Created" });
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/popups"] });
+      });
+    }
+  };
 
   return (
     <AdminLayout>
@@ -77,10 +150,33 @@ export default function CMSManager() {
                   <CardTitle className="text-xl font-bold font-heading">Announcements & Ticker</CardTitle>
                   <CardDescription>Manage the scrolling text on the website header.</CardDescription>
                 </div>
-                <Button size="sm" className="bg-primary hover:bg-primary-dark">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add New News
-                </Button>
+                <Dialog open={isNewsModalOpen} onOpenChange={setIsNewsModalOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="bg-primary hover:bg-primary-dark">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add New News
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader><DialogTitle>Add News Ticker Item</DialogTitle></DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="space-y-2">
+                        <Label>Content</Label>
+                        <Input value={newsForm.content} onChange={e => setNewsForm({...newsForm, content: e.target.value})} placeholder="Announcement text" />
+                      </div>
+                      <div className="space-y-2">
+                         <Label>Priority</Label>
+                         <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" value={newsForm.priority} onChange={e => setNewsForm({...newsForm, priority: e.target.value})}>
+                            <option value="normal">Normal</option>
+                            <option value="high">High (Red)</option>
+                         </select>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                       <Button onClick={() => createNewsMutation.mutate(newsForm)}>Save</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </CardHeader>
               <CardContent className="p-0">
                 <div className="divide-y">
@@ -107,13 +203,12 @@ export default function CMSManager() {
                           </div>
                         </div>
                         <div className="flex items-center gap-6">
-                          <div className="flex items-center gap-3 pr-6 border-r">
-                             <Label htmlFor={`active-${item.id}`} className="text-xs font-bold text-slate-500 uppercase tracking-tighter cursor-pointer">Active Status</Label>
-                             <Switch id={`active-${item.id}`} checked={item.isActive} />
+                           <div className="flex items-center gap-3 pr-6 border-r">
+                             <Label className="text-xs font-bold text-slate-500 uppercase cursor-pointer">Active Status</Label>
+                             <Switch checked={item.isActive} onCheckedChange={(checked) => toggleNewsMutation.mutate({ id: item.id, isActive: checked })} />
                           </div>
                           <div className="flex items-center gap-1">
-                             <Button variant="ghost" size="icon" className="h-9 w-9 text-blue-600 hover:bg-blue-50"><Edit className="w-4 h-4" /></Button>
-                             <Button variant="ghost" size="icon" className="h-9 w-9 text-red-600 hover:bg-red-50"><Trash2 className="w-4 h-4" /></Button>
+                             <Button onClick={() => {if(window.confirm('Delete?')) deleteNewsMutation.mutate(item.id)}} variant="ghost" size="icon" className="h-9 w-9 text-red-600 hover:bg-red-50"><Trash2 className="w-4 h-4" /></Button>
                           </div>
                         </div>
                       </div>
@@ -127,21 +222,43 @@ export default function CMSManager() {
           {/* Hero Sliders Tab */}
           <TabsContent value="sliders" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-               <Card className="shadow-md border-2 border-dashed border-slate-200 bg-slate-50/50 flex flex-col items-center justify-center p-8 min-h-[300px] hover:bg-slate-100/80 transition-colors cursor-pointer group">
-                  <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                    <Plus className="w-8 h-8 text-primary" />
-                  </div>
-                  <p className="mt-4 font-bold text-slate-600">Add New Slider Image</p>
-                  <p className="text-[11px] text-muted-foreground mt-1 uppercase font-bold tracking-widest">Recommended: 1920x800 PX</p>
-               </Card>
+               <Dialog open={isSliderModalOpen} onOpenChange={setIsSliderModalOpen}>
+                  <DialogTrigger asChild>
+                     <Card className="shadow-md border-2 border-dashed border-slate-200 bg-slate-50/50 flex flex-col items-center justify-center p-8 min-h-[300px] hover:bg-slate-100/80 transition-colors cursor-pointer group">
+                        <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                          <Plus className="w-8 h-8 text-primary" />
+                        </div>
+                        <p className="mt-4 font-bold text-slate-600">Add New Slider Image</p>
+                     </Card>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader><DialogTitle>Add Slider</DialogTitle></DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="space-y-2">
+                        <Label>Image URL</Label>
+                        <Input value={sliderForm.imageUrl} onChange={e => setSliderForm({...sliderForm, imageUrl: e.target.value})} placeholder="https://..." />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Title Label</Label>
+                        <Input value={sliderForm.title} onChange={e => setSliderForm({...sliderForm, title: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Description</Label>
+                        <Input value={sliderForm.description} onChange={e => setSliderForm({...sliderForm, description: e.target.value})} />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                       <Button onClick={() => createSliderMutation.mutate(sliderForm)}>Save Slider</Button>
+                    </DialogFooter>
+                  </DialogContent>
+               </Dialog>
 
                {sliders?.map((slider) => (
                  <Card key={slider.id} className="border-none shadow-md overflow-hidden group">
                    <div className="relative h-48 overflow-hidden bg-slate-200">
                      <img src={slider.imageUrl} alt={slider.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                      <div className="absolute top-3 right-3 flex gap-2">
-                       <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full shadow-md backdrop-blur-md bg-white/80"><Edit className="w-4 h-4" /></Button>
-                       <Button variant="destructive" size="icon" className="h-8 w-8 rounded-full shadow-md"><Trash2 className="w-4 h-4" /></Button>
+                       <Button onClick={() => {if(window.confirm('Delete?')) deleteSliderMutation.mutate(slider.id)}} variant="destructive" size="icon" className="h-8 w-8 rounded-full shadow-md"><Trash2 className="w-4 h-4" /></Button>
                      </div>
                    </div>
                    <CardHeader className="p-5">
@@ -178,22 +295,22 @@ export default function CMSManager() {
                        <div className="space-y-4">
                           <div className="space-y-2">
                             <Label htmlFor="popup-title">Popup Header Title</Label>
-                            <Input id="popup-title" defaultValue="Admissions Open 2026-27" className="font-bold border-slate-300" />
+                            <Input id="popup-title" value={popupForm.title} onChange={e => setPopupForm({...popupForm, title: e.target.value})} className="font-bold border-slate-300" />
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="popup-content">Promotional Message</Label>
-                            <Input id="popup-content" defaultValue="Join RP Public School - Where Excellence is a Habit." className="font-medium border-slate-300" />
+                            <Input id="popup-content" value={popupForm.imageUrl} onChange={e => setPopupForm({...popupForm, imageUrl: e.target.value})} className="font-medium border-slate-300" />
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="popup-link">Redirection Link</Label>
-                            <Input id="popup-link" defaultValue="/apply-now" className="text-primary font-bold border-slate-300 shadow-inner bg-slate-50/50" />
+                            <Input id="popup-link" value={popupForm.linkUrl} onChange={e => setPopupForm({...popupForm, linkUrl: e.target.value})} className="text-primary font-bold border-slate-300 shadow-inner bg-slate-50/50" />
                           </div>
                           <div className="flex items-center gap-4 pt-4 border-t">
                             <div className="flex-1 flex items-center gap-3">
-                               <Switch id="popup-active" checked />
-                               <Label htmlFor="popup-active" className="font-bold text-slate-700">Display Popup to Visitors</Label>
+                               <Switch checked={popupForm.isActive} onCheckedChange={checked => setPopupForm({...popupForm, isActive: checked})} />
+                               <Label className="font-bold text-slate-700">Display Popup to Visitors</Label>
                             </div>
-                            <Button className="bg-primary hover:bg-primary-dark">
+                            <Button className="bg-primary hover:bg-primary-dark" onClick={handleSavePopup}>
                               <Save className="w-4 h-4 mr-2" />
                               Save & Publish
                             </Button>
@@ -205,8 +322,9 @@ export default function CMSManager() {
                              <div className="w-10 h-10 rounded bg-primary/10 mb-3 flex items-center justify-center">
                                 <Plus className="w-5 h-5 text-primary" />
                              </div>
-                             <p className="font-bold text-slate-800 text-lg">Admissions Open 2026-27</p>
-                             <p className="text-xs text-muted-foreground mt-2 font-medium">Join RP Public School - Where Excellence is a Habit.</p>
+                             <p className="font-bold text-slate-800 text-lg">{popupForm.title || "Admissions Open 2026-27"}</p>
+                             <p className="text-xs text-muted-foreground mt-2 font-medium">{popupForm.imageUrl || "Join RP Public School - Where Excellence is a Habit."}</p>
+
                              <div className="mt-4 pt-4 border-t flex flex-col gap-2">
                                 <div className="h-8 w-full bg-primary rounded flex items-center justify-center text-[10px] text-white font-bold uppercase tracking-wider">APPLY NOW</div>
                                 <div className="h-8 w-full bg-slate-100 rounded flex items-center justify-center text-[10px] text-slate-500 font-bold uppercase tracking-wider">LATER</div>

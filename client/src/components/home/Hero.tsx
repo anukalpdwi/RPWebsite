@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import AnimatedText from "@/components/ui/animated-text";
+import { useQuery } from "@tanstack/react-query";
 
 // Hero slider data
 const heroSlides = [
@@ -66,14 +67,30 @@ export default function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const slideIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  const { data: dbSliders } = useQuery<any[]>({
+    queryKey: ["/api/sliders"],
+  });
+
+  const displaySlides = dbSliders && dbSliders.length > 0 
+    ? dbSliders.map(s => ({
+        image: s.imageUrl,
+        title: s.title || "RP Public School",
+        subtitle: s.description || "Nurturing Excellence",
+        buttons: [
+          { text: "Apply Now", link: "/apply-now", primary: true },
+          { text: "Discover More", link: "#about", primary: false }
+        ]
+      }))
+    : heroSlides;
+
   // Function to go to next slide
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    setCurrentSlide((prev) => (prev + 1) % displaySlides.length);
   };
 
   // Function to go to previous slide
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+    setCurrentSlide((prev) => (prev - 1 + displaySlides.length) % displaySlides.length);
   };
 
   // Function to go to a specific slide
@@ -104,7 +121,7 @@ export default function Hero() {
   return (
     <section className="relative hero-slider overflow-hidden h-[600px] md:h-[600px]">
       <AnimatePresence mode="wait">
-        {heroSlides.map((slide, index) => (
+        {displaySlides.map((slide, index) => (
           <motion.div
             key={index}
             className={`absolute inset-0 ${index === currentSlide ? "z-10" : "z-0"}`}
@@ -130,11 +147,11 @@ export default function Hero() {
                   <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white mb-4">
                     <AnimatedText text={slide.title} />
                   </h2>
-                  <p className="text-xl md:text-2xl text-white mb-6 max-w-3xl mx-auto">
+                  <p className="text-xl md:text-2xl text-white mb-6 max-w-3xl mx-auto drop-shadow-lg font-medium">
                     <AnimatedText text={slide.subtitle} type="paragraph" delay={0.4} />
                   </p>
                   <div className="flex flex-col sm:flex-row justify-center gap-4">
-                    {slide.buttons.map((button, buttonIndex) => (
+                    {slide.buttons.map((button: any, buttonIndex: number) => (
                       <motion.div
                         key={buttonIndex}
                         initial={{ opacity: 0, y: 20 }}
@@ -163,7 +180,7 @@ export default function Hero() {
       
       {/* Slider Controls */}
       <div className="absolute bottom-5 left-0 right-0 flex justify-center gap-2 z-20">
-        {heroSlides.map((_, index) => (
+        {displaySlides.map((_, index) => (
           <button 
             key={index}
             className={`w-3 h-3 rounded-full transition-all duration-300 ${

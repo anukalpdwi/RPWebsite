@@ -4,7 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { useEffect } from "react";
 import NotFound from "@/pages/not-found";
-import { Analytics } from '@vercel/analytics/next';
+import { Analytics } from '@vercel/analytics/react';
 import { AuthProvider } from "@/hooks/use-auth";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
 
@@ -34,6 +34,7 @@ import AdmissionsManager from "@/pages/admin/Admissions";
 import StudentManager from "@/pages/admin/Students";
 import StaffManager from "@/pages/admin/Staff";
 import CMSManager from "@/pages/admin/CMS";
+import GalleryManager from "@/pages/admin/Gallery";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -88,7 +89,7 @@ function Router() {
       </Route>
       <Route path="/admin/gallery">
         <ProtectedRoute>
-          <CMSManager />
+          <GalleryManager />
         </ProtectedRoute>
       </Route>
       <Route path="/admin/cms">
@@ -130,6 +131,7 @@ function App() {
           )}
         </div>
         <Toaster />
+        <Analytics />
         {!isAdminPath && <AdmissionPopup />}
       </QueryClientProvider>
     </AuthProvider>

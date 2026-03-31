@@ -1,51 +1,126 @@
-# Admin Panel Skill
+# CMS Communication Skill (News, Notifications, Popups, Banners, Slider)
 
-This skill provides a comprehensive guide and set of patterns for building a modern, secure, and feature-rich Admin Panel for educational institutions (Schools/Colleges).
+This skill provides the architectural blueprints and implementation patterns for building and managing real-time communication components (News, Notifications, Popups, Banners, and Sliders) for institutional websites.
 
-## Core Technologies
+## 1. Overview
 
-- **Frontend**: React (Vite), TypeScript, Tailwind CSS
-- **Backend/Auth**: Supabase (PostgreSQL + Realtime)
-- **Icons**: Lucide React
-- **State Management**: React Context API
+Institutional websites require dynamic ways to communicate urgent information, routine updates, and visual highlights. This skill standardizes the "Manager" pattern used for these components.
 
-## Features & Implementation Details
+### Core Pattern: The Manager Component
 
-### 1. Secure Login System
+All CMS components follow a consistent UI/UX pattern in the Admin Panel:
 
-- **Authentication**: Use Supabase Auth for email/password login.
-- **Session Management**: Persistent sessions with automatic redirection.
-- **Security**: Protected routes using an `AuthContext` and `ProtectedRoute` component.
-- **UI**: Premium, centered login card with background overlays and connection status indicators.
+- **Accordion Editor**: A collapsible form section for adding/editing items with **Live Preview**.
+- **Real-time Metrics**: Visual counts of active vs. inactive items.
+- **Data Persistence**: Direct integration with Supabase for CRUD operations.
+- **Feedback Loops**: Success toasts, error alerts, and "Delete Confirmation" dialogs.
 
-### 2. Dashboard Overview
+---
 
-- **Metric Cards**: Display key statistics (e.g., Total Students, Active Staff, Pending Admissions).
-- **System Status**: Real-time connection status to the database/API.
-- **Quick Links**: Easy access to common tasks (e.g., "Add New Student", "Post Announcement").
+## 2. Component Specifications
 
-### 3. Content Management Systems (CMS)
+### A. News Ticker (Announcement Bar)
 
-- **Banner/Slider Manager**: CRUD operations for homepage sliders with image preview.
-- **News Ticker**: Manage scrolling announcements with priority levels.
-- **Notification Center**: Categorized alerts (Student, Faculty, Academic, General).
-- **Gallery Manager**: Manage event photos and albums.
+- **Purpose**: Continuous scrolling text for high-priority updates.
+- **Data Schema (`news_ticker`)**:
+  - `id` (uuid)
+  - `text` (text): The announcement content.
+  - `label` (text): Badge type (e.g., 'New', 'Results', 'Circular').
+  - `link` (text): Optional URL for details.
+  - `sort_order` (int): Display priority.
+- **UI Features**:
+  - Multi-colored badges with glow effects (e.g., Red for 'New', Green for 'Results').
+  - Maximum character limit (usually 150-200) to keep the ticker readable.
 
-### 4. Educational Records Management
+### B. Notifications (Bulletins/Circulars)
 
-- **Admission Manager**: Handle new applications, filter by status, and view detailed forms.
-- **Student Database**: Searchable list of students with profile details.
-- **Faculty Management**: Staff directory with department-wise filtering.
+- **Purpose**: Categorized lists of official documents and notices.
+- **Data Schema (`notifications`)**:
+  - `id` (uuid)
+  - `category` (enum): 'student', 'circular', 'recruitment', 'tender'.
+  - `text` (text): Title of the notice.
+  - `link` (text): Link to PDF/Document.
+  - `date_label` (text): Human-readable date (e.g., 'Jan 20, 2026').
+- **UI Features**:
+  - Tabbed interface to switch between categories.
+  - "New" indicators for recently posted items.
 
-## Design Patterns
+### C. Popups & Modal Banners
 
-- **Layout**: Sidebar navigation with a collapsible menu for mobile.
-- **Feedback**: Loading states (spinners), success toasts, and error alerts.
-- **Responsive**: Mobile-first design for all admin controls.
-- **Consistency**: Centralized theme tokens and reusable header/table components.
+- **Purpose**: Urgent interruptions (e.g., Holiday notice, Admission deadline).
+- **Data Schema (`popup_banners`)**:
+  - `id` (uuid)
+  - `title` (text): Banner badge (e.g., 'ATTENTION').
+  - `heading` (text): Main title.
+  - `description` (text): Body content.
+  - `image_url` (text): Icon or background image.
+  - `link` (text): Optional "View Details" URL.
+  - `is_active` (bool): Toggle visibility.
+- **UI Features**:
+  - Glassmorphism overlays.
+  - Direct Google Drive image integration.
+  - Limit to 1-2 active popups to avoid user fatigue.
 
-## Best Practices
+### D. Hero Sliders (Carousel)
 
-- **Real-time Updates**: Use Supabase Realtime for instant updates across the dashboard.
-- **Error Handling**: Graceful handling of network failures and invalid inputs.
-- **Performance**: Memoize heavy computations and use efficient data fetching patterns (e.g., pre-fetching in GlobalContext).
+- **Purpose**: Large-scale visual storytelling on the homepage.
+- **Data Schema (`main_slider`)**:
+  - `id` (uuid)
+  - `title` (text): Small badge overlay.
+  - `subtitle` (text): Large text caption.
+  - `image_url` (text): High-res background.
+  - `sort_order` (int): Carousel order.
+  - `is_active` (bool): Toggle visibility.
+- **UI Features**:
+  - Aspect ratio enforcement (e.g., 16:9 or 21:9).
+  - Blurred background for portrait images to prevent empty space.
+
+---
+
+## 3. Technical Implementation Patterns
+
+### Image Handling (Google Drive Wrapper)
+
+To use Google Drive for hosting images without external costs, use a utility to convert "Share" links to "Direct" links:
+
+```typescript
+export const getGoogleDriveDirectLink = (url: string) => {
+  if (url.includes("drive.google.com")) {
+    const fileId =
+      url.match(/\/d\/([^/]+)/)?.[1] || url.match(/id=([^&]+)/)?.[1];
+    return fileId
+      ? `https://drive.google.com/uc?export=view&id=${fileId}`
+      : url;
+  }
+  return url;
+};
+```
+
+### Real-time Sync (Supabase)
+
+Enable realtime on the client to ensure the website updates instantly when the Admin makes a change:
+
+```typescript
+useEffect(() => {
+  const channel = supabase
+    .channel("cms_changes")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "news_ticker" },
+      fetchNews,
+    )
+    .subscribe();
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, []);
+```
+
+---
+
+## 4. Design Guidelines (Aesthetics)
+
+1. **Interactive Feedback**: All buttons should have hover/active states (e.g., `scale-95`).
+2. **Gradients & Depth**: Use subtle gradients for headers and `shadow-xl` for editor panels.
+3. **Consistency**: Use a unified icon set (Lucide React) and typography (e.g., Noto Serif for headlines, Inter for UI).
+4. **Mobile First**: Managers must be fully usable on mobile, using dropdowns for tab navigation if necessary.

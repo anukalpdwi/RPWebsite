@@ -33,14 +33,64 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { getGoogleDriveDirectLink } from "@/lib/utils";
 
 export default function StudentManager() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    rollNumber: "",
+    name: "",
+    grade: "",
+    dob: "",
+    gender: "Male",
+    address: "",
+    fatherName: "",
+    motherName: "",
+    parentPhone: "",
+    parentEmail: "",
+    photoUrl: "",
+    academicYear: "2026-27"
+  });
   const { toast } = useToast();
 
   const { data: students, isLoading } = useQuery<any[]>({
     queryKey: ["/api/admin/students"],
   });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const payload = { ...data, photoUrl: getGoogleDriveDirectLink(data.photoUrl) };
+      return await apiRequest("POST", "/api/admin/students", payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/students"] });
+      setIsAddModalOpen(false);
+      setFormData({
+        rollNumber: "", name: "", grade: "", dob: "", gender: "Male", address: "",
+        fatherName: "", motherName: "", parentPhone: "", parentEmail: "", photoUrl: "", academicYear: "2026-27"
+      });
+      toast({ title: "Student Added Successfully" });
+    },
+    onError: () => {
+      toast({ title: "Operation failed", description: "Ensure roll number is unique.", variant: "destructive" });
+    }
+  });
+
+  const handleAddSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    createMutation.mutate(formData);
+  };
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
@@ -95,10 +145,86 @@ export default function StudentManager() {
               <FileDown className="w-4 h-4 mr-2" />
               Export Records
             </Button>
-            <Button size="sm" className="bg-primary hover:bg-primary-dark">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Student
-            </Button>
+            <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="bg-primary hover:bg-primary-dark shadow-sm hover:shadow active:scale-95 transition-all">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Student
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+                <form onSubmit={handleAddSubmit}>
+                  <DialogHeader>
+                    <DialogTitle className="text-xl text-primary font-heading font-bold">Register New Student</DialogTitle>
+                    <DialogDescription>Fill in the student's personal and academic details. Fields marked * are required.</DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-5 py-6 mt-2 border-y">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="rollNumber" className="text-xs font-bold uppercase required">Roll Number *</Label>
+                        <Input id="rollNumber" required placeholder="e.g. 26001" value={formData.rollNumber} onChange={(e) => setFormData({...formData, rollNumber: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="name" className="text-xs font-bold uppercase">Full Name *</Label>
+                        <Input id="name" required placeholder="e.g. Rahul Kumar" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="grade" className="text-xs font-bold uppercase">Class/Grade *</Label>
+                        <Input id="grade" required placeholder="e.g. Class 10" value={formData.grade} onChange={(e) => setFormData({...formData, grade: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="dob" className="text-xs font-bold uppercase">Date of Birth *</Label>
+                        <Input id="dob" type="date" required value={formData.dob} onChange={(e) => setFormData({...formData, dob: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="gender" className="text-xs font-bold uppercase">Gender *</Label>
+                        <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background" id="gender" value={formData.gender} onChange={(e) => setFormData({...formData, gender: e.target.value})}>
+                          <option>Male</option>
+                          <option>Female</option>
+                          <option>Other</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="fatherName" className="text-xs font-bold uppercase">Father's Name *</Label>
+                        <Input id="fatherName" required value={formData.fatherName} onChange={(e) => setFormData({...formData, fatherName: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="motherName" className="text-xs font-bold uppercase">Mother's Name *</Label>
+                        <Input id="motherName" required value={formData.motherName} onChange={(e) => setFormData({...formData, motherName: e.target.value})} />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="parentPhone" className="text-xs font-bold uppercase">Parent Phone *</Label>
+                        <Input id="parentPhone" required value={formData.parentPhone} onChange={(e) => setFormData({...formData, parentPhone: e.target.value})} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="academicYear" className="text-xs font-bold uppercase">Academic Year *</Label>
+                        <Input id="academicYear" required value={formData.academicYear} onChange={(e) => setFormData({...formData, academicYear: e.target.value})} />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="address" className="text-xs font-bold uppercase">Residential Address *</Label>
+                      <Input id="address" required value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="photoUrl" className="text-xs font-bold uppercase cursor-pointer">Photo URL (Drive Link)</Label>
+                      <Input id="photoUrl" placeholder="https://drive.google.com/..." value={formData.photoUrl} onChange={(e) => setFormData({...formData, photoUrl: e.target.value})} />
+                    </div>
+                  </div>
+                  <DialogFooter className="mt-4">
+                    <Button type="button" variant="outline" onClick={() => setIsAddModalOpen(false)}>Cancel</Button>
+                    <Button type="submit" disabled={createMutation.isPending} className="bg-primary hover:bg-primary-dark">
+                      {createMutation.isPending ? "Saving..." : "Register Student"}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 

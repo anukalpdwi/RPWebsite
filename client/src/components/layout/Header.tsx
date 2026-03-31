@@ -3,6 +3,9 @@ import { Link, useLocation } from "wouter";
 import { schoolInfo } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronDown, FaBars, FaLock } from "react-icons/fa";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { queryClient } from "@/lib/queryClient";
 
 // Navigation items with dropdowns
 const navigationItems = [
@@ -56,6 +59,10 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [location] = useLocation();
 
+  const { data: activeNews } = useQuery<any[]>({
+    queryKey: ["/api/news"],
+  });
+
   useEffect(() => {
     // Close mobile menu when route changes
     setIsMobileMenuOpen(false);
@@ -66,7 +73,23 @@ export default function Header() {
     };
     
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    
+    // Real-time synchronization for News Ticker
+    const channel = supabase
+      .channel("cms_news_changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "news_ticker" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["/api/news"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      supabase.removeChannel(channel);
+    };
   }, [location]);
 
   const toggleMobileMenu = () => {
@@ -236,8 +259,10 @@ export default function Header() {
             <span className="mr-1">📢</span> Announcements:
           </div>
           <div className="overflow-hidden whitespace-nowrap">
-            <div className="announcement-scroll inline-block">
-              Admissions open for academic year 2026-27 &nbsp;&nbsp;|&nbsp;&nbsp; Annual Sports Meet on December 15th &nbsp;&nbsp;|&nbsp;&nbsp; Parent-Teacher Meeting scheduled for October 5th &nbsp;&nbsp;|&nbsp;&nbsp; New session starts April 1, 2026
+            <div className="announcement-scroll inline-block font-medium">
+              {activeNews && activeNews.length > 0 
+                ? activeNews.map(n => n.content).join(" \u00A0\u00A0|\u00A0\u00A0 ")
+                : "Admissions open for academic year 2026-27 \u00A0\u00A0|\u00A0\u00A0 New session starts April 1, 2026"}
             </div>
           </div>
         </div>

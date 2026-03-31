@@ -9,7 +9,8 @@ import {
   insertStaffSchema,
   insertSliderSchema,
   insertNewsTickerSchema,
-  insertPopupSchema
+  insertPopupSchema,
+  insertGalleryEventSchema
 } from "../shared/schema.js";
 import { z, ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -422,6 +423,35 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Public Content Endpoints
+  app.get("/api/sliders", async (_req, res) => {
+    try {
+      const items = await storage.getAllSliders();
+      res.json(items.filter(i => i.isActive));
+    } catch (e) { res.status(500).json({ error: "Failed to fetch top sliders" }); }
+  });
+
+  app.get("/api/news", async (_req, res) => {
+    try {
+      const items = await storage.getAllNewsTickers();
+      res.json(items.filter(i => i.isActive));
+    } catch (e) { res.status(500).json({ error: "Failed to fetch news" }); }
+  });
+
+  app.get("/api/popups", async (_req, res) => {
+    try {
+       const items = await storage.getAllPopups();
+       res.json(items.filter(i => i.isActive));
+    } catch (e) { res.status(500).json({ error: "Failed to fetch popups" }); }
+  });
+
+  app.get("/api/gallery", async (_req, res) => {
+    try {
+       const events = await storage.getAllGalleryEvents();
+       res.json(events);
+    } catch (e) { res.status(500).json({ error: "Failed to fetch gallery" }); }
+  });
+
   // --- ADMIN API ROUTES ---
 
   // Dashboard Stats
@@ -475,6 +505,15 @@ export function registerRoutes(app: Express): Server {
       res.json(updated);
     } catch (error) {
       res.status(500).json({ success: false, message: "Error updating admission" });
+    }
+  });
+
+  app.delete("/api/admin/admissions/:id", async (req, res) => {
+    try {
+      await storage.deleteAdmissionInquiry(parseInt(req.params.id));
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Error deleting admission" });
     }
   });
 
@@ -538,6 +577,20 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  app.patch("/api/admin/staff/:id", async (req, res) => {
+    try {
+      const updated = await storage.updateStaff(parseInt(req.params.id), req.body);
+      res.json(updated);
+    } catch (error) { res.status(500).json({ message: "Error updating staff" }); }
+  });
+
+  app.delete("/api/admin/staff/:id", async (req, res) => {
+    try {
+      await storage.deleteStaff(parseInt(req.params.id));
+      res.json({ success: true });
+    } catch (error) { res.status(500).json({ message: "Error deleting staff" }); }
+  });
+
   // Content Management (Sliders, News, Popups)
   app.get("/api/admin/sliders", async (_req, res) => {
     const items = await storage.getAllSliders();
@@ -548,6 +601,14 @@ export function registerRoutes(app: Express): Server {
     const data = insertSliderSchema.parse(req.body);
     const item = await storage.createSlider(data);
     res.status(201).json(item);
+  });
+  app.patch("/api/admin/sliders/:id", async (req, res) => {
+    const item = await storage.updateSlider(parseInt(req.params.id), req.body);
+    res.json(item);
+  });
+  app.delete("/api/admin/sliders/:id", async (req, res) => {
+    await storage.deleteSlider(parseInt(req.params.id));
+    res.json({ success: true });
   });
 
   app.get("/api/admin/news", async (_req, res) => {
@@ -560,6 +621,14 @@ export function registerRoutes(app: Express): Server {
     const item = await storage.createNewsTicker(data);
     res.status(201).json(item);
   });
+  app.patch("/api/admin/news/:id", async (req, res) => {
+    const item = await storage.updateNewsTicker(parseInt(req.params.id), req.body);
+    res.json(item);
+  });
+  app.delete("/api/admin/news/:id", async (req, res) => {
+    await storage.deleteNewsTicker(parseInt(req.params.id));
+    res.json({ success: true });
+  });
 
   app.get("/api/admin/popups", async (_req, res) => {
     const items = await storage.getAllPopups();
@@ -570,6 +639,35 @@ export function registerRoutes(app: Express): Server {
     const data = insertPopupSchema.parse(req.body);
     const item = await storage.createPopup(data);
     res.status(201).json(item);
+  });
+  app.patch("/api/admin/popups/:id", async (req, res) => {
+    const item = await storage.updatePopup(parseInt(req.params.id), req.body);
+    res.json(item);
+  });
+  app.delete("/api/admin/popups/:id", async (req, res) => {
+    await storage.deletePopup(parseInt(req.params.id));
+    res.json({ success: true });
+  });
+
+  // Gallery Management
+  app.get("/api/admin/gallery", async (_req, res) => {
+    const events = await storage.getAllGalleryEvents();
+    res.json(events);
+  });
+
+  app.post("/api/admin/gallery", async (req, res) => {
+    try {
+      const data = insertGalleryEventSchema.parse(req.body);
+      const item = await storage.createGalleryEvent(data);
+      res.status(201).json(item);
+    } catch (error) { res.status(400).json({ message: "Invalid gallery data" }); }
+  });
+  
+  app.delete("/api/admin/gallery/:id", async (req, res) => {
+    try {
+      await storage.deleteGalleryEvent(parseInt(req.params.id));
+      res.json({ success: true });
+    } catch (error) { res.status(500).json({ message: "Error deleting item" }); }
   });
 
   // Create HTTP server

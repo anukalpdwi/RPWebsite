@@ -26,6 +26,14 @@ export function truncateText(text: string, length: number): string {
   return text.slice(0, length) + "...";
 }
 
+export const getGoogleDriveDirectLink = (url: string) => {
+  if (url && url.includes("drive.google.com")) {
+    const fileId = url.match(/\/d\/([^/]+)/)?.[1] || url.match(/id=([^&]+)/)?.[1];
+    return fileId ? `https://drive.google.com/uc?export=view&id=${fileId}` : url;
+  }
+  return url;
+};
+
 export const schoolInfo = {
   name: "RP Public School",
   location: "Jaisinghnagar, Shahdol, Madhya Pradesh",

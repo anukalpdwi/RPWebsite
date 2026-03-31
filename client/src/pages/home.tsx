@@ -10,11 +10,15 @@ import Gallery from "@/components/home/Gallery";
 import News from "@/components/home/News";
 import AdmissionInquiry from "@/components/home/AdmissionInquiry";
 import Contact from "@/components/home/Contact";
+import StudentNotifications from "@/components/home/StudentNotifications";
+import GlobalPopup from "@/components/home/GlobalPopup";
 
 export default function Home() {
   return (
     <>
+      <GlobalPopup />
       <Hero />
+      <StudentNotifications />
       <QuickLinks />
       <About />
       <CounterStats />

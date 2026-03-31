@@ -39,6 +39,7 @@ export interface IStorage {
   getAllAdmissionInquiries(): Promise<AdmissionInquiry[]>;
   createAdmissionInquiry(inquiry: InsertAdmissionInquiry): Promise<AdmissionInquiry>;
   updateAdmissionInquiry(id: number, data: Partial<AdmissionInquiry>): Promise<AdmissionInquiry | undefined>;
+  deleteAdmissionInquiry(id: number): Promise<void>;
   
   // Newsletter subscription methods
   getNewsletterSubscription(id: number): Promise<NewsletterSubscription | undefined>;
@@ -72,14 +73,19 @@ export interface IStorage {
   updateNewsTicker(id: number, data: Partial<NewsTicker>): Promise<NewsTicker | undefined>;
   deleteNewsTicker(id: number): Promise<void>;
 
-  getAllGalleryEvents(): Promise<GalleryEvent[]>;
-  createGalleryEvent(event: InsertGalleryEvent): Promise<GalleryEvent>;
-  getGalleryImages(eventId: number): Promise<GalleryImage[]>;
-  addGalleryImage(image: InsertGalleryImage): Promise<GalleryImage>;
-
   getAllPopups(): Promise<Popup[]>;
   createPopup(popup: InsertPopup): Promise<Popup>;
   updatePopup(id: number, data: Partial<Popup>): Promise<Popup | undefined>;
+  deletePopup(id: number): Promise<void>;
+
+  // Gallery
+  getAllGalleryEvents(): Promise<GalleryEvent[]>;
+  createGalleryEvent(event: InsertGalleryEvent): Promise<GalleryEvent>;
+  deleteGalleryEvent(id: number): Promise<void>;
+  
+  getGalleryImagesByEvent(eventId: number): Promise<GalleryImage[]>;
+  createGalleryImage(image: InsertGalleryImage): Promise<GalleryImage>;
+  deleteGalleryImage(id: number): Promise<void>;
 
   // Dashboard stats
   getDashboardStats(): Promise<any>;
@@ -143,6 +149,10 @@ export class DatabaseStorage implements IStorage {
   async updateAdmissionInquiry(id: number, data: Partial<AdmissionInquiry>) {
     const [updated] = await db.update(admissionInquiries).set(data).where(eq(admissionInquiries.id, id)).returning();
     return updated;
+  }
+  
+  async deleteAdmissionInquiry(id: number) {
+    await db.delete(admissionInquiries).where(eq(admissionInquiries.id, id));
   }
 
   async getNewsletterSubscription(id: number) {
@@ -236,21 +246,6 @@ export class DatabaseStorage implements IStorage {
     await db.delete(newsTicker).where(eq(newsTicker.id, id));
   }
 
-  async getAllGalleryEvents() {
-    return await db.select().from(galleryEvents);
-  }
-  async createGalleryEvent(insertEvent: InsertGalleryEvent) {
-    const [newItem] = await db.insert(galleryEvents).values(insertEvent).returning();
-    return newItem;
-  }
-  async getGalleryImages(eventId: number) {
-    return await db.select().from(galleryImages).where(eq(galleryImages.eventId, eventId));
-  }
-  async addGalleryImage(image: InsertGalleryImage) {
-    const [newItem] = await db.insert(galleryImages).values(image).returning();
-    return newItem;
-  }
-
   async getAllPopups() {
     return await db.select().from(popups);
   }
@@ -261,6 +256,34 @@ export class DatabaseStorage implements IStorage {
   async updatePopup(id: number, data: Partial<Popup>) {
     const [updated] = await db.update(popups).set(data).where(eq(popups.id, id)).returning();
     return updated;
+  }
+  
+  async deletePopup(id: number) {
+    await db.delete(popups).where(eq(popups.id, id));
+  }
+
+  // Gallery
+  async getAllGalleryEvents() {
+    return await db.select().from(galleryEvents);
+  }
+  async createGalleryEvent(event: InsertGalleryEvent) {
+    const [newEvent] = await db.insert(galleryEvents).values(event).returning();
+    return newEvent;
+  }
+  async deleteGalleryEvent(id: number) {
+    await db.delete(galleryImages).where(eq(galleryImages.eventId, id));
+    await db.delete(galleryEvents).where(eq(galleryEvents.id, id));
+  }
+
+  async getGalleryImagesByEvent(eventId: number) {
+    return await db.select().from(galleryImages).where(eq(galleryImages.eventId, eventId));
+  }
+  async createGalleryImage(image: InsertGalleryImage) {
+    const [newImg] = await db.insert(galleryImages).values(image).returning();
+    return newImg;
+  }
+  async deleteGalleryImage(id: number) {
+    await db.delete(galleryImages).where(eq(galleryImages.id, id));
   }
 
   // Dashboard Stats
@@ -415,6 +438,8 @@ class MockStorage implements IStorage {
     return this.admissionInquiries[index];
   }
 
+  async deleteAdmissionInquiry(id: number): Promise<void> {}
+
   async getNewsletterSubscription(id: number) { return this.newsletterSubscriptions.find(s => s.id === id); }
   async getNewsletterSubscriptionByEmail(email: string) { return this.newsletterSubscriptions.find(s => s.email === email); }
   async getAllNewsletterSubscriptions() { return this.newsletterSubscriptions; }
@@ -455,14 +480,18 @@ class MockStorage implements IStorage {
   async updateNewsTicker(id: number, data: Partial<NewsTicker>): Promise<NewsTicker | undefined> { return undefined; }
   async deleteNewsTicker(id: number): Promise<void> {}
 
-  async getAllGalleryEvents(): Promise<GalleryEvent[]> { return []; }
-  async createGalleryEvent(event: InsertGalleryEvent): Promise<GalleryEvent> { throw new Error("Not implemented in Mock"); }
-  async getGalleryImages(eventId: number): Promise<GalleryImage[]> { return []; }
-  async addGalleryImage(image: InsertGalleryImage): Promise<GalleryImage> { throw new Error("Not implemented in Mock"); }
-
   async getAllPopups(): Promise<Popup[]> { return []; }
   async createPopup(popup: InsertPopup): Promise<Popup> { throw new Error("Not implemented in Mock"); }
   async updatePopup(id: number, data: Partial<Popup>): Promise<Popup | undefined> { return undefined; }
+  async deletePopup(id: number): Promise<void> {}
+
+  async getAllGalleryEvents(): Promise<GalleryEvent[]> { return []; }
+  async createGalleryEvent(event: InsertGalleryEvent): Promise<GalleryEvent> { throw new Error("Not implemented"); }
+  async deleteGalleryEvent(id: number): Promise<void> {}
+  
+  async getGalleryImagesByEvent(eventId: number): Promise<GalleryImage[]> { return []; }
+  async createGalleryImage(image: InsertGalleryImage): Promise<GalleryImage> { throw new Error("Not implemented"); }
+  async deleteGalleryImage(id: number): Promise<void> {}
 
   async getDashboardStats(): Promise<any> {
     return {
@@ -475,4 +504,7 @@ class MockStorage implements IStorage {
 }
 
 import 'dotenv/config';
-export const storage = new DatabaseStorage();
+
+export const storage = process.env.DATABASE_URL 
+  ? new DatabaseStorage() 
+  : new MockStorage();

@@ -10,7 +10,8 @@ import {
   MoreVertical,
   Download,
   Filter,
-  ArrowRight
+  ArrowRight,
+  Trash2
 } from "lucide-react";
 import { 
   Table, 
@@ -56,6 +57,21 @@ export default function AdmissionsManager() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return await apiRequest("DELETE", `/api/admin/admissions/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/admissions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      toast({
+        title: "Record Deleted",
+        description: "The admission record was permanently removed.",
+        variant: "destructive"
+      });
+    },
+  });
+
   const filteredAdmissions = admissions?.filter(item => 
     item.childName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.admissionNumber?.toString().includes(searchTerm)
@@ -63,6 +79,12 @@ export default function AdmissionsManager() {
 
   const handleStatusChange = (id: number, status: string) => {
     updateStatusMutation.mutate({ id, status });
+  };
+
+  const handleDelete = (id: number) => {
+    if (confirm("Are you sure you want to permanently delete this application?")) {
+      deleteMutation.mutate(id);
+    }
   };
 
   const handleExport = () => {
@@ -211,6 +233,13 @@ export default function AdmissionsManager() {
                                 <XCircle className="w-4 h-4" /> Reject Admission
                               </DropdownMenuItem>
                             )}
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              className="flex items-center gap-2 cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
+                              onClick={() => handleDelete(item.id)}
+                            >
+                              <Trash2 className="w-4 h-4" /> Delete Record
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
